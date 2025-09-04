@@ -1,4 +1,4 @@
-import { cborDiagnostic, cborSerialise, cborDeserialise } from '@aiken/cbor';
+import { cborDiagnostic, cborSerialise, cborDeserialise } from './index';
 import { ByteArray } from '@/types/basic/index';
 
 // Helper function to create ByteArray from hex string

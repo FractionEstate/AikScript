@@ -136,17 +136,8 @@ describe('TypeScriptToAikenTranspiler', () => {
 
     const transpiler = new TypeScriptToAikenTranspiler();
     const ast = transpiler.parse(sourceCode);
-
-    console.log('Parsed AST functions:', ast.functions.length);
-    ast.functions.forEach((func, index) => {
-      console.log(`Function ${index}: ${func.name}, expectExpressions:`, func.expectExpressions);
-    });
-
     const aikenAst = transpiler.transform(ast);
     const aikenCode = transpiler.generate(aikenAst);
-
-    console.log('Generated Aiken code:');
-    console.log(aikenCode);
 
     // Check that expect expressions are parsed
     expect(ast.functions).toHaveLength(3);

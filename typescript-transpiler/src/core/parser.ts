@@ -603,59 +603,46 @@ export class TypeScriptParser {
    * Parses expect expressions around a function declaration
    */
   private parseExpectExpressionsAroundFunction(node: ts.FunctionDeclaration): ExpectExpression[] {
-    // Get the source file and position information
+    console.log('parseExpectExpressionsAroundFunction called for:', node.name?.getText());
+
     const sourceFile = node.getSourceFile();
+    const text = sourceFile.getFullText();
     const functionStart = node.getStart();
 
-    // Look for expect expressions in the lines preceding the function
-    // We'll search backwards from the function start position
-    const text = sourceFile.getFullText();
+    // Look for @expect comments in the 500 characters before the function
+    const searchStart = Math.max(0, functionStart - 500);
+    const searchText = text.substring(searchStart, functionStart);
 
-    console.log('Function start position:', functionStart);
-    console.log('Source text around function:');
-    console.log(text.substring(Math.max(0, functionStart - 200), functionStart + 50));
+    console.log('Function name:', node.name?.getText());
+    console.log('Search text length:', searchText.length);
+    console.log('Search text:');
+    console.log(searchText);
 
-    // Find the start of the function declaration (including any preceding comments)
-    let searchStart = functionStart;
-    let braceCount = 0;
-    let inComment = false;
+    // Find all @expect comments in the search text
+    const expectRegex = /\/\/\s*@expect\s+(.+)/g;
+    const expressions: ExpectExpression[] = [];
+    let match;
 
-    // Go backwards to find the start of the relevant comment block
-    for (let i = functionStart - 1; i >= 0; i--) {
-      const char = text[i];
-
-      if (char === '/' && i > 0 && text[i - 1] === '/' && !inComment) {
-        // Found a line comment, this might contain @expect
-        const lineStart = text.lastIndexOf('\n', i) + 1;
-        const lineEnd = text.indexOf('\n', i);
-        const line = text.substring(lineStart, lineEnd !== -1 ? lineEnd : text.length);
-
-        console.log('Found comment line:', line);
-
-        if (line.includes('@expect')) {
-          console.log('Found @expect in line:', line);
-          // Extract the expect expressions from this line and continue searching
-          const expectExpressions = this.parseExpectExpressions(line);
-          console.log('Parsed expect expressions:', expectExpressions);
-          if (expectExpressions.length > 0) {
-            return expectExpressions;
-          }
-        }
-      } else if (char === '\n' && braceCount === 0) {
-        // We've gone back a full line without finding braces, stop searching
-        break;
+    while ((match = expectRegex.exec(searchText)) !== null) {
+      const expectLine = match[1].trim();
+      const parsed = this.parseExpectLine(expectLine);
+      if (parsed) {
+        expressions.push(parsed);
       }
     }
 
-    return [];
+    // For each function, we only want the expect expression that immediately precedes it
+    // So we take only the last one found (the most recent)
+    return expressions.length > 0 ? [expressions[expressions.length - 1]] : [];
   }
 
   /**
    * Parses a single expect line like "someOption, 'Value not found'" or "someOption 'Value not found'"
    */
   private parseExpectLine(expectLine: string): ExpectExpression | null {
-    // Handle expect with custom error message: expect(option, "error message") or expect(option "error message")
-    const withMessageMatch = expectLine.match(/^(\w+)[,\s]+['"](.+)['"]$/);
+    // Handle expect with custom error message: expect(option.Some, "error message") or expect(option.Some "error message")
+    // Also handle simple variable names and complex expressions with dots
+    const withMessageMatch = expectLine.match(/^([\w\.]+)[,\s]+['"](.+)['"]$/);
     if (withMessageMatch) {
       return {
         expression: withMessageMatch[1],
@@ -663,8 +650,8 @@ export class TypeScriptParser {
       };
     }
 
-    // Handle simple expect: expect(option)
-    const simpleMatch = expectLine.match(/^(\w+)$/);
+    // Handle simple expect: expect(option) or expect(option.Some)
+    const simpleMatch = expectLine.match(/^([\w\.]+)$/);
     if (simpleMatch) {
       return {
         expression: simpleMatch[1],

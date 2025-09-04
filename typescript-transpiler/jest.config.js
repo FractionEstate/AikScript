@@ -38,13 +38,7 @@ module.exports = {
     '^@cardano/voter$': '<rootDir>/src/core/packages/aiken-lang/stdlib/v2.2.0/lib/cardano/governance/voter/index.ts',
     '^@cardano/output_reference$': '<rootDir>/src/core/packages/aiken-lang/stdlib/v2.2.0/lib/cardano/transaction/output_reference/index.ts',
     '^@cardano/script_purpose$': '<rootDir>/src/core/packages/aiken-lang/stdlib/v2.2.0/lib/cardano/transaction/script_purpose/index.ts',
-    '^@cardano/fuzz$': '<rootDir>/src/core/packages/aiken-lang/fuzz/v2.2.0/lib/cardano/fuzz/index.ts'
-  },
-  projects: [
-    '<rootDir>/src/core/packages/aiken-lang/stdlib/v2.2.0/tsconfig.json',
-    '<rootDir>/src/core/packages/aiken-lang/fuzz/v2.2.0/tsconfig.json',
-    '<rootDir>/src/core/packages/aiken-lang/prelude/v1.0.0/tsconfig.json',
-    '<rootDir>/src/core/packages/aiken-lang/merkle-patricia-forestry/v2.1.0/tsconfig.json',
-    '<rootDir>/tsconfig.json'
-  ]
+    '^@cardano/fuzz$': '<rootDir>/src/core/packages/aiken-lang/fuzz/v2.2.0/lib/cardano/fuzz/index.ts',
+    '^@aikscript/types$': '<rootDir>/src/core/packages/aikscript/v1.0.0/lib/types/index.ts'
+  }
 };

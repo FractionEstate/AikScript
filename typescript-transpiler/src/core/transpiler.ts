@@ -193,7 +193,10 @@ export class TypeScriptToAikenTranspiler {
       console.log('Generated code preview:', aikenCode.substring(0, 200));
 
       // Write output
-      require('fs').writeFileSync(config.outputPath, aikenCode);
+      // Write output only if output path is provided
+      if (config.outputPath) {
+        require('fs').writeFileSync(config.outputPath, aikenCode);
+      }
 
       return {
         success: true,

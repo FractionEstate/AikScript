@@ -221,6 +221,13 @@ export class CodeGenerator {
       });
     }
 
+    // Check if this is a validator function (body starts with "validator")
+    if (func.body.trim().startsWith('validator')) {
+      // For validators, output the body as-is (it already contains proper validator syntax)
+      lines.push(func.body);
+      return lines.join('\n');
+    }
+
     let signature = '';
     if (func.isPublic) {
       signature += 'pub ';

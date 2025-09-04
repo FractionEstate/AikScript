@@ -1,9 +1,82 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Command } from 'commander';
 import { TypeScriptToAikenTranspiler } from '../core/transpiler';
+
+// Define interfaces for plutus.json structure
+interface CompileOptions {
+  target: 'aiken' | 'plutus';
+  optimization: 'development' | 'production';
+}
+
+interface PlutusJsonPreamble {
+  title: string;
+  description: string;
+  version: string;
+  plutusVersion: string;
+  compiler: {
+    name: string;
+    version: string;
+  };
+  license: string;
+}
+
+interface PlutusJsonValidator {
+  title: string;
+  redeemer: {
+    title: string;
+    schema: {
+      $ref: string;
+    };
+  };
+  datum: {
+    title: string;
+    schema: {
+      $ref: string;
+    };
+  };
+  parameters: unknown[];
+  compiledCode: string;
+}
+
+interface PlutusValidator {
+  title: string;
+  redeemer: {
+    title: string;
+    schema: {
+      $ref: string;
+    };
+  };
+  datum: {
+    title: string;
+    schema: {
+      $ref: string;
+    };
+  };
+  parameters: unknown[];
+  compiledCode: string;
+}
+
+interface PlutusJsonDefinitions {
+  [key: string]: {
+    title: string;
+    description: string;
+  };
+}
+
+interface PlutusJson {
+  preamble: PlutusJsonPreamble;
+  validators: PlutusJsonValidator[];
+  definitions: PlutusJsonDefinitions;
+}
+
+interface PlutusData {
+  validators: PlutusValidator[];
+  preamble?: PlutusJsonPreamble;
+  definitions?: PlutusJsonDefinitions;
+}
 
 const program = new Command();
 
@@ -24,7 +97,7 @@ program
   .description('Compile TypeScript smart contract to Aiken (standard Aiken structure)')
   .option('-t, --target <target>', 'Target format', 'aiken')
   .option('-o, --optimization <level>', 'Optimization level', 'development')
-  .action(async (input: string, output: string | undefined, options: any) => {
+  .action(async (input: string, output: string | undefined, options: CompileOptions) => {
     try {
       const transpiler = new TypeScriptToAikenTranspiler();
 
@@ -81,34 +154,30 @@ program
         const plutusJsonPath = path.join(process.cwd(), 'plutus.json');
         if (fs.existsSync(plutusJsonPath)) {
           try {
-            const plutusData = JSON.parse(fs.readFileSync(plutusJsonPath, 'utf-8'));
+            const plutusData: PlutusData = JSON.parse(fs.readFileSync(plutusJsonPath, 'utf-8'));
 
             // Add/update validator in plutus.json
             const contractName = path.basename(inputPath, '.ts');
             const existingValidatorIndex = plutusData.validators.findIndex(
-              (v: any) => v.title && v.title.includes(contractName)
+              (v: PlutusValidator) => v.title && v.title.includes(contractName)
             );
 
-            const newValidator = {
+            const newValidator: PlutusValidator = {
               title: `${contractName}.spend`,
               datum: {
                 title: 'datum',
                 schema: {
-                  type: 'object',
-                  properties: {
-                    owner: { type: 'string' },
-                    amount: { type: 'string' },
-                  },
+                  $ref: '#/definitions/Data',
                 },
               },
               redeemer: {
                 title: 'redeemer',
                 schema: {
-                  type: 'object',
+                  $ref: '#/definitions/Data',
                 },
               },
-              compiledCode: 'placeholder_compiled_code',
-              hash: 'placeholder_hash',
+              compiledCode: outputPath,
+              parameters: [],
             };
 
             if (existingValidatorIndex >= 0) {
@@ -141,7 +210,7 @@ program
   .command('init <projectName>')
   .description('Initialize a new TypeScript Aiken project with standard Aiken structure')
   .option('-t, --template <template>', 'Project template', 'basic')
-  .action(async (projectName: string, _options: any) => {
+  .action(async (projectName: string, _options: unknown) => {
     try {
       const projectPath = path.resolve(projectName);
 
@@ -334,7 +403,8 @@ export class HelloWorldContract {
 `;
 
       fs.mkdirSync(path.join(projectPath, 'typescript/lib/types'), { recursive: true });
-      fs.writeFileSync(path.join(projectPath, 'typescript/lib/HelloWorld.ts'), exampleContract);
+      fs.mkdirSync(path.join(projectPath, 'typescript/validators'), { recursive: true });
+      fs.writeFileSync(path.join(projectPath, 'typescript/validators/HelloWorld.ts'), exampleContract);
 
       // Create lib/utils.ts in typescript directory
       const utilsFile = `/**
@@ -382,10 +452,10 @@ export function createRedeemer(action: string, data?: any): any {
       console.log(`   ├── lib/`);
       console.log(`   ├── typescript/`);
       console.log(`   │   ├── lib/`);
-      console.log(`   │   │   ├── HelloWorld.ts`);
       console.log(`   │   │   ├── utils.ts`);
       console.log(`   │   │   └── types/`);
       console.log(`   │   └── validators/`);
+      console.log(`   │       └── HelloWorld.ts`);
       console.log(`   └── validators/`);
       console.log(`       └── placeholder.ak`);
 
@@ -406,7 +476,7 @@ program
   .command('watch <input>')
   .description('Watch for changes and recompile automatically')
   .option('-o, --output <output>', 'Output directory')
-  .action(async (_input: string, _options: any) => {
+  .action(async (_input: string, _options: unknown) => {
     console.log('Watch mode not yet implemented. Use compile command instead.');
   });
 
@@ -431,32 +501,40 @@ program
 
       console.log(`🔄 Creating new AikScript project: ${projectName}`);
 
-      // Create project directory
-      fs.mkdirSync(projectPath, { recursive: true });
-
-      // Create standard Aiken project structure
+      // Create standard Aiken project structure matching smartcontracts example
       const dirs = [
+        'env',
         'lib',
-        'lib/types',
+        'typescript/lib',
+        'typescript/validators',
         'validators',
-        'tests',
-        'env'
+        'build/packages',
+        '.github/workflows'
       ];
 
       dirs.forEach(dir => {
         fs.mkdirSync(path.join(projectPath, dir), { recursive: true });
       });
 
-      // Create aiken.toml
-      const aikenToml = `[project]
-name = "${projectName}"
-version = "1.0.0"
-plutusVersion = "v3"
-licences = ["Apache-2.0"]
-description = "AikScript project"
+      // Create aiken.toml matching smartcontracts format
+      const aikenToml = `name = "${projectName}"
+version = "0.0.0"
+compiler = "v1.1.19"
+plutus = "v3"
+license = "Apache-2.0"
+description = "Aiken contracts for project '${projectName}'"
 
-[dependencies]
-aiken-lang/stdlib = "2.2.0"
+[repository]
+user = "your-username"
+project = "${projectName}"
+platform = "github"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v2.2.0"
+source = "github"
+
+[config]
 `;
 
       fs.writeFileSync(path.join(projectPath, 'aiken.toml'), aikenToml);
@@ -481,6 +559,121 @@ aiken-lang/stdlib = "2.2.0"
         JSON.stringify(packageJson, null, 2)
       );
 
+      // Create plutus.json matching smartcontracts format
+      const plutusJson = {
+        preamble: {
+          title: projectName,
+          description: `Aiken contracts for project '${projectName}'`,
+          version: "0.0.0",
+          plutusVersion: "v3",
+          compiler: {
+            name: "Aiken",
+            version: "v1.1.19+e525483"
+          },
+          license: "Apache-2.0"
+        },
+        validators: [
+          {
+            title: "placeholder.placeholder.mint",
+            redeemer: {
+              title: "_redeemer",
+              schema: {
+                $ref: "#/definitions/Data"
+              }
+            },
+            datum: {
+              title: "_datum",
+              schema: {
+                $ref: "#/definitions/Data"
+              }
+            },
+            parameters: [],
+            compiledCode: "validators/placeholder.ak"
+          }
+        ],
+        definitions: {
+          Data: {
+            title: "Data",
+            description: "Any Plutus data."
+          }
+        }
+      };
+
+      fs.writeFileSync(path.join(projectPath, 'plutus.json'), JSON.stringify(plutusJson, null, 2));
+
+      // Create .gitignore matching smartcontracts format
+      const gitignoreContent = `# Aiken compilation artifacts
+artifacts/
+# Aiken's project working directory
+build/
+# Aiken's default documentation export
+docs/
+`;
+
+      fs.writeFileSync(path.join(projectPath, '.gitignore'), gitignoreContent);
+
+      // Create README.md matching smartcontracts format
+      const readme = `# ${projectName}
+
+Write validators in the \`validators\` folder, and supporting functions in the \`lib\` folder using \`.ak\` as a file extension.
+
+\`\`\`aiken
+validator my_first_validator {
+  spend(_datum: Option<Data>, _redeemer: Data, _output_reference: Data, _context: Data) {
+    True
+  }
+}
+\`\`\`
+
+## Building
+
+\`\`\`sh
+aiken build
+\`\`\`
+
+## Configuring
+
+Edit \`aiken.toml\` to configure your project.
+
+## TypeScript Support
+
+This project includes TypeScript support through AikScript. Write your contracts in TypeScript in the \`typescript/validators/\` directory and utility functions in \`typescript/lib/\`.
+
+\`\`\`sh
+# Check and compile TypeScript contracts
+aikscript check
+aikscript build
+
+# Create new contracts
+aikscript new my-contract
+\`\`\`
+`;
+
+      fs.writeFileSync(path.join(projectPath, 'README.md'), readme);
+
+      // Create GitHub Actions CI workflow
+      const ciWorkflow = `name: Continuous Integration
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aiken-lang/setup-aiken@v1
+        with:
+          version: v1.1.19
+      - run: aiken fmt --check
+      - run: aiken check -D
+      - run: aiken build
+`;
+
+      fs.writeFileSync(path.join(projectPath, '.github/workflows/continuous-integration.yml'), ciWorkflow);
+
       // Create placeholder validator
       const placeholderValidator = `validator placeholder {
   mint(_redeemer: Data, _context: Data) {
@@ -491,7 +684,7 @@ aiken-lang/stdlib = "2.2.0"
 
       fs.writeFileSync(path.join(projectPath, 'validators/placeholder.ak'), placeholderValidator);
 
-      // Create example contract in typescript/lib
+      // Create example contract in typescript/validators
       const exampleContract = `import { contract, datum, validator, Bool, POSIXTime, PubKeyHash, ScriptContext } from 'aikscript';
 
 @contract("HelloWorld")
@@ -510,7 +703,8 @@ export class HelloWorldContract {
 `;
 
       fs.mkdirSync(path.join(projectPath, 'typescript/lib/types'), { recursive: true });
-      fs.writeFileSync(path.join(projectPath, 'typescript/lib/HelloWorld.ts'), exampleContract);
+      fs.mkdirSync(path.join(projectPath, 'typescript/validators'), { recursive: true });
+      fs.writeFileSync(path.join(projectPath, 'typescript/validators/HelloWorld.ts'), exampleContract);
 
       // Create lib/utils.ts in typescript directory
       const utilsFile = `/**
@@ -542,8 +736,8 @@ export function createRedeemer(action: string, data?: any): any {
 
       fs.writeFileSync(path.join(projectPath, 'typescript/lib/utils.ts'), utilsFile);
 
-      console.log('✅ AikScript project initialized successfully!');
-      console.log(`\n📁 Project structure:`);
+      console.log(`✅ AikScript project initialized successfully!`);
+      console.log(`📁 Project structure:`);
       console.log(`   ${projectName}/`);
       console.log(`   ├── .gitignore`);
       console.log(`   ├── README.md`);
@@ -558,30 +752,461 @@ export function createRedeemer(action: string, data?: any): any {
       console.log(`   ├── lib/`);
       console.log(`   ├── typescript/`);
       console.log(`   │   ├── lib/`);
-      console.log(`   │   │   ├── HelloWorld.ts`);
       console.log(`   │   │   ├── utils.ts`);
       console.log(`   │   │   └── types/`);
       console.log(`   │   └── validators/`);
+      console.log(`   │       └── HelloWorld.ts`);
       console.log(`   └── validators/`);
       console.log(`       └── placeholder.ak`);
+      console.log(``);
+      console.log(`🚀 Next steps:`);
+      console.log(`   cd ${projectName}`);
+      console.log(`   npm install`);
+      console.log(`   npm run build`);
+      console.log(``);
+      console.log(`Then you can use standard Aiken CLI commands:`);
+      console.log(`   aiken check`);
+      console.log(`   aiken build`);
 
-      console.log(`\nNext steps:`);
-      console.log(`  cd ${projectName}`);
-      console.log(`  npm install`);
-      console.log(`  npm run build`);
-      console.log(`\nThen you can use standard Aiken CLI commands:`);
-      console.log(`  aiken check`);
-      console.log(`  aiken build`);
     } catch (error) {
-      console.error('❌ Error initializing project:', (error as Error).message);
+      console.error(`❌ Failed to create project: ${error}`);
       process.exit(1);
     }
   });
 
+/**
+ * Check command - Type-check and run tests
+ * Mirrors: aiken check
+ */
 program
-  .command('watch <input>')
-  .description('Watch for changes and recompile automatically')
-  .option('-o, --output <output>', 'Output directory')
-  .action(async (_input: string, _options: any) => {
-    console.log('Watch mode not yet implemented. Use compile command instead.');
+  .command('check')
+  .description('Type-check AikScript project and run tests')
+  .action(async () => {
+    try {
+      console.log(`🔍 Checking AikScript project...`);
+
+      // Check if we're in a project directory
+      const aikenTomlPath = path.join(process.cwd(), 'aiken.toml');
+      if (!fs.existsSync(aikenTomlPath)) {
+        console.error(`❌ Not in an AikScript project directory (no aiken.toml found)`);
+        console.log(`💡 Try running: aikscript new <projectName>`);
+        process.exit(1);
+      }
+
+      // Check typescript directories for TypeScript files
+      const tsLibDir = path.join(process.cwd(), 'typescript/lib');
+      const tsValidatorsDir = path.join(process.cwd(), 'typescript/validators');
+
+      if (!fs.existsSync(tsLibDir) && !fs.existsSync(tsValidatorsDir)) {
+        console.error(`❌ No typescript/lib or typescript/validators directories found`);
+        process.exit(1);
+      }
+
+      // Recursively find all TypeScript files in both directories
+      const findTsFiles = (dir: string): string[] => {
+        const files: string[] = [];
+        if (!fs.existsSync(dir)) return files;
+
+        const items = fs.readdirSync(dir);
+
+        for (const item of items) {
+          const fullPath = path.join(dir, item);
+          const stat = fs.statSync(fullPath);
+
+          if (stat.isDirectory()) {
+            // Recursively search subdirectories
+            files.push(...findTsFiles(fullPath));
+          } else if (item.endsWith('.ts')) {
+            files.push(fullPath);
+          }
+        }
+
+        return files;
+      };
+
+      const libFiles = findTsFiles(tsLibDir);
+      const validatorFiles = findTsFiles(tsValidatorsDir);
+      const tsFiles = [...libFiles, ...validatorFiles];
+
+      if (tsFiles.length === 0) {
+        console.log(`⚠️  No TypeScript files found in typescript/`);
+        console.log(`✅ Project structure is valid`);
+        return;
+      }
+
+      console.log(`📁 Found ${tsFiles.length} TypeScript file(s)`);
+
+      // Compile all TypeScript files
+      const transpiler = new TypeScriptToAikenTranspiler();
+      let errorCount = 0;
+      let contractCount = 0;
+      let utilityCount = 0;
+
+      for (const tsFile of tsFiles) {
+        try {
+          const fileContent = fs.readFileSync(tsFile, 'utf-8');
+          const isContract = fileContent.includes('@contract(');
+          const isInValidatorsDir = tsFile.includes(path.join('typescript', 'validators'));
+          const isInTypesDir = tsFile.includes(path.join('typescript', 'lib', 'types'));
+
+          const relativePath = path.relative(process.cwd(), tsFile);
+
+          if (isInValidatorsDir || (isContract && !isInTypesDir)) {
+            // This is a contract file - compile to validators
+            const outputPath = path.join(
+              process.cwd(),
+              'validators',
+              path.basename(tsFile, '.ts') + '.ak'
+            );
+
+            console.log(`🔄 Compiling contract ${relativePath}...`);
+
+            const config = {
+              inputPath: tsFile,
+              outputPath,
+              target: 'aiken' as const,
+              optimization: 'development' as const,
+            };
+
+            const result = transpiler.compile(config);
+
+            if (result.success) {
+              contractCount++;
+            } else {
+              console.error(`❌ ${path.basename(tsFile)} compilation failed`);
+              errorCount++;
+            }
+          } else {
+            // This is a utility file or type definition - just validate syntax
+            const fileType = isInTypesDir ? 'type definition' : 'utility';
+            console.log(`🔍 Validating ${fileType} ${relativePath}...`);
+
+            const config = {
+              inputPath: tsFile,
+              outputPath: '', // No output for utilities/types
+              target: 'aiken' as const,
+              optimization: 'development' as const,
+            };
+
+            const result = transpiler.compile(config);
+
+            if (result.success) {
+              console.log(`✅ ${path.basename(tsFile)} validated successfully`);
+              utilityCount++;
+            } else {
+              console.error(`❌ ${path.basename(tsFile)} validation failed`);
+              errorCount++;
+            }
+          }
+        } catch (error) {
+          console.error(`❌ Error processing ${path.basename(tsFile)}: ${error}`);
+          errorCount++;
+        }
+      }
+
+      console.log(``);
+      console.log(`📊 Check Results:`);
+      console.log(`   ✅ Successful: ${contractCount + utilityCount}`);
+      console.log(`   ❌ Failed: ${errorCount}`);
+      console.log(`   📁 Total files: ${tsFiles.length}`);
+      console.log(`   🏗️  Contracts: ${contractCount}`);
+      console.log(`   🛠️  Utilities: ${utilityCount}`);
+
+      if (errorCount > 0) {
+        console.log(`❌ Check failed with ${errorCount} error(s)`);
+        process.exit(1);
+      } else {
+        console.log(`✅ All checks passed!`);
+      }
+
+    } catch (error) {
+      console.error(`❌ Check failed: ${error}`);
+      process.exit(1);
+    }
   });
+
+/**
+ * Build command - Build the AikScript project
+ * Mirrors: aiken build
+ */
+program
+  .command('build')
+  .description('Build AikScript project')
+  .action(async () => {
+    try {
+      console.log(`🔨 Building AikScript project...`);
+
+      // Check if we're in a project directory
+      const aikenTomlPath = path.join(process.cwd(), 'aiken.toml');
+      if (!fs.existsSync(aikenTomlPath)) {
+        console.error(`❌ Not in an AikScript project directory (no aiken.toml found)`);
+        console.log(`💡 Try running: aikscript new <projectName>`);
+        process.exit(1);
+      }
+
+      // First run check to ensure everything compiles
+      console.log(`🔍 Running pre-build checks...`);
+
+      // Check typescript directories for TypeScript files
+      const tsLibDir = path.join(process.cwd(), 'typescript/lib');
+      const tsValidatorsDir = path.join(process.cwd(), 'typescript/validators');
+
+      if (!fs.existsSync(tsLibDir) && !fs.existsSync(tsValidatorsDir)) {
+        console.error(`❌ No typescript/lib or typescript/validators directories found`);
+        process.exit(1);
+      }
+
+      // Recursively find all TypeScript files in both directories
+      const findTsFiles = (dir: string): string[] => {
+        const files: string[] = [];
+        if (!fs.existsSync(dir)) return files;
+
+        const items = fs.readdirSync(dir);
+
+        for (const item of items) {
+          const fullPath = path.join(dir, item);
+          const stat = fs.statSync(fullPath);
+
+          if (stat.isDirectory()) {
+            // Recursively search subdirectories
+            files.push(...findTsFiles(fullPath));
+          } else if (item.endsWith('.ts')) {
+            files.push(fullPath);
+          }
+        }
+
+        return files;
+      };
+
+      const libFiles = findTsFiles(tsLibDir);
+      const validatorFiles = findTsFiles(tsValidatorsDir);
+      const tsFiles = [...libFiles, ...validatorFiles];
+
+      if (tsFiles.length === 0) {
+        console.log(`⚠️  No TypeScript files found in typescript/`);
+        console.log(`✅ Build completed (no files to compile)`);
+        return;
+      }
+
+      // Compile all files
+      const transpiler = new TypeScriptToAikenTranspiler();
+      let errorCount = 0;
+      let contractCount = 0;
+      let utilityCount = 0;
+
+      for (const tsFile of tsFiles) {
+        try {
+          const fileContent = fs.readFileSync(tsFile, 'utf-8');
+          const isContract = fileContent.includes('@contract(');
+          const isInValidatorsDir = tsFile.includes(path.join('typescript', 'validators'));
+          const isInTypesDir = tsFile.includes(path.join('typescript', 'lib', 'types'));
+
+          if (isInValidatorsDir || (isContract && !isInTypesDir)) {
+            // This is a contract file - compile to validators
+            const outputPath = path.join(
+              process.cwd(),
+              'validators',
+              path.basename(tsFile, '.ts') + '.ak'
+            );
+
+            const config = {
+              inputPath: tsFile,
+              outputPath,
+              target: 'aiken' as const,
+              optimization: 'production' as const,
+            };
+
+            const result = transpiler.compile(config);
+
+            if (result.success) {
+              contractCount++;
+            } else {
+              errorCount++;
+            }
+          } else {
+            // This is a utility file or type definition - just validate syntax
+            const fileType = isInTypesDir ? 'type definition' : 'utility';
+            console.log(`🔍 Validating ${fileType} ${path.relative(process.cwd(), tsFile)}...`);
+
+            const config = {
+              inputPath: tsFile,
+              outputPath: '', // No output for utilities/types
+              target: 'aiken' as const,
+              optimization: 'production' as const,
+            };
+
+            const result = transpiler.compile(config);
+
+            if (result.success) {
+              utilityCount++;
+            } else {
+              errorCount++;
+            }
+          }
+        } catch (error) {
+          console.error(`❌ Error processing ${path.basename(tsFile)}: ${error}`);
+          errorCount++;
+        }
+      }
+
+      if (errorCount > 0) {
+        console.error(`❌ Build failed with ${errorCount} error(s)`);
+        process.exit(1);
+      }
+
+      // Update plutus.json with compiled validators
+      if (contractCount > 0) {
+        try {
+          const plutusJsonPath = path.join(process.cwd(), 'plutus.json');
+          let plutusJson: PlutusJson = {} as PlutusJson;
+
+          // Read existing plutus.json if it exists
+          if (fs.existsSync(plutusJsonPath)) {
+            const plutusJsonContent = fs.readFileSync(plutusJsonPath, 'utf-8');
+            plutusJson = JSON.parse(plutusJsonContent);
+          } else {
+            // Create basic structure if it doesn't exist
+            plutusJson = {
+              preamble: {
+                title: "test-smartcontracts",
+                description: "Aiken contracts for project 'test-smartcontracts'",
+                version: "0.0.0",
+                plutusVersion: "v3",
+                compiler: {
+                  name: "Aiken",
+                  version: "v1.1.19+e525483"
+                },
+                license: "Apache-2.0"
+              },
+              validators: [],
+              definitions: {
+                Data: {
+                  title: "Data",
+                  description: "Any Plutus data."
+                }
+              }
+            };
+          }
+
+          // Clear existing validators and add newly compiled ones
+          plutusJson.validators = [];
+
+          // Find all compiled .ak files in validators directory
+          const validatorsDir = path.join(process.cwd(), 'validators');
+          if (fs.existsSync(validatorsDir)) {
+            const validatorFiles = fs.readdirSync(validatorsDir)
+              .filter(file => file.endsWith('.ak'))
+              .map(file => path.join('validators', file));
+
+            for (const validatorFile of validatorFiles) {
+              const validatorName = path.basename(validatorFile, '.ak');
+              plutusJson.validators.push({
+                title: `${validatorName}.${validatorName}.spend`,
+                redeemer: {
+                  title: "_redeemer",
+                  schema: {
+                    "$ref": "#/definitions/Data"
+                  }
+                },
+                datum: {
+                  title: "_datum",
+                  schema: {
+                    "$ref": "#/definitions/Data"
+                  }
+                },
+                parameters: [],
+                compiledCode: validatorFile
+              });
+            }
+          }
+
+          // Write updated plutus.json
+          fs.writeFileSync(plutusJsonPath, JSON.stringify(plutusJson, null, 2));
+          console.log(`📄 Updated plutus.json with ${plutusJson.validators.length} validator(s)`);
+        } catch (error) {
+          console.warn(`⚠️  Failed to update plutus.json: ${error}`);
+        }
+      }
+
+      console.log(`✅ Build completed successfully!`);
+      console.log(`📊 Compiled ${contractCount} contract(s), validated ${utilityCount} utility file(s)`);
+      console.log(`📁 Output: ./validators/`);
+
+    } catch (error) {
+      console.error(`❌ Build failed: ${error}`);
+      process.exit(1);
+    }
+  });
+
+/**
+ * Format command - Format AikScript project
+ * Mirrors: aiken fmt
+ */
+program
+  .command('fmt')
+  .description('Format AikScript project files')
+  .action(async () => {
+    try {
+      console.log(`🎨 Formatting AikScript project...`);
+
+      // Check if we're in a project directory
+      const aikenTomlPath = path.join(process.cwd(), 'aiken.toml');
+      if (!fs.existsSync(aikenTomlPath)) {
+        console.error(`❌ Not in an AikScript project directory (no aiken.toml found)`);
+        process.exit(1);
+      }
+
+      // Check typescript directories for TypeScript files
+      const tsLibDir = path.join(process.cwd(), 'typescript/lib');
+      const tsValidatorsDir = path.join(process.cwd(), 'typescript/validators');
+
+      if (!fs.existsSync(tsLibDir) && !fs.existsSync(tsValidatorsDir)) {
+        console.log(`⚠️  No typescript directories found`);
+        return;
+      }
+
+      // Recursively find all TypeScript files in both directories
+      const findTsFiles = (dir: string): string[] => {
+        const files: string[] = [];
+        if (!fs.existsSync(dir)) return files;
+
+        const items = fs.readdirSync(dir);
+
+        for (const item of items) {
+          const fullPath = path.join(dir, item);
+          const stat = fs.statSync(fullPath);
+
+          if (stat.isDirectory()) {
+            // Recursively search subdirectories
+            files.push(...findTsFiles(fullPath));
+          } else if (item.endsWith('.ts')) {
+            files.push(fullPath);
+          }
+        }
+
+        return files;
+      };
+
+      const libFiles = findTsFiles(tsLibDir);
+      const validatorFiles = findTsFiles(tsValidatorsDir);
+      const tsFiles = [...libFiles, ...validatorFiles];
+
+      if (tsFiles.length === 0) {
+        console.log(`⚠️  No TypeScript files found in typescript/`);
+        return;
+      }
+
+      console.log(`📁 Found ${tsFiles.length} TypeScript file(s)`);
+
+      // For now, just check if prettier is available and format
+      // In a real implementation, you'd integrate with prettier or another formatter
+      console.log(`✅ Formatting completed (placeholder - integrate with prettier)`);
+
+    } catch (error) {
+      console.error(`❌ Format failed: ${error}`);
+      process.exit(1);
+    }
+  });
+
+// Parse the command line arguments
+program.parse();

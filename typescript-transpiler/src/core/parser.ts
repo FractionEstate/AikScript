@@ -201,10 +201,12 @@ export class TypeScriptParser {
       } else if (ts.isFunctionDeclaration(node)) {
         ast.functions.push(this.parseFunctionDeclaration(node));
       } else if (ts.isMethodDeclaration(node)) {
-        if (this.isTestMethod(node)) {
-          ast.tests.push(this.parseTestDeclaration(node));
+        if (this.isValidatorMethod(node)) {
+          const validator = this.parseValidatorDeclaration(node);
+          ast.functions.push(validator);
         } else {
-          ast.functions.push(this.parseFunctionDeclaration(node as any));
+          const method = this.parseFunctionDeclaration(node as any);
+          ast.functions.push(method);
         }
       }
 
@@ -460,6 +462,89 @@ export class TypeScriptParser {
    */
   private isTestMethod(node: ts.MethodDeclaration): boolean {
     return node.name.getText().startsWith('test');
+  }
+
+  /**
+   * Checks if a method has a @validator decorator
+   */
+  private isValidatorMethod(node: ts.MethodDeclaration): boolean {
+    const modifiers = node.modifiers;
+    if (!modifiers) return false;
+
+    return modifiers.some(modifier => {
+      if (ts.isDecorator(modifier)) {
+        const expression = modifier.expression;
+        if (ts.isCallExpression(expression)) {
+          const identifier = expression.expression;
+          if (ts.isIdentifier(identifier)) {
+            return identifier.text === 'validator';
+          }
+        } else if (ts.isIdentifier(expression)) {
+          return expression.text === 'validator';
+        }
+      }
+      return false;
+    });
+  }
+
+  /**
+   * Parses validator declaration
+   */
+  private parseValidatorDeclaration(node: ts.MethodDeclaration): FunctionDefinition {
+    const body = node.body ? node.body.getText() : '';
+
+    const parameters = node.parameters.map(param => ({
+      name: param.name.getText(),
+      type: param.type ? this.generateTypeDefinition(param.type) : 'Data',
+    }));
+
+    // For validators, we need to generate validator syntax instead of function syntax
+    const validatorName = node.name.getText();
+    const purpose = this.extractValidatorPurpose(node);
+
+    // Extract the actual function body (remove the outer braces if present)
+    let cleanBody = body.trim();
+    if (cleanBody.startsWith('{') && cleanBody.endsWith('}')) {
+      cleanBody = cleanBody.slice(1, -1).trim();
+    }
+
+    // Generate validator block instead of function
+    const validatorBody = `validator ${validatorName} {
+  ${purpose}(${parameters.map(p => `${p.name}: ${p.type}`).join(', ')}) -> ${node.type ? this.generateTypeDefinition(node.type) : 'Bool'} {
+    ${cleanBody}
+  }
+}`;
+
+    return {
+      name: validatorName,
+      parameters,
+      returnType: node.type ? this.generateTypeDefinition(node.type) : 'Bool',
+      body: validatorBody,
+      isPublic: this.isPublicDeclaration(node),
+      docs: this.extractJSDoc(node),
+    };
+  }
+
+  /**
+   * Extracts validator purpose from decorator arguments
+   */
+  private extractValidatorPurpose(node: ts.MethodDeclaration): string {
+    const modifiers = node.modifiers;
+    if (!modifiers) return 'spend';
+
+    for (const modifier of modifiers) {
+      if (ts.isDecorator(modifier)) {
+        const expression = modifier.expression;
+        if (ts.isCallExpression(expression) && expression.arguments.length > 0) {
+          const arg = expression.arguments[0];
+          if (ts.isStringLiteral(arg)) {
+            return arg.text;
+          }
+        }
+      }
+    }
+
+    return 'spend';
   }
 
   /**

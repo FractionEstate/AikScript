@@ -1,0 +1,11 @@
+{
+  "name": "test-smartcontracts",
+  "version": "1.0.0",
+  "description": "AikScript project",
+  "scripts": {
+    "build": "node ../typescript-transpiler/dist/src/cli/index.js build",
+    "check": "node ../typescript-transpiler/dist/src/cli/index.js check",
+    "test": "node ../typescript-transpiler/dist/src/cli/index.js check"
+  },
+  "devDependencies": {}
+}

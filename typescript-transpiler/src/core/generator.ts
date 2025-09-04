@@ -8,6 +8,7 @@ import {
   AikenTest,
   AikenWhenExpression,
   AikenPipeExpression,
+  AikenExpectExpression,
 } from './transpiler';
 
 /**
@@ -239,11 +240,16 @@ export class CodeGenerator {
     // Convert function body from TypeScript to Aiken syntax
     let aikenBody = this.convertFunctionBodyToAiken(func.body);
 
-    // If pipe expressions exist, replace the body with pipe expression
+    // If pipe expressions exist, handle them properly
     if (func.pipeExpressions && func.pipeExpressions.length > 0) {
-      // Use the first pipe expression as the main body
-      const pipeExpr = func.pipeExpressions[0];
-      aikenBody = this.generatePipeExpression(pipeExpr);
+      // Check if this is a conditional function with multiple pipe expressions
+      if (this.isConditionalFunction(func.body) && func.pipeExpressions.length > 1) {
+        aikenBody = this.generateConditionalPipeline(func);
+      } else {
+        // Use the first pipe expression as the main body for simple cases
+        const pipeExpr = func.pipeExpressions[0];
+        aikenBody = this.generatePipeExpression(pipeExpr);
+      }
     }
 
     lines.push(aikenBody);
@@ -253,6 +259,14 @@ export class CodeGenerator {
       func.whenExpressions.forEach(whenExpr => {
         lines.push('');
         lines.push(this.generateWhenExpression(whenExpr));
+      });
+    }
+
+    // Generate expect expressions if any
+    if (func.expectExpressions && func.expectExpressions.length > 0) {
+      func.expectExpressions.forEach(expectExpr => {
+        lines.push('');
+        lines.push(this.generateExpectExpression(expectExpr));
       });
     }
 
@@ -403,5 +417,68 @@ export class CodeGenerator {
 
     lines.push(currentValue);
     return lines.join('\n');
+  }
+
+  /**
+   * Check if a function body contains conditional logic
+   */
+  private isConditionalFunction(body: string): boolean {
+    return body.includes('if') && body.includes('else');
+  }
+
+  /**
+   * Generate conditional pipeline with multiple pipe expressions
+   */
+  private generateConditionalPipeline(func: AikenFunction): string {
+    if (!func.pipeExpressions || func.pipeExpressions.length === 0) {
+      return this.convertFunctionBodyToAiken(func.body);
+    }
+
+    const lines: string[] = [];
+    const body = func.body;
+
+    // Parse the conditional structure and extract branches
+    const ifMatch = body.match(/if\s*\(([^)]+)\)\s*\{([\s\S]*?)\}\s*else\s*\{([\s\S]*?)\}/);
+
+    if (ifMatch) {
+      const condition = ifMatch[1];
+      const ifBranch = ifMatch[2];
+      const elseBranch = ifMatch[3];
+
+      // Generate the if branch with its pipe expression
+      if (func.pipeExpressions.length >= 1) {
+        const ifPipeExpr = func.pipeExpressions[0];
+        const ifResult = this.generatePipeExpression(ifPipeExpr);
+        lines.push(`if ${condition} {`);
+        lines.push(`  ${ifResult}`);
+        lines.push(`} else {`);
+
+        // Generate the else branch with its pipe expression
+        if (func.pipeExpressions.length >= 2) {
+          const elsePipeExpr = func.pipeExpressions[1];
+          const elseResult = this.generatePipeExpression(elsePipeExpr);
+          lines.push(`  ${elseResult}`);
+        } else {
+          // Fallback to converted body for else branch
+          const elseBody = this.convertFunctionBodyToAiken(elseBranch);
+          lines.push(`  ${elseBody}`);
+        }
+        lines.push(`}`);
+      }
+    } else {
+      // Fallback to first pipe expression if conditional parsing fails
+      const pipeExpr = func.pipeExpressions[0];
+      return this.generatePipeExpression(pipeExpr);
+    }
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Generate expect expression
+   */
+  private generateExpectExpression(expectExpr: AikenExpectExpression): string {
+    const errorMessage = expectExpr.errorMessage || 'Expected value but found None';
+    return `expect(${expectExpr.expression}, "${errorMessage}")`;
   }
 }

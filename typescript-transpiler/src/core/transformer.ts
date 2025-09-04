@@ -164,6 +164,7 @@ export class AikenTransformer {
       body: func.body,
       whenExpressions: func.whenExpressions,
       pipeExpressions: func.pipeExpressions,
+      expectExpressions: func.expectExpressions,
       isPublic: func.isPublic,
       docs: func.docs,
     };

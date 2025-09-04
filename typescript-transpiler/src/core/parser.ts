@@ -43,6 +43,7 @@ export interface FunctionDefinition {
   body: string;
   whenExpressions?: WhenExpression[]; // Pattern matching expressions
   pipeExpressions?: PipeExpression[]; // Pipe operator expressions
+  expectExpressions?: ExpectExpression[]; // Expect expressions for error handling
   isPublic: boolean;
   docs?: string[];
 }
@@ -87,6 +88,12 @@ export interface PipeExpression {
 export interface PipeOperation {
   functionName: string;
   args?: string[];
+}
+
+// Expect expression interfaces
+export interface ExpectExpression {
+  expression: string;
+  errorMessage?: string;
 }
 
 // Legacy interfaces for backward compatibility
@@ -292,6 +299,7 @@ export class TypeScriptParser {
     const body = node.body ? node.body.getText() : '';
     const whenExpressions = this.parseWhenExpressions(body);
     const pipeExpressions = this.parsePipeExpressions(body);
+    const expectExpressions = this.parseExpectExpressions(body);
 
     return {
       name: node.name?.getText() || 'anonymous',
@@ -301,6 +309,7 @@ export class TypeScriptParser {
       body,
       whenExpressions,
       pipeExpressions,
+      expectExpressions,
       isPublic: this.isPublicDeclaration(node),
       docs: this.extractJSDoc(node),
     };
@@ -567,5 +576,49 @@ export class TypeScriptParser {
     }
 
     return { initialValue, operations };
+  }
+
+  /**
+   * Parses expect expressions in the function body
+   */
+  private parseExpectExpressions(body: string): ExpectExpression[] {
+    const expectRegex = /\/\/\s*@expect\s+(.+)/g;
+    const expressions: ExpectExpression[] = [];
+    let match;
+
+    while ((match = expectRegex.exec(body)) !== null) {
+      const expectLine = match[1].trim();
+      const parsed = this.parseExpectLine(expectLine);
+      if (parsed) {
+        expressions.push(parsed);
+      }
+    }
+
+    return expressions;
+  }
+
+  /**
+   * Parses a single expect line like "someOption, 'Value not found'"
+   */
+  private parseExpectLine(expectLine: string): ExpectExpression | null {
+    // Handle expect with custom error message: expect(option, "error message")
+    const withMessageMatch = expectLine.match(/^(\w+),\s*['"](.+)['"]$/);
+    if (withMessageMatch) {
+      return {
+        expression: withMessageMatch[1],
+        errorMessage: withMessageMatch[2]
+      };
+    }
+
+    // Handle simple expect: expect(option)
+    const simpleMatch = expectLine.match(/^(\w+)$/);
+    if (simpleMatch) {
+      return {
+        expression: simpleMatch[1],
+        errorMessage: 'Expected value but found None'
+      };
+    }
+
+    return null;
   }
 }

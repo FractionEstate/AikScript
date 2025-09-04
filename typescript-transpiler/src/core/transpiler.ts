@@ -45,6 +45,7 @@ export interface AikenFunction {
   body: string;
   whenExpressions?: AikenWhenExpression[]; // Pattern matching expressions
   pipeExpressions?: AikenPipeExpression[]; // Pipe operator expressions
+  expectExpressions?: AikenExpectExpression[]; // Expect expressions for error handling
   isPublic: boolean;
   docs?: string[];
 }
@@ -89,6 +90,12 @@ export interface AikenPipeExpression {
 export interface AikenPipeOperation {
   functionName: string;
   args?: string[];
+}
+
+// Expect expression interfaces
+export interface AikenExpectExpression {
+  expression: string;
+  errorMessage?: string;
 }
 
 // Legacy interfaces for backward compatibility

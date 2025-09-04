@@ -100,25 +100,21 @@ export function contract(name: string) {
   };
 }
 
-export function datum(target: any, context: ClassFieldDecoratorContext): void {
+export function datum(target: any, propertyKey: string): void {
   const datums = (target.constructor as any).__datums || [];
-  datums.push(context.name);
+  datums.push(propertyKey);
   (target.constructor as any).__datums = datums;
 }
 
 export function validator(purpose: string) {
-  return function <T extends (...args: any[]) => any>(
-    target: T,
-    context: ClassMethodDecoratorContext
-  ): T {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor): void {
     const validators = (target.constructor as any).__validators || [];
     validators.push({
-      name: context.name,
+      name: propertyKey,
       purpose,
-      implementation: target,
+      implementation: descriptor.value,
     });
     (target.constructor as any).__validators = validators;
-    return target;
   };
 }
 

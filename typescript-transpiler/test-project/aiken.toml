@@ -1,0 +1,10 @@
+name = "test-project"
+version = "1.0.0"
+plutusVersion = "v3"
+licences = ["Apache-2.0"]
+description = "TypeScript Aiken contracts for project 'test-project'"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v2"
+source = "github"

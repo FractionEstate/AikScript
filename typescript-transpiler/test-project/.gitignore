@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+validators/*.ak
+plutus.json
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

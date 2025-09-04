@@ -1,10 +1,10 @@
 {
-  "name": "typescript-aiken-copilot",
+  "name": "aikscript",
   "version": "1.0.0",
-  "description": "TypeScript-to-Aiken development copilot for Cardano smart contracts",
+  "description": "AikScript: TypeScript-to-Aiken development copilot for Cardano smart contracts",
   "main": "dist/src/index.js",
   "bin": {
-    "ts-aiken": "./dist/src/cli/index.js"
+    "aikscript": "./dist/src/cli/index.js"
   },
   "scripts": {
     "build": "tsc",

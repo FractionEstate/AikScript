@@ -207,7 +207,7 @@ export class TypeScriptParser {
 
         const propertySignature = ts.factory.createPropertySignature(
           undefined, // modifiers
-          propertyName.text,
+          propertyName, // pass the identifier directly, not propertyName.text
           undefined, // question token
           typeNode
         );

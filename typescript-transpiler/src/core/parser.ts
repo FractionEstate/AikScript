@@ -603,8 +603,6 @@ export class TypeScriptParser {
    * Parses expect expressions around a function declaration
    */
   private parseExpectExpressionsAroundFunction(node: ts.FunctionDeclaration): ExpectExpression[] {
-    console.log('parseExpectExpressionsAroundFunction called for:', node.name?.getText());
-
     const sourceFile = node.getSourceFile();
     const text = sourceFile.getFullText();
     const functionStart = node.getStart();
@@ -612,11 +610,6 @@ export class TypeScriptParser {
     // Look for @expect comments in the 500 characters before the function
     const searchStart = Math.max(0, functionStart - 500);
     const searchText = text.substring(searchStart, functionStart);
-
-    console.log('Function name:', node.name?.getText());
-    console.log('Search text length:', searchText.length);
-    console.log('Search text:');
-    console.log(searchText);
 
     // Find all @expect comments in the search text
     const expectRegex = /\/\/\s*@expect\s+(.+)/g;
@@ -631,8 +624,26 @@ export class TypeScriptParser {
       }
     }
 
-    // For each function, we only want the expect expression that immediately precedes it
-    // So we take only the last one found (the most recent)
+    // For each function, collect all expect expressions that precede it
+    // If there are multiple expressions close together, they likely belong to the same function
+    if (expressions.length > 1) {
+      // Check if the last few expressions are close together (within the same logical block)
+      const lastExpressions = expressions.slice(-2); // Get last 2 expressions
+      const searchTextAfterLastExpression = searchText.substring(
+        searchText.lastIndexOf('@expect', searchText.lastIndexOf('@expect') - 1)
+      );
+
+      // If there's no function declaration between the last two @expect comments,
+      // they likely belong to the same function
+      const hasFunctionBetween = searchTextAfterLastExpression.includes('export function') ||
+                                searchTextAfterLastExpression.includes('function ');
+
+      if (!hasFunctionBetween) {
+        return lastExpressions;
+      }
+    }
+
+    // Default: return only the last expect expression
     return expressions.length > 0 ? [expressions[expressions.length - 1]] : [];
   }
 

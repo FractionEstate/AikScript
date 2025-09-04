@@ -394,13 +394,11 @@ export class TypeScriptParser {
 
     // Handle type literals (object types)
     if (ts.isTypeLiteralNode(type)) {
-      const members = type.members
-        .filter(ts.isPropertySignature)
-        .map(member => {
-          const name = member.name.getText();
-          const memberType = member.type ? this.generateTypeDefinition(member.type) : 'Void';
-          return `${name}: ${memberType}`;
-        });
+      const members = type.members.filter(ts.isPropertySignature).map(member => {
+        const name = member.name.getText();
+        const memberType = member.type ? this.generateTypeDefinition(member.type) : 'Void';
+        return `${name}: ${memberType}`;
+      });
       return `{\n${members.map(m => `  ${m}`).join(',\n')}\n}`;
     }
 
@@ -418,12 +416,18 @@ export class TypeScriptParser {
    */
   private isPublicDeclaration(node: ts.Node): boolean {
     // Check for export keyword or public modifier
-    if (ts.isVariableDeclaration(node) || ts.isFunctionDeclaration(node) ||
-        ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)) {
-      return (node as any).modifiers?.some((mod: ts.Modifier) =>
-        mod.kind === ts.SyntaxKind.ExportKeyword ||
-        mod.kind === ts.SyntaxKind.PublicKeyword
-      ) || false;
+    if (
+      ts.isVariableDeclaration(node) ||
+      ts.isFunctionDeclaration(node) ||
+      ts.isTypeAliasDeclaration(node) ||
+      ts.isInterfaceDeclaration(node)
+    ) {
+      return (
+        (node as any).modifiers?.some(
+          (mod: ts.Modifier) =>
+            mod.kind === ts.SyntaxKind.ExportKeyword || mod.kind === ts.SyntaxKind.PublicKeyword
+        ) || false
+      );
     }
     return false;
   }
@@ -497,7 +501,7 @@ export class TypeScriptParser {
       const patternValue = match[1].replace(/['"]/g, '').trim();
       clauses.push({
         pattern: { type: 'literal', value: patternValue } as Pattern,
-        body: `// matched ${patternValue}`
+        body: `// matched ${patternValue}`,
       });
     }
 
@@ -507,7 +511,7 @@ export class TypeScriptParser {
       const propertyName = match[1];
       clauses.push({
         pattern: { type: 'constructor', constructor: propertyName } as Pattern,
-        body: `// matched ${propertyName}`
+        body: `// matched ${propertyName}`,
       });
     }
 

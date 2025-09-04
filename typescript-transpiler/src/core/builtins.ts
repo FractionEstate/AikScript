@@ -61,7 +61,10 @@ export class BuiltinRegistry {
 
     // Data conversion functions
     this.addMapping('Buffer.from', { aikenName: 'b_data', importName: 'bData' });
-    this.addMapping('parseInt', { aikenName: 'bytearray_to_integer', importName: 'byteStringToInteger' });
+    this.addMapping('parseInt', {
+      aikenName: 'bytearray_to_integer',
+      importName: 'byteStringToInteger',
+    });
     this.addMapping('toHex', { aikenName: 'encode_base16', importName: 'encodeBase16' });
     this.addMapping('fromHex', { aikenName: 'decode_base16', importName: 'decodeBase16' });
 
@@ -73,11 +76,26 @@ export class BuiltinRegistry {
     this.addMapping('mapData', { aikenName: 'map_data', importName: 'mapData' });
 
     // Utility functions
-    this.addMapping('lengthOfByteString', { aikenName: 'length_of_bytearray', importName: 'lengthOfByteString' });
-    this.addMapping('indexByteString', { aikenName: 'index_bytearray', importName: 'indexByteString' });
-    this.addMapping('sliceByteString', { aikenName: 'slice_bytearray', importName: 'sliceByteString' });
-    this.addMapping('appendByteString', { aikenName: 'append_bytearray', importName: 'appendByteString' });
-    this.addMapping('equalsByteString', { aikenName: 'equals_bytearray', importName: 'equalsByteString' });
+    this.addMapping('lengthOfByteString', {
+      aikenName: 'length_of_bytearray',
+      importName: 'lengthOfByteString',
+    });
+    this.addMapping('indexByteString', {
+      aikenName: 'index_bytearray',
+      importName: 'indexByteString',
+    });
+    this.addMapping('sliceByteString', {
+      aikenName: 'slice_bytearray',
+      importName: 'sliceByteString',
+    });
+    this.addMapping('appendByteString', {
+      aikenName: 'append_bytearray',
+      importName: 'appendByteString',
+    });
+    this.addMapping('equalsByteString', {
+      aikenName: 'equals_bytearray',
+      importName: 'equalsByteString',
+    });
 
     // Pair/Tuple operations
     this.addMapping('fst', { aikenName: 'pair.fst', importName: 'pair' });

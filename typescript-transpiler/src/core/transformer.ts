@@ -5,7 +5,7 @@ import {
   AikenType,
   AikenConstant,
   AikenFunction,
-  AikenTest
+  AikenTest,
 } from './transpiler';
 import {
   TranspilerAST,
@@ -13,7 +13,7 @@ import {
   TypeDefinition,
   ConstantDefinition,
   FunctionDefinition,
-  TestDefinition
+  TestDefinition,
 } from './parser';
 
 /**
@@ -93,7 +93,10 @@ export class AikenTransformer {
    */
   private transformType(type: TypeDefinition): AikenType {
     // Check if this is a simple type alias (no braces, no unions in definition)
-    const isSimpleAlias = !type.definition.includes('{') && !type.definition.includes('|') && !type.definition.includes('\n');
+    const isSimpleAlias =
+      !type.definition.includes('{') &&
+      !type.definition.includes('|') &&
+      !type.definition.includes('\n');
 
     let definition = '';
 
@@ -102,7 +105,8 @@ export class AikenTransformer {
       definition = type.definition;
     } else {
       // For complex types, check if it's already a record type
-      const isRecordType = type.definition.trim().startsWith('{') && type.definition.trim().endsWith('}');
+      const isRecordType =
+        type.definition.trim().startsWith('{') && type.definition.trim().endsWith('}');
 
       if (isRecordType) {
         // For record types, just use the definition as-is (it will be formatted by the generator)

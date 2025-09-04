@@ -7,7 +7,7 @@ import {
   AikenFunction,
   AikenTest,
   AikenWhenExpression,
-  AikenPipeExpression
+  AikenPipeExpression,
 } from './transpiler';
 
 /**
@@ -165,7 +165,10 @@ export class CodeGenerator {
         // Extract content between braces
         const content = definition.slice(1, -1).trim();
         // Clean up formatting - ensure proper line breaks and indentation
-        const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        const lines = content
+          .split('\n')
+          .map(line => line.trim())
+          .filter(line => line.length > 0);
         return lines.join('\n');
       }
       // Otherwise, it's likely a type alias that doesn't need extra formatting
@@ -371,7 +374,9 @@ export class CodeGenerator {
         } else if (pattern.constructor === 'None') {
           return 'None';
         }
-        return `${pattern.constructor}(${pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''})`;
+        return `${pattern.constructor}(${
+          pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''
+        })`;
       case 'tuple':
         return `(${pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''})`;
       case 'list':
@@ -388,7 +393,7 @@ export class CodeGenerator {
     const lines: string[] = [];
 
     let currentValue = pipeExpr.initialValue;
-    pipeExpr.operations.forEach((op) => {
+    pipeExpr.operations.forEach(op => {
       if (op.args && op.args.length > 0) {
         currentValue = `${op.functionName}(${currentValue}, ${op.args.join(', ')})`;
       } else {

@@ -31,18 +31,20 @@ async function testTranspiler() {
     console.log('Parsing TypeScript...');
     const tsAst = transpiler.parse(sourceCode);
     console.log('Parse completed');
-    console.log('Contracts found:', tsAst.contracts.length);
+    console.log('Functions found:', tsAst.functions.length);
     console.log('Types found:', tsAst.types.length);
+    console.log('Constants found:', tsAst.constants.length);
 
-    if (tsAst.contracts.length > 0) {
-      console.log('First contract:', JSON.stringify(tsAst.contracts[0], null, 2));
+    if (tsAst.functions.length > 0) {
+      console.log('First function:', JSON.stringify(tsAst.functions[0], null, 2));
     }
 
     console.log('Transforming to Aiken AST...');
     const aikenAst = transpiler.transform(tsAst);
     console.log('Transform completed');
-    console.log('Aiken contracts:', aikenAst.contracts.length);
+    console.log('Aiken functions:', aikenAst.functions.length);
     console.log('Aiken types:', aikenAst.types.length);
+    console.log('Aiken constants:', aikenAst.constants.length);
 
     console.log('Generating Aiken code...');
     const aikenCode = transpiler.generate(aikenAst);

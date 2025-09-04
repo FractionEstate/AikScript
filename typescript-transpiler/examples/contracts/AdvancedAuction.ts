@@ -1,4 +1,10 @@
-import { Contract, Datum, Validator, ScriptContext, PubKeyHash, AssetName, PolicyId } from '../types/cardano';
+// Cardano types (will be imported from transpiler)
+type PubKeyHash = string;
+type POSIXTime = number;
+type Bool = boolean;
+type Int = number;
+type ByteArray = Uint8Array;
+type String = string;
 
 /**
  * Advanced AikScript example demonstrating all major Aiken features

@@ -1,5 +1,7 @@
 import { TranspilerAST } from './parser';
 import { AikenTransformer } from './transformer';
+import { TypeScriptParser } from './parser';
+import { CodeGenerator } from './generator';
 
 // Aiken AST representation
 export interface AikenAST {
@@ -89,10 +91,14 @@ export interface TranspilerConfig {
 }
 
 export class TypeScriptToAikenTranspiler {
+  private parser: TypeScriptParser;
   private transformer: AikenTransformer;
+  private generator: CodeGenerator;
 
   constructor() {
+    this.parser = new TypeScriptParser();
     this.transformer = new AikenTransformer();
+    this.generator = new CodeGenerator(this.transformer.getBuiltinRegistry());
   }
 
   /**
@@ -101,7 +107,7 @@ export class TypeScriptToAikenTranspiler {
    * @returns The parsed AST representation
    */
   parse(sourceCode: string): TranspilerAST {
-    return this.transformer.parse(sourceCode);
+    return this.parser.parseSource(sourceCode);
   }
 
   /**
@@ -119,7 +125,7 @@ export class TypeScriptToAikenTranspiler {
    * @returns The generated Aiken source code
    */
   generate(aikenAst: AikenAST): string {
-    return this.transformer.generate(aikenAst);
+    return this.generator.generate(aikenAst);
   }
 
   compile(config: TranspilerConfig): CompilationResult {

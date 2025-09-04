@@ -195,7 +195,7 @@ export class AikenTransformer {
   }
 
   /**
-   * Get the builtin registry for external access
+   * Gets the builtin registry for external access
    */
   getBuiltinRegistry(): BuiltinRegistry {
     return this.builtinRegistry;

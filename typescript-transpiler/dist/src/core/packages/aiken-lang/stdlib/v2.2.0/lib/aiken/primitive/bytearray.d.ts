@@ -1,4 +1,4 @@
-import { Int, Bool } from './index';
+import { Int, Bool } from '@/types/basic/index';
 export declare function bytearrayFromIntBigEndian(value: Int): Uint8Array;
 export declare function bytearrayFromIntLittleEndian(value: Int): Uint8Array;
 export declare function bytearrayFromString(str: string): Uint8Array;

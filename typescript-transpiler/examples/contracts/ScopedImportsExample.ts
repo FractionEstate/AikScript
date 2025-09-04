@@ -2,13 +2,13 @@
 import { contract, datum, validator, Bool, ByteArray, ScriptContext, PubKeyHash } from '../../src/types';
 
 // Import from specific modules using scoped imports
-import * as collection from '../../src/aiken/collection';
-import * as crypto from '../../src/aiken/crypto';
-import * as math from '../../src/aiken/math';
-import * as cbor from '../../src/aiken/cbor';
-import * as address from '../../src/cardano/address';
-import * as assets from '../../src/cardano/assets';
-import * as mpf from '../../src/merkle-patricia-forestry';
+import * as collection from '@/lib/aiken/collection';
+import * as crypto from '@/lib/aiken/crypto';
+import * as math from '@/lib/aiken/math';
+import * as cbor from '@/lib/aiken/cbor';
+import * as address from '@/lib/cardano/address';
+import * as assets from '@/lib/cardano/assets';
+import * as mpf from '@/lib/aiken/merkle-patricia-forestry';
 
 @contract("ScopedImportsExample")
 export class ScopedImportsExampleContract {

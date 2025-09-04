@@ -1,7 +1,7 @@
 // Aiken Collection - List Module
 // TypeScript declarations for aiken-lang/stdlib/lib/aiken/collection/list.ak
 
-import { Int, Bool } from '../primitive/index';
+import { Int, Bool } from '@/types/basic/index';
 
 // List operations
 export declare function listPush<T>(list: T[], elem: T): T[];

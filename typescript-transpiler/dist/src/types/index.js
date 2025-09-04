@@ -22,4 +22,5 @@ __exportStar(require("./basic/index"), exports);
 __exportStar(require("./dsl/index"), exports);
 __exportStar(require("./builtin/index"), exports);
 __exportStar(require("./convenience/index"), exports);
+__exportStar(require("./address/index"), exports);
 //# sourceMappingURL=index.js.map

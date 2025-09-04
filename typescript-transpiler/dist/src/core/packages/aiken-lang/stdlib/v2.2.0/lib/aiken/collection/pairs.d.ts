@@ -1,4 +1,4 @@
-import { ByteArray } from '../primitive/index';
+import { ByteArray } from '@/types/basic/index';
 export declare function pairsGetAll<T>(pairs: [ByteArray, T][], key: ByteArray): T[];
 export declare function pairsGetFirst<T>(pairs: [ByteArray, T][], key: ByteArray): T | undefined;
 export declare function pairsGetLast<T>(pairs: [ByteArray, T][], key: ByteArray): T | undefined;

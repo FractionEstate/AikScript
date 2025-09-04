@@ -34,14 +34,13 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.merklePatriciaForestry = exports.stdlib = void 0;
-exports.stdlib = __importStar(require("./stdlib/v2.2.0/lib/aiken/index"));
+exports.prelude = exports.merklePatriciaForestry = exports.aiken = exports.cardano = void 0;
+exports.cardano = __importStar(require("./stdlib/v2.2.0/lib/cardano/index"));
+exports.aiken = __importStar(require("./stdlib/v2.2.0/lib/aiken/index"));
 exports.merklePatriciaForestry = __importStar(require("./merkle-patricia-forestry/v2.1.0/lib/aiken/index"));
+exports.prelude = __importStar(require("./prelude/v1.0.0/lib/aiken/index"));
 // Legacy exports for backward compatibility
-__exportStar(require("./stdlib/v2.2.0/lib/aiken/index"), exports);
-__exportStar(require("./merkle-patricia-forestry/v2.1.0/lib/aiken/index"), exports);
+// Note: Prelude types are foundational and may conflict with stdlib
+// Use namespace imports (e.g., aiken.prelude.Bool) for clarity
 //# sourceMappingURL=index.js.map

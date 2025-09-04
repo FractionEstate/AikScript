@@ -21,4 +21,4 @@ export type ScriptPurpose =
 // DSL Decorators - re-export from global declarations
 export declare function contract(name: string): <T extends new (...args: unknown[]) => Record<string, unknown>>(target: T) => T;
 export declare function datum(target: Record<string, unknown>, propertyKey: string | symbol): void;
-export declare function validator(purpose: string): <T extends (...args: unknown[]) => unknown>(target: Record<string, unknown>, propertyKey: string | symbol, descriptor: PropertyDescriptor) => T;
+export declare function validator(purpose: string): (target: Record<string, unknown>, propertyKey: string | symbol, descriptor: PropertyDescriptor) => void;

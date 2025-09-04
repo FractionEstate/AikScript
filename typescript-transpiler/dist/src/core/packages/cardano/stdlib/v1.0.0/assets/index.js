@@ -1,5 +1,5 @@
 "use strict";
-// Value and asset type definitions for AikScript
-// Following aiken-lang patterns for modular organization
+// Cardano Assets Module
+// TypeScript declarations for Cardano asset and value operations
 Object.defineProperty(exports, "__esModule", { value: true });
 //# sourceMappingURL=index.js.map

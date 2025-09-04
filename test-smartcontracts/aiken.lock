@@ -11,6 +11,11 @@ name = "aiken-lang/merkle-patricia-forestry"
 version = "2.1.0"
 source = "github"
 
+[[requirements]]
+name = "aiken-lang/fuzz"
+version = "v2"
+source = "github"
+
 [[packages]]
 name = "aiken-lang/stdlib"
 version = "v2.2.0"
@@ -23,4 +28,11 @@ version = "2.1.0"
 requirements = []
 source = "github"
 
+[[packages]]
+name = "aiken-lang/fuzz"
+version = "v2"
+requirements = []
+source = "github"
+
 [etags]
+"aiken-lang/fuzz@v2" = [{ secs_since_epoch = 1757000840, nanos_since_epoch = 97860925 }, "9843473958e51725a9274b487d2d4aac0395ec1a2e30f090724fa737226bc127"]

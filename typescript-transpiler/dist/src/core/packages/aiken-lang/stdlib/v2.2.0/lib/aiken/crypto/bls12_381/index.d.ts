@@ -1,4 +1,4 @@
-import { ByteArray } from '../../primitive/index';
+import { ByteArray } from '@/types/basic/index';
 export declare type G1Element = ByteArray;
 export declare type G2Element = ByteArray;
 export declare type Scalar = ByteArray;

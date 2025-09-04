@@ -1,4 +1,4 @@
-import { ByteArray, Bool } from '../../../../../types/basic/index';
+import { ByteArray, Bool } from '@/types/basic/index';
 export declare type MerklePatriciaForestry = {
     root: ByteArray;
 };

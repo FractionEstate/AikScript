@@ -1,4 +1,4 @@
-import { Int, Bool } from '../primitive/index';
+import { Int, Bool } from '@/types/basic/index';
 export declare function listPush<T>(list: T[], elem: T): T[];
 export declare function listRange(from: Int, to: Int): Int[];
 export declare function listRepeat<T>(elem: T, nTimes: Int): T[];

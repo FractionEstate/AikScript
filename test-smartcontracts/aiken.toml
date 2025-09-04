@@ -20,4 +20,9 @@ name = "aiken-lang/merkle-patricia-forestry"
 version = "2.1.0"
 source = "github"
 
+[[dependencies]]
+name = "aiken-lang/fuzz"
+version = "v2"
+source = "github"
+
 [config]

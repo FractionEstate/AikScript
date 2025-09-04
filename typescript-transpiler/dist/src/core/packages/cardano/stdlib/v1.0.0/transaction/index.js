@@ -1,5 +1,5 @@
 "use strict";
-// Transaction-related type definitions for AikScript
-// Following aiken-lang patterns for modular organization
+// Cardano Transaction Module
+// TypeScript declarations for Cardano transaction types and operations
 Object.defineProperty(exports, "__esModule", { value: true });
 //# sourceMappingURL=index.js.map

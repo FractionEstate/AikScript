@@ -1,7 +1,7 @@
 // Aiken Primitive - ByteArray Module
 // TypeScript declarations for aiken-lang/stdlib/lib/aiken/primitive/bytearray.ak
 
-import { Int, Bool } from './index';
+import { Int, Bool } from '@/types/basic/index';
 
 // ByteArray operations
 export declare function bytearrayFromIntBigEndian(value: Int): Uint8Array;

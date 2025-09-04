@@ -1,4 +1,4 @@
-import { ByteArray, Int } from '../primitive/index';
+import { ByteArray, Int } from '@/types/basic/index';
 export declare type Dict = unknown;
 export declare const dictEmpty: Dict;
 export declare function dictInsert(dict: Dict, key: ByteArray, value: unknown): Dict;

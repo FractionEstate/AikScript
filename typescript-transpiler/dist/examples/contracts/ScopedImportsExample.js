@@ -46,13 +46,13 @@ exports.ScopedImportsExampleContract = void 0;
 // Example demonstrating the new scoped import structure
 const types_1 = require("../../src/types");
 // Import from specific modules using scoped imports
-const collection = __importStar(require("../../src/aiken/collection"));
-const crypto = __importStar(require("../../src/aiken/crypto"));
-const math = __importStar(require("../../src/aiken/math"));
-const cbor = __importStar(require("../../src/aiken/cbor"));
-const address = __importStar(require("../../src/cardano/address"));
-const assets = __importStar(require("../../src/cardano/assets"));
-const mpf = __importStar(require("../../src/merkle-patricia-forestry"));
+const collection = __importStar(require("@/lib/aiken/collection"));
+const crypto = __importStar(require("@/lib/aiken/crypto"));
+const math = __importStar(require("@/lib/aiken/math"));
+const cbor = __importStar(require("@/lib/aiken/cbor"));
+const address = __importStar(require("@/lib/cardano/address"));
+const assets = __importStar(require("@/lib/cardano/assets"));
+const mpf = __importStar(require("@/lib/aiken/merkle-patricia-forestry"));
 let ScopedImportsExampleContract = class ScopedImportsExampleContract {
     constructor() {
         this.exampleDatum = {

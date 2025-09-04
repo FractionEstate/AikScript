@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MultiPurposeContract = void 0;
 const types_1 = require("../../src/types");
@@ -52,7 +51,7 @@ __decorate([
 __decorate([
     (0, types_1.validator)("withdraw"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, typeof (_a = typeof types_1.Credential !== "undefined" && types_1.Credential) === "function" ? _a : Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Boolean)
 ], MultiPurposeContract.prototype, "withdraw", null);
 __decorate([

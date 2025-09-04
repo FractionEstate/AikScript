@@ -1,7 +1,7 @@
 // Aiken Crypto - BLS12-381 Module
 // TypeScript declarations for aiken-lang/stdlib/lib/aiken/crypto/bls12_381/
 
-import { ByteArray } from '../../primitive/index';
+import { ByteArray } from '@/types/basic/index';
 
 // BLS12-381 types
 export declare type G1Element = ByteArray;

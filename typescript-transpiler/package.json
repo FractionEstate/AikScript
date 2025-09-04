@@ -20,7 +20,12 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build && npm test",
     "postinstall": "echo '\\n🎉 AikScript installed successfully!\\n\\nQuick start:\\n  aikscript --help\\n  aikscript new my-project\\n\\nDocumentation: https://github.com/FractionEstate/AikScript\\n'",
-    "bump": "node ../../scripts/bump-version.js"
+    "bump": "node ../../scripts/bump-version.js",
+    "build:packages": "tsc --project tsconfig.packages.json",
+    "test:packages": "jest --testPathPattern=packages",
+    "lint:packages": "eslint src/core/packages/**/*.ts",
+    "format:packages": "npx prettier --write \"src/core/packages/**/*.ts\"",
+    "validate:packages": "npm run lint:packages && npm run test:packages && npm run build:packages"
   },
   "keywords": [
     "cardano",

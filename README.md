@@ -16,6 +16,12 @@ AikScript enables TypeScript developers to build Cardano smart contracts without
 - ✅ Type-safe convenience functions for math and string operations
 - ✅ Production-ready build pipeline
 - ✅ Complete test coverage
+- ✅ **Package-based architecture** with version control
+- ✅ **Scoped import system** (@aiken/*, @cardano/*)
+- ✅ **Modular stdlib** implementation
+- ✅ **Merkle Patricia Forestry** integration
+- ✅ **Property-based testing** framework
+- ✅ **Prelude utilities** for common operations
 
 ## 📋 Requirements
 
@@ -47,6 +53,11 @@ import {
   ScriptContext,
   validator
 } from 'aikscript';
+
+// Import from scoped packages
+import { listPush, listMap } from '@aiken/collection';
+import { blake2b_256 } from '@aiken/crypto';
+import { addressFromScript } from '@cardano/address';
 
 @contract("MyFirstContract")
 export class MyFirstContract {
@@ -88,15 +99,28 @@ aiken build
 ```
 AikScript/
 ├── typescript-transpiler/          # Main TypeScript project
-│   ├── src/                        # Core transpiler logic
+│   ├── src/
+│   │   ├── cli/                    # Command-line interface
+│   │   ├── core/                   # Core transpiler engine
+│   │   │   ├── packages/           # Version-controlled packages
+│   │   │   │   ├── aiken-lang/     # Aiken ecosystem packages
+│   │   │   │   │   ├── stdlib/v2.2.0/        # Core stdlib
+│   │   │   │   │   ├── fuzz/v2.2.0/          # Property testing
+│   │   │   │   │   ├── prelude/v1.0.0/       # Utilities
+│   │   │   │   │   └── merkle-patricia-forestry/v2.1.0/
+│   │   │   │   └── cardano/         # Cardano-specific packages
+│   │   │   │       └── stdlib/v1.0.0/
+│   │   │   ├── parser/             # TypeScript AST parsing
+│   │   │   ├── transformer/        # AST transformation logic
+│   │   │   ├── generator/          # Aiken code generation
+│   │   │   └── types/              # Core type definitions
+│   │   ├── types/                  # Type system
+│   │   └── index.ts                # Main library exports
 │   ├── examples/                   # Example contracts
 │   ├── tests/                      # Jest test suite
 │   └── ...
 ├── benchmarks/                     # Aiken benchmark examples
 ├── examples/                       # Additional examples
-│   ├── hello_world/                # Basic contract example
-│   ├── gift_card/                  # Full-stack example with Svelte
-│   └── acceptance_tests/           # Comprehensive test suite
 └── ...
 ```
 
@@ -168,6 +192,53 @@ const length = lengthOfByteString(encoded);
 // Bitwise operations
 const bitCount = countSetBits(42n);
 const firstBit = findFirstSetBit(42n);
+```
+
+## 📦 Package System
+
+AikScript features a sophisticated package management system that mirrors the Aiken ecosystem:
+
+### Scoped Imports
+
+```typescript
+// Aiken standard library
+import { listPush, listMap } from '@aiken/collection';
+import { blake2b_256, sha3_256 } from '@aiken/crypto';
+import { intAbs, intPow } from '@aiken/math';
+
+// Cardano-specific functions
+import { addressFromScript } from '@cardano/address';
+import { valueAdd, valueSubtract } from '@cardano/assets';
+
+// Merkle Patricia Forestry
+import { mpfInsert, mpfGet } from '@aiken/merkle-patricia-forestry';
+
+// Property-based testing
+import { fuzz, property } from '@aiken/fuzz';
+
+// Prelude utilities
+import { identity, compose } from '@aiken/prelude';
+```
+
+### Version Control
+
+Each package is version-controlled, allowing for:
+- **Multiple versions** of the same package
+- **Easy upgrades** and **downgrades**
+- **Backward compatibility** guarantees
+- **Clear dependency management**
+
+### Package Structure
+
+```
+src/core/packages/
+├── aiken-lang/           # Aiken ecosystem
+│   ├── stdlib/v2.2.0/   # Core functions
+│   ├── fuzz/v2.2.0/     # Property testing
+│   ├── prelude/v1.0.0/  # Utilities
+│   └── merkle-patricia-forestry/v2.1.0/
+└── cardano/              # Cardano-specific
+    └── stdlib/v1.0.0/
 ```
 
 ## 🛠️ Development

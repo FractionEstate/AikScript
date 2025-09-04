@@ -44,6 +44,9 @@ export declare function listFind<T>(list: T[], predicate: (item: T) => Bool): Op
 export declare function listAny<T>(list: T[], predicate: (item: T) => Bool): Bool;
 export declare function listAll<T>(list: T[], predicate: (item: T) => Bool): Bool;
 export declare function listCount<T>(list: T[], predicate: (item: T) => Bool): Int;
+export declare function listPush<T>(list: T[], item: T): T[];
+export declare function listRange(start: Int, end: Int): Int[];
+export declare function listRepeat<T>(item: T, count: Int): T[];
 
 // Dictionary operations
 export declare function dictNew<K, V>(): Dict<K, V>;

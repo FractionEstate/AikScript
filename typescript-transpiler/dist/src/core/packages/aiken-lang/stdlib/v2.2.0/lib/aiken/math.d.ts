@@ -1,4 +1,4 @@
-import { Int } from './primitive/index';
+import { Int } from '@/types/basic/index';
 export declare function abs(value: Int): Int;
 export declare function clamp(value: Int, min: Int, max: Int): Int;
 export declare function gcd(a: Int, b: Int): Int;

@@ -299,7 +299,9 @@ export class TypeScriptParser {
     const body = node.body ? node.body.getText() : '';
     const whenExpressions = this.parseWhenExpressions(body);
     const pipeExpressions = this.parsePipeExpressions(body);
-    const expectExpressions = this.parseExpectExpressions(body);
+
+    // Extract expect expressions from the source code around the function declaration
+    const expectExpressions = this.parseExpectExpressionsAroundFunction(node);
 
     return {
       name: node.name?.getText() || 'anonymous',
@@ -598,11 +600,62 @@ export class TypeScriptParser {
   }
 
   /**
-   * Parses a single expect line like "someOption, 'Value not found'"
+   * Parses expect expressions around a function declaration
+   */
+  private parseExpectExpressionsAroundFunction(node: ts.FunctionDeclaration): ExpectExpression[] {
+    // Get the source file and position information
+    const sourceFile = node.getSourceFile();
+    const functionStart = node.getStart();
+
+    // Look for expect expressions in the lines preceding the function
+    // We'll search backwards from the function start position
+    const text = sourceFile.getFullText();
+
+    console.log('Function start position:', functionStart);
+    console.log('Source text around function:');
+    console.log(text.substring(Math.max(0, functionStart - 200), functionStart + 50));
+
+    // Find the start of the function declaration (including any preceding comments)
+    let searchStart = functionStart;
+    let braceCount = 0;
+    let inComment = false;
+
+    // Go backwards to find the start of the relevant comment block
+    for (let i = functionStart - 1; i >= 0; i--) {
+      const char = text[i];
+
+      if (char === '/' && i > 0 && text[i - 1] === '/' && !inComment) {
+        // Found a line comment, this might contain @expect
+        const lineStart = text.lastIndexOf('\n', i) + 1;
+        const lineEnd = text.indexOf('\n', i);
+        const line = text.substring(lineStart, lineEnd !== -1 ? lineEnd : text.length);
+
+        console.log('Found comment line:', line);
+
+        if (line.includes('@expect')) {
+          console.log('Found @expect in line:', line);
+          // Extract the expect expressions from this line and continue searching
+          const expectExpressions = this.parseExpectExpressions(line);
+          console.log('Parsed expect expressions:', expectExpressions);
+          if (expectExpressions.length > 0) {
+            return expectExpressions;
+          }
+        }
+      } else if (char === '\n' && braceCount === 0) {
+        // We've gone back a full line without finding braces, stop searching
+        break;
+      }
+    }
+
+    return [];
+  }
+
+  /**
+   * Parses a single expect line like "someOption, 'Value not found'" or "someOption 'Value not found'"
    */
   private parseExpectLine(expectLine: string): ExpectExpression | null {
-    // Handle expect with custom error message: expect(option, "error message")
-    const withMessageMatch = expectLine.match(/^(\w+),\s*['"](.+)['"]$/);
+    // Handle expect with custom error message: expect(option, "error message") or expect(option "error message")
+    const withMessageMatch = expectLine.match(/^(\w+)[,\s]+['"](.+)['"]$/);
     if (withMessageMatch) {
       return {
         expression: withMessageMatch[1],

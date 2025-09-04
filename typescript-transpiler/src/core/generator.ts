@@ -442,7 +442,6 @@ export class CodeGenerator {
 
     if (ifMatch) {
       const condition = ifMatch[1];
-      const ifBranch = ifMatch[2];
       const elseBranch = ifMatch[3];
 
       // Generate the if branch with its pipe expression

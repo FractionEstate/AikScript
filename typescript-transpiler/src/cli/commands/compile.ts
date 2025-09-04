@@ -4,7 +4,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { TypeScriptToAikenTranspiler } from '../../core/transpiler';
-import { CompileOptions } from '../interfaces';
+import { CompileOptions } from './index';
 import { ensureDirectoryExists, resolveOutputPath, updatePlutusJson } from '../utils/file-operations';
 
 /**

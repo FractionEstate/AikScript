@@ -1,17 +1,17 @@
 // Main exports for the TypeScript-to-Aiken transpiler
-export { BuiltinRegistry } from './core/builtins';
-export { ExpressionTransformer } from './core/expressions';
-export { CodeGenerator } from './core/generator';
-export { TypeScriptParser } from './core/parser';
-export { AikenTransformer } from './core/transformer';
-export { TypeScriptToAikenTranspiler } from './core/transpiler';
-export { TypeMapper } from './core/types';
-export { ValidatorTransformer } from './core/validators';
+// Following aiken-lang patterns for modular organization
 
-// New modular exports
-export * as aiken from './aiken/index';
-export * as cardano from './cardano/index';
-export * as merklePatriciaForestry from './merkle-patricia-forestry/index';
+// Core transpiler engine
+export * from './core/index';
+
+// Version-controlled packages
+export * from './core/packages/index';
+
+// Type system
+export * from './types/index';
+
+// CLI interface
+export * from './cli/index';
 
 // Legacy exports for backward compatibility
-export * from './types';
+export { TypeScriptToAikenTranspiler } from './core/transpiler';

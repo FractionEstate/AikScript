@@ -3,7 +3,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { InitOptions } from '../interfaces';
+import { InitOptions } from './index';
 import { createProjectStructure, generateAikenToml, generatePlutusJson } from '../utils/file-operations';
 
 /**

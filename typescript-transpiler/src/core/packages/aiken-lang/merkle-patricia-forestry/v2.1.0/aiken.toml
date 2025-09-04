@@ -1,0 +1,13 @@
+name = "aiken-lang-merkle-patricia-forestry"
+description = "Merkle Patricia Forestry implementation for Aiken"
+version = "2.1.0"
+license = "Apache-2.0"
+
+[repository]
+user = "aiken-lang"
+project = "merkle-patricia-forestry"
+
+[[dependencies]]
+name = "aiken-lang-stdlib"
+version = "2.2.0"
+source = "github"

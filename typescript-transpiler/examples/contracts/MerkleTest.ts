@@ -1,4 +1,23 @@
-import { Bool, contract, datum, ByteArray, ScriptContext, validator, sliceByteArray, nibble, combineHashes, PubKeyHash } from '../../src/types';
+import {
+  Bool, contract, datum, ByteArray, ScriptContext, validator,
+  // Merkle Patricia Forestry functions
+  sliceByteArray, nibble, nibbles, suffix, combineHashes,
+  merkle4, merkle8, merkle16, sparseMerkle4, sparseMerkle8, sparseMerkle16,
+  nullHash, nullHash2, nullHash4, nullHash8,
+  // Additional cryptographic functions
+  sha2_256, sha3_256, verifyEcdsaSignature, verifySchnorrSignature,
+  // Mathematical functions
+  mathAbs, mathClamp, mathGcd, mathIsSqrt, mathLog, mathLog2,
+  // List functions
+  listPush, listRange, listRepeat, listAll, listAny,
+  // CBOR functions
+  cborDiagnostic, cborSerialise, cborDeserialise,
+  // Address functions
+  addressFromScript, addressFromVerificationKey,
+  // Asset functions
+  valueFromAsset, valueFromAssetList, valueZero, valueAdd, valueSubtract, valueGetAsset, valueIsZero,
+  PubKeyHash, Int
+} from '../../src/types';
 
 @contract("MerkleTest")
 export class MerkleTestContract {

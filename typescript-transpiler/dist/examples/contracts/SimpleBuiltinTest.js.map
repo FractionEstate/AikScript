@@ -1,0 +1,1 @@
+{"version":3,"file":"SimpleBuiltinTest.js","sourceRoot":"","sources":["../../../examples/contracts/SimpleBuiltinTest.ts"],"names":[],"mappings":";AAAA,sCAAsC;AACtC,2DAA2D;;;AAE3D,MAAa,iBAAiB;IAC5B,iDAAiD;IACjD,KAAK,CAAC,MAAe,EAAE,SAAkB,EAAE,IAAa;QACtD,OAAO,IAAI,CAAC;IACd,CAAC;IAED,wBAAwB;IACxB,IAAI,CAAC,SAAkB,EAAE,SAAkB,EAAE,IAAa;QACxD,OAAO,IAAI,CAAC;IACd,CAAC;CACF;AAVD,8CAUC"}

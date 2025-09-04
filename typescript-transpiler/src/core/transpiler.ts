@@ -1,7 +1,7 @@
-import { TranspilerAST } from './parser';
-import { AikenTransformer } from './transformer';
-import { TypeScriptParser } from './parser';
-import { CodeGenerator } from './generator';
+import { TranspilerAST } from './parser/parser';
+import { AikenTransformer } from './transformer/transformer';
+import { TypeScriptParser } from './parser/parser';
+import { CodeGenerator } from './generator/generator';
 
 // Aiken AST representation
 export interface AikenAST {

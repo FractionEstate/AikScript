@@ -1,208 +1,73 @@
-// Convenience functions for AikScript
-// TypeScript implementations using existing UPLC builtins
+// Utility types and functions for AikScript
 // Following aiken-lang patterns for modular organization
 
 import { Int, Bool } from '../basic/index.js';
-import {
-  lessThanInteger,
-  subtractInteger,
-  addInteger,
-  multiplyInteger,
-  divideInteger,
-  remainderInteger,
-  equalsInteger,
-  encodeUtf8,
-  decodeUtf8,
-  appendByteString,
-  sliceByteString,
-  lengthOfByteString,
-  equalsByteString,
-  indexByteString
-} from '../builtin/index.js';
 
-/**
- * Mathematical convenience functions using existing UPLC builtins
- */
+// Option type
+export type Option<T> = { type: 'Some'; value: T } | { type: 'None' };
+export const Some = <T>(value: T): Option<T> => ({ type: 'Some', value });
+export const None: Option<never> = { type: 'None' };
 
-// Absolute value
-export function convenienceAbs(value: Int): Int {
-  return lessThanInteger(value, BigInt(0)) ? subtractInteger(BigInt(0), value) : value;
+// Rational type for mathematical operations
+export interface Rational {
+  numerator: Int;
+  denominator: Int;
 }
 
-// Minimum of two integers
-export function convenienceMin(a: Int, b: Int): Int {
-  return lessThanInteger(a, b) ? a : b;
+// Dictionary/Map type
+export interface Dict<K, V> {
+  // Type-only properties to ensure generic parameters are used
+  readonly _keyType: K;
+  readonly _valueType: V;
 }
 
-// Maximum of two integers
-export function convenienceMax(a: Int, b: Int): Int {
-  return lessThanInteger(a, b) ? b : a;
-}
+// Ordering type for comparisons
+export type Ordering = 'Less' | 'Equal' | 'Greater';
 
-// Clamp value between min and max
-export function convenienceClamp(value: Int, minVal: Int, maxVal: Int): Int {
-  if (lessThanInteger(value, minVal)) return minVal;
-  if (lessThanInteger(maxVal, value)) return maxVal;
-  return value;
-}
+// Fuzzing utilities
+export declare function fuzzInt(): Int;
+export declare function fuzzByteArray(): Uint8Array;
+export declare function fuzzString(): string;
+export declare function fuzzBool(): Bool;
+export declare function fuzzOption<T>(fuzzer: () => T): Option<T>;
+export declare function fuzzList<T>(fuzzer: () => T): T[];
+export declare function fuzzLabel(label: string): void;
 
-// Sign function (-1, 0, or 1)
-export function convenienceSign(value: Int): Int {
-  if (lessThanInteger(value, BigInt(0))) return -1n;
-  if (lessThanInteger(0n, value)) return 1n;
-  return 0n;
-}
+// Collection operations
+export declare function listFilter<T>(list: T[], predicate: (item: T) => Bool): T[];
+export declare function listMap<T, U>(list: T[], mapper: (item: T) => U): U[];
+export declare function listLength<T>(list: T[]): Int;
+export declare function listHead<T>(list: T[]): Option<T>;
+export declare function listTail<T>(list: T[]): T[];
+export declare function listIsEmpty<T>(list: T[]): Bool;
+export declare function listFind<T>(list: T[], predicate: (item: T) => Bool): Option<T>;
+export declare function listAny<T>(list: T[], predicate: (item: T) => Bool): Bool;
+export declare function listAll<T>(list: T[], predicate: (item: T) => Bool): Bool;
+export declare function listCount<T>(list: T[], predicate: (item: T) => Bool): Int;
 
-// Compare two integers
-export function convenienceCompare(a: Int, b: Int): Int {
-  if (lessThanInteger(a, b)) return BigInt(-1);
-  if (lessThanInteger(b, a)) return BigInt(1);
-  return BigInt(0);
-}
+// Dictionary operations
+export declare function dictNew<K, V>(): Dict<K, V>;
+export declare function dictInsert<K, V>(dict: Dict<K, V>, key: K, value: V): Dict<K, V>;
+export declare function dictGet<K, V>(dict: Dict<K, V>, key: K): Option<V>;
+export declare function dictDelete<K, V>(dict: Dict<K, V>, key: K): Dict<K, V>;
+export declare function dictHasKey<K, V>(dict: Dict<K, V>, key: K): Bool;
+export declare function dictSize<K, V>(dict: Dict<K, V>): Int;
 
-// Power function (exponentiation by squaring for positive integer exponents)
-export function conveniencePow(base: Int, exponent: Int): Int {
-  if (equalsInteger(exponent, BigInt(0))) return BigInt(1);
-  if (equalsInteger(exponent, BigInt(1))) return base;
+// Option operations
+export declare function optionMap<T, U>(option: Option<T>, mapper: (value: T) => U): Option<U>;
+export declare function optionIsSome<T>(option: Option<T>): Bool;
+export declare function optionIsNone<T>(option: Option<T>): Bool;
+export declare function optionUnwrap<T>(option: Option<T>): T;
+export declare function optionUnwrapOr<T>(option: Option<T>, defaultValue: T): T;
+export declare function optionUnwrapOrElse<T>(option: Option<T>, defaultFn: () => T): T;
 
-  let result = BigInt(1);
-  let currentExponent = exponent;
-
-  while (lessThanInteger(BigInt(0), currentExponent)) {
-    if (equalsInteger(remainderInteger(currentExponent, BigInt(2)), BigInt(1))) {
-      result = multiplyInteger(result, base);
-    }
-    base = multiplyInteger(base, base);
-    currentExponent = divideInteger(currentExponent, BigInt(2));
-  }
-
-  return result;
-}
-
-// Check if number is even
-export function convenienceIsEven(value: Int): Bool {
-  return equalsInteger(remainderInteger(value, BigInt(2)), BigInt(0));
-}
-
-// Check if number is odd
-export function convenienceIsOdd(value: Int): Bool {
-  return equalsInteger(remainderInteger(value, BigInt(2)), BigInt(1));
-}
-
-// Factorial (for small integers to avoid overflow)
-export function convenienceFactorial(n: Int): Int {
-  if (lessThanInteger(n, BigInt(0))) return BigInt(0); // Error case
-  if (equalsInteger(n, BigInt(0)) || equalsInteger(n, BigInt(1))) return BigInt(1);
-
-  let result = BigInt(1);
-  let i = BigInt(2);
-  while (lessThanInteger(i, addInteger(n, BigInt(1)))) {
-    result = multiplyInteger(result, i);
-    i = addInteger(i, BigInt(1));
-  }
-  return result;
-}
-
-/**
- * String convenience functions using existing builtins
- */
-
-// Get string length
-export function convenienceStringLength(str: string): Int {
-  return lengthOfByteString(encodeUtf8(str));
-}
-
-// Concatenate two strings
-export function convenienceStringConcat(a: string, b: string): string {
-  return decodeUtf8(appendByteString(encodeUtf8(a), encodeUtf8(b)));
-}
-
-// Check if string contains substring
-export function convenienceStringContains(haystack: string, needle: string): Bool {
-  const haystackBytes = encodeUtf8(haystack);
-  const needleBytes = encodeUtf8(needle);
-  const haystackLen = lengthOfByteString(haystackBytes);
-  const needleLen = lengthOfByteString(needleBytes);
-
-  if (lessThanInteger(haystackLen, needleLen)) return false;
-
-  let i = 0n;
-  const maxStart = subtractInteger(haystackLen, needleLen);
-
-  while (lessThanInteger(i, addInteger(maxStart, 1n))) {
-    const slice = sliceByteString(haystackBytes, i, addInteger(i, needleLen));
-    if (equalsByteString(slice, needleBytes)) return true;
-    i = addInteger(i, 1n);
-  }
-
-  return false;
-}
-
-// Compare two strings lexicographically
-export function convenienceStringCompare(a: string, b: string): Int {
-  const aBytes = encodeUtf8(a);
-  const bBytes = encodeUtf8(b);
-  const aLen = lengthOfByteString(aBytes);
-  const bLen = lengthOfByteString(bBytes);
-
-  let i = BigInt(0);
-  const maxLen = convenienceMin(aLen, bLen);
-
-  while (lessThanInteger(i, maxLen)) {
-    const aByte = indexByteString(aBytes, i);
-    const bByte = indexByteString(bBytes, i);
-
-    if (lessThanInteger(BigInt(aByte), BigInt(bByte))) return BigInt(-1);
-    if (lessThanInteger(BigInt(bByte), BigInt(aByte))) return BigInt(1);
-
-    i = addInteger(i, BigInt(1));
-  }
-
-  if (lessThanInteger(aLen, bLen)) return BigInt(-1);
-  if (lessThanInteger(bLen, aLen)) return BigInt(1);
-  return BigInt(0);
-}
-
-// Check if string starts with prefix
-export function convenienceStringStartsWith(str: string, prefix: string): Bool {
-  const strBytes = encodeUtf8(str);
-  const prefixBytes = encodeUtf8(prefix);
-  const prefixLen = lengthOfByteString(prefixBytes);
-
-  if (lessThanInteger(lengthOfByteString(strBytes), prefixLen)) return false;
-
-  const strPrefix = sliceByteString(strBytes, 0n, prefixLen);
-  return equalsByteString(strPrefix, prefixBytes);
-}
-
-// Check if string ends with suffix
-export function convenienceStringEndsWith(str: string, suffix: string): Bool {
-  const strBytes = encodeUtf8(str);
-  const suffixBytes = encodeUtf8(suffix);
-  const strLen = lengthOfByteString(strBytes);
-  const suffixLen = lengthOfByteString(suffixBytes);
-
-  if (lessThanInteger(strLen, suffixLen)) return false;
-
-  const start = subtractInteger(strLen, suffixLen);
-  const strSuffix = sliceByteString(strBytes, start, strLen);
-  return equalsByteString(strSuffix, suffixBytes);
-}
-
-// Substring function
-export function convenienceSubstring(str: string, start: Int, end: Int): string {
-  const strBytes = encodeUtf8(str);
-  const strLen = lengthOfByteString(strBytes);
-  const clampedStart = convenienceMax(BigInt(0), convenienceMin(start, strLen));
-  const clampedEnd = convenienceMax(clampedStart, convenienceMin(end, strLen));
-
-  const resultBytes = sliceByteString(strBytes, clampedStart, clampedEnd);
-  return decodeUtf8(resultBytes);
-}
-
-// Split string by delimiter (returns array of strings)
-export function convenienceStringSplit(str: string, _delimiter: string): string[] {
-  // For now, return the string as a single element array
-  // TODO: Implement proper string splitting using available builtins
-  return [str];
-}
+// Rational operations
+export declare function rationalFromInt(value: Int): Rational;
+export declare function rationalAdd(a: Rational, b: Rational): Rational;
+export declare function rationalSubtract(a: Rational, b: Rational): Rational;
+export declare function rationalMultiply(a: Rational, b: Rational): Rational;
+export declare function rationalDivide(a: Rational, b: Rational): Option<Rational>;
+export declare function rationalCompare(a: Rational, b: Rational): Ordering;
+export declare function rationalTruncate(rational: Rational): Int;
+export declare function rationalCeil(rational: Rational): Int;
+export declare function rationalFloor(rational: Rational): Int;

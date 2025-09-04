@@ -3,7 +3,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { PlutusData, PlutusValidator } from '../interfaces';
+import { PlutusData, PlutusValidator } from '../commands/index';
 
 /**
  * Ensures a directory exists, creating it recursively if needed

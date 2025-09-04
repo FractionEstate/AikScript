@@ -1,0 +1,13 @@
+name = "cardano-stdlib"
+description = "Cardano-specific standard library functions"
+version = "1.0.0"
+license = "Apache-2.0"
+
+[repository]
+user = "aiken-lang"
+project = "stdlib"
+
+[[dependencies]]
+name = "aiken-lang-stdlib"
+version = "2.2.0"
+source = "github"

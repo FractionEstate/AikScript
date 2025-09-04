@@ -1,7 +1,7 @@
 // Main code generation orchestrator for AikScript
 // Following aiken-lang patterns for modular organization
 
-import { BuiltinRegistry } from '../builtins';
+import { BuiltinRegistry } from '../types/builtins';
 import {
   AikenAST,
 } from '../transpiler';

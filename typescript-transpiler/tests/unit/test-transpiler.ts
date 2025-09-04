@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TypeScriptToAikenTranspiler } from '../src/core/transpiler';
+import { TypeScriptToAikenTranspiler } from '../../src/core/transpiler';
 
 async function testTranspiler() {
   console.log('Starting transpiler test...');

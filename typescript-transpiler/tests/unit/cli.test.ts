@@ -1,4 +1,4 @@
-import { TypeScriptToAikenTranspiler } from '../src/core/transpiler';
+import { TypeScriptToAikenTranspiler } from '../../src/core/transpiler';
 
 describe('CLI Commands', () => {
   let transpiler: TypeScriptToAikenTranspiler;

@@ -4,9 +4,6 @@
 // Core transpiler engine
 export * from './core/index';
 
-// Version-controlled packages
-export * from './core/packages/index';
-
 // Type system
 export * from './types/index';
 

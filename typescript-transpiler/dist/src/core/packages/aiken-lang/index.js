@@ -39,9 +39,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.merklePatriciaForestry = exports.stdlib = void 0;
-exports.stdlib = __importStar(require("./stdlib/v2.2.0/index"));
-exports.merklePatriciaForestry = __importStar(require("./merkle-patricia-forestry/v2.1.0/index"));
+exports.stdlib = __importStar(require("./stdlib/v2.2.0/lib/aiken/index"));
+exports.merklePatriciaForestry = __importStar(require("./merkle-patricia-forestry/v2.1.0/lib/aiken/index"));
 // Legacy exports for backward compatibility
-__exportStar(require("./stdlib/v2.2.0/index"), exports);
-__exportStar(require("./merkle-patricia-forestry/v2.1.0/index"), exports);
+__exportStar(require("./stdlib/v2.2.0/lib/aiken/index"), exports);
+__exportStar(require("./merkle-patricia-forestry/v2.1.0/lib/aiken/index"), exports);
 //# sourceMappingURL=index.js.map

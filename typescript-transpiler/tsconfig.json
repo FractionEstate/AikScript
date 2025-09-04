@@ -19,8 +19,18 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "@/types/*": ["src/types/*"],
-      "@module/*": ["src/core/packages/*/*/*/lib/*"]
+      "@types/*": ["src/types/*"],
+      "@aiken/collection": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/aiken/collection"],
+      "@aiken/crypto": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/aiken/crypto"],
+      "@aiken/math": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/aiken/math"],
+      "@aiken/cbor": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/aiken/cbor"],
+      "@aiken/primitive": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/aiken/primitive"],
+      "@aiken/fuzz": ["src/core/packages/aiken-lang/fuzz/v2.2.0/lib/aiken/fuzz"],
+      "@aiken/prelude": ["src/core/packages/aiken-lang/prelude/v1.0.0/lib/aiken/prelude"],
+      "@aiken/merkle-patricia-forestry": ["src/core/packages/aiken-lang/merkle-patricia-forestry/v2.1.0/lib/aiken/merkle-patricia-forestry"],
+      "@cardano/address": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/cardano/address"],
+      "@cardano/assets": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/cardano/assets"],
+      "@cardano/transaction": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/cardano/transaction"]
     }
   },
   "include": ["src/**/*", "tests/**/*", "examples/**/*"],

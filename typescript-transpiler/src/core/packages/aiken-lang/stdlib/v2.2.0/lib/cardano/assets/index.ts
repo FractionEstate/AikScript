@@ -16,3 +16,6 @@ export declare function valueAdd(left: Value, right: Value): Value;
 export declare function valueSubtract(left: Value, right: Value): Value;
 export declare function valueGetAsset(value: Value, policyId: PolicyId, assetName: AssetName): Int;
 export declare function valueIsZero(value: Value): boolean;
+
+// ADA/Lovelace specific functions
+export declare function ada(lovelace: Lovelace): Value;

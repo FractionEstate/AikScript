@@ -2,13 +2,13 @@
 import { contract, datum, validator, Bool, ByteArray, ScriptContext, PubKeyHash } from '../../src/types';
 
 // Import from specific modules using scoped imports
-import * as collection from '@/lib/aiken/collection';
-import * as crypto from '@/lib/aiken/crypto';
-import * as math from '@/lib/aiken/math';
-import * as cbor from '@/lib/aiken/cbor';
-import * as address from '@/lib/cardano/address';
-import * as assets from '@/lib/cardano/assets';
-import * as mpf from '@/lib/aiken/merkle-patricia-forestry';
+import * as collection from '@aiken/collection';
+import * as crypto from '@aiken/crypto';
+import * as math from '@aiken/math';
+import * as cbor from '@aiken/cbor';
+import * as address from '@cardano/address';
+import * as assets from '@cardano/assets';
+import * as mpf from '@aiken/merkle-patricia-forestry';
 
 @contract("ScopedImportsExample")
 export class ScopedImportsExampleContract {
@@ -32,9 +32,9 @@ export class ScopedImportsExampleContract {
     const tx = ctx.transaction;
 
     // Use functions from scoped imports
-    const sliced = mpf.sliceByteArray(datum.data, 0n, 8n);
-    const firstNibble = mpf.nibble(datum.data, 0n);
-    const combined = mpf.combineHashes(datum.root, sliced);
+    const sliced = mpf.sliceByteArray(datum.data, 0, 8);
+    const hashLeaf = mpf.hashLeaf(datum.key, datum.data);
+    const combined = mpf.concatByteArrays(datum.root, sliced);
 
     // Use crypto functions
     const hash1 = crypto.blake2b_256(datum.data);
@@ -49,19 +49,19 @@ export class ScopedImportsExampleContract {
     const allPositive = collection.listAll(testList, (x: bigint) => x > 0n);
 
     // Use CBOR functions
-    const diagnostic = cbor.diagnostic(datum.data);
+    const diagnostic = cbor.cborDiagnostic(datum.data);
 
     // Use address functions
-    address.fromScript(datum.key);
+    const scriptAddress = address.addressFromScript(datum.key);
 
     // Use asset functions
-    assets.fromAsset(datum.key, new Uint8Array([0x41]), 1000n);
+    const adaValue = assets.ada(1000000n);
 
     // Simple validation
     const rootHash = Array.from(datum.root).map((b: number) => b.toString(16).padStart(2, '0')).join('') as PubKeyHash;
     return tx.isSignedBy(rootHash) &&
            sliced.length === 8 &&
-           firstNibble >= 0n &&
+           hashLeaf.length === 32 &&
            combined.length === 32 &&
            hash1.length === 32 &&
            hash2.length === 32 &&

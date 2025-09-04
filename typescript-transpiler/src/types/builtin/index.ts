@@ -13,7 +13,6 @@ export declare function ripemd_160(data: ByteArray): ByteArray;
 
 // Additional cryptographic functions from aiken-lang/stdlib
 export declare function sha2_256(bytes: ByteArray): ByteArray;
-export declare function sha3_256(bytes: ByteArray): ByteArray;
 export declare function verifyEcdsaSignature(key: ByteArray, msg: ByteArray, sig: ByteArray): Bool;
 export declare function verifySchnorrSignature(key: ByteArray, msg: ByteArray, sig: ByteArray): Bool;
 

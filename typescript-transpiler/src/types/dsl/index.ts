@@ -18,7 +18,5 @@ export type ScriptPurpose =
   | { type: 'withdraw'; stakeCredential: Credential }
   | { type: 'publish' };
 
-// DSL Decorators - re-export from global declarations
-export declare function contract(name: string): <T extends new (...args: unknown[]) => Record<string, unknown>>(target: T) => T;
-export declare function datum(target: Record<string, unknown>, propertyKey: string | symbol): void;
-export declare function validator(purpose: string): (target: Record<string, unknown>, propertyKey: string | symbol, descriptor: PropertyDescriptor) => void;
+// DSL Decorators - import actual implementations
+export { contract, datum, validator, getContractMetadata, getAllContracts } from './decorators';

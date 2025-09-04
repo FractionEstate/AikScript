@@ -5,8 +5,7 @@ import {
   AikenType,
   AikenConstant,
   AikenFunction,
-  AikenTest,
-  AikenParameter
+  AikenTest
 } from './transpiler';
 import {
   TranspilerAST,
@@ -14,8 +13,7 @@ import {
   TypeDefinition,
   ConstantDefinition,
   FunctionDefinition,
-  TestDefinition,
-  ParameterDefinition
+  TestDefinition
 } from './parser';
 
 /**
@@ -141,20 +139,6 @@ export class AikenTransformer {
    * Transforms a constant definition
    */
   private transformConstant(constant: ConstantDefinition): AikenConstant {
-    let definition = '';
-
-    if (constant.isPublic) {
-      definition += 'pub ';
-    }
-
-    definition += `const ${constant.name}`;
-
-    if (constant.typeAnnotation) {
-      definition += `: ${constant.typeAnnotation}`;
-    }
-
-    definition += ` = ${constant.value}`;
-
     return {
       name: constant.name,
       type: constant.typeAnnotation || 'unknown',
@@ -168,27 +152,6 @@ export class AikenTransformer {
    * Transforms a function definition
    */
   private transformFunction(func: FunctionDefinition): AikenFunction {
-    let definition = '';
-
-    if (func.isPublic) {
-      definition += 'pub ';
-    }
-
-    definition += `fn ${func.name}`;
-
-    if (func.typeParams && func.typeParams.length > 0) {
-      definition += `<${func.typeParams.join(', ')}>`;
-    }
-
-    const params = func.parameters.map((p: ParameterDefinition) => `${p.name}: ${p.type}`).join(', ');
-    definition += `(${params})`;
-
-    if (func.returnType) {
-      definition += ` -> ${func.returnType}`;
-    }
-
-    definition += ` {\n${func.body}\n}`;
-
     return {
       name: func.name,
       typeParams: func.typeParams,

@@ -471,7 +471,7 @@ export class TypeScriptParser {
     const expressions: WhenExpression[] = [];
     let match;
 
-    while (match = whenRegex.exec(body)) {
+    while ((match = whenRegex.exec(body)) !== null) {
       const variableName = match[1];
       const expression = variableName;
       const clauses = this.parseWhenClausesFromBody(body, variableName);
@@ -493,7 +493,7 @@ export class TypeScriptParser {
     const ifRegex = new RegExp(`if\\s*\\(\\s*${variableName}\\s*===?\\s*([^)]+)\\)`, 'g');
     let match;
 
-    while (match = ifRegex.exec(body)) {
+    while ((match = ifRegex.exec(body)) !== null) {
       const patternValue = match[1].replace(/['"]/g, '').trim();
       clauses.push({
         pattern: { type: 'literal', value: patternValue } as Pattern,
@@ -503,7 +503,7 @@ export class TypeScriptParser {
 
     // Look for hasOwnProperty checks (for object patterns)
     const hasOwnPropertyRegex = new RegExp(`${variableName}\\.hasOwnProperty\\('([^']+)'\\)`, 'g');
-    while (match = hasOwnPropertyRegex.exec(body)) {
+    while ((match = hasOwnPropertyRegex.exec(body)) !== null) {
       const propertyName = match[1];
       clauses.push({
         pattern: { type: 'constructor', constructor: propertyName } as Pattern,
@@ -522,7 +522,7 @@ export class TypeScriptParser {
     const expressions: PipeExpression[] = [];
     let match;
 
-    while (match = pipeRegex.exec(body)) {
+    while ((match = pipeRegex.exec(body)) !== null) {
       const pipeLine = match[1].trim();
       const parsed = this.parsePipeLine(pipeLine);
       if (parsed) {
@@ -538,7 +538,7 @@ export class TypeScriptParser {
    */
   private parsePipeLine(pipeLine: string): PipeExpression | null {
     // Remove the |> operators and split by them
-    const parts = pipeLine.split(/\s*\|\>\s*/).map(p => p.trim());
+    const parts = pipeLine.split(/\s*\|\s*>\s*/).map(p => p.trim());
 
     if (parts.length < 2) {
       return null;

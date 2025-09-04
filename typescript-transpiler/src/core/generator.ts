@@ -163,7 +163,7 @@ export class CodeGenerator {
       // If it's already properly formatted, clean it up
       if (definition.startsWith('{') && definition.endsWith('}')) {
         // Extract content between braces
-        let content = definition.slice(1, -1).trim();
+        const content = definition.slice(1, -1).trim();
         // Clean up formatting - ensure proper line breaks and indentation
         const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
         return lines.join('\n');
@@ -234,10 +234,18 @@ export class CodeGenerator {
     lines.push('{');
 
     // Convert function body from TypeScript to Aiken syntax
-    const aikenBody = this.convertFunctionBodyToAiken(func.body);
+    let aikenBody = this.convertFunctionBodyToAiken(func.body);
+
+    // If pipe expressions exist, replace the body with pipe expression
+    if (func.pipeExpressions && func.pipeExpressions.length > 0) {
+      // Use the first pipe expression as the main body
+      const pipeExpr = func.pipeExpressions[0];
+      aikenBody = this.generatePipeExpression(pipeExpr);
+    }
+
     lines.push(aikenBody);
 
-    // Generate when expressions if any
+    // Generate additional when expressions if any (but not pipe expressions since we handled them above)
     if (func.whenExpressions && func.whenExpressions.length > 0) {
       func.whenExpressions.forEach(whenExpr => {
         lines.push('');
@@ -245,14 +253,7 @@ export class CodeGenerator {
       });
     }
 
-    // Generate pipe expressions if any
-    if (func.pipeExpressions && func.pipeExpressions.length > 0) {
-      func.pipeExpressions.forEach(pipeExpr => {
-        lines.push('');
-        lines.push(this.generatePipeExpression(pipeExpr));
-      });
-    }
-
+    // Don't generate pipe expressions separately since we handled them in the body
     lines.push('}');
 
     return lines.join('\n');

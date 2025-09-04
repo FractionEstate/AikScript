@@ -296,7 +296,7 @@ export class CodeGenerator {
       .replace(/===\s*([^f])/g, ' == $1') // Convert === to ==
       .replace(/!==\s*([^f])/g, ' != $1') // Convert !== to !=
       .replace(/&&/g, ' && ') // Ensure spaces around &&
-      .replace(/(\w+)\s*\|\|\s*(\w+)/g, '$1 || $2') // Ensure spaces around || between words
+      .replace(/\s*\|\|\s*/g, ' || ') // Ensure spaces around || operator
       .replace(/!/g, ' !') // Ensure space before !
       .replace(/if\s*\(/g, 'if ') // Remove parentheses from if
       .replace(/\)\s*{/g, ' {') // Remove closing paren from if

@@ -1,0 +1,40 @@
+# Development files
+src/
+tests/
+coverage/
+.github/
+docs/
+examples/
+test-project/
+
+# Development dependencies
+.eslintrc.json
+.prettierrc.json
+jest.config.js
+tsconfig.json
+eslint.config.js
+.editorconfig
+
+# Package manager files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Build artifacts (keep dist/)
+*.tgz
+*.tar.gz
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime files
+node_modules/

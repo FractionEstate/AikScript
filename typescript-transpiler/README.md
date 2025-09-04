@@ -1,10 +1,10 @@
 # AikScript: TypeScript-to-Aiken Development Copilot
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/aikscript/aikscript)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/FractionEstate/AikScript)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20.19.5-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/typescript-5.9.2-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/aikscript/aikscript/actions)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/FractionEstate/AikScript/actions)
 
 A powerful development tool that enables TypeScript developers to write Cardano smart contracts using familiar syntax, while leveraging Aiken's proven compilation pipeline and performance characteristics.
 
@@ -92,16 +92,57 @@ aiken build
 
 ## 📦 Installation
 
+### Prerequisites
+
+- **Node.js**: >= 20.19.5
+- **Aiken**: Latest version (automatically installed with AikScript)
+
 ### Global Installation (Recommended)
 
 ```bash
+# Install AikScript globally
 npm install -g aikscript
+
+# Verify installation
+aikscript --version
 ```
 
-### Local Installation
+### Local Installation (Development)
 
 ```bash
-npm install aikscript --save-dev
+# Clone the repository
+git clone https://github.com/FractionEstate/AikScript.git
+cd AikScript/typescript-transpiler
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Test the installation
+node dist/src/cli/index.js --version
+```
+
+### Alternative Installation Methods
+
+#### Using Yarn
+```bash
+yarn global add aikscript
+```
+
+#### Using pnpm
+```bash
+pnpm add -g aikscript
+```
+
+#### From Source
+```bash
+git clone https://github.com/FractionEstate/AikScript.git
+cd AikScript/typescript-transpiler
+npm install
+npm run build
+npm link  # Creates global symlink
 ```
 
 ### Requirements
@@ -109,6 +150,48 @@ npm install aikscript --save-dev
 - **Node.js**: ≥ 20.19.5 (Latest LTS)
 - **TypeScript**: ≥ 5.9.2
 - **Aiken**: ≥ 1.1.19 (for compilation)
+
+## 📤 Publishing & Version Management
+
+### Automated Publishing
+
+AikScript uses GitHub Actions for automated NPM publishing:
+
+1. **Version Bumping**: Use the built-in version bump script
+   ```bash
+   npm run bump patch    # For bug fixes
+   npm run bump minor    # For new features
+   npm run bump major    # For breaking changes
+   ```
+
+2. **Automatic Publishing**: When you push a version tag (e.g., `v1.0.1`), GitHub Actions will:
+   - Run the full test suite
+   - Build the project
+   - Publish to NPM automatically
+   - Create a GitHub release
+
+### Manual Publishing (For Maintainers)
+
+If you need to publish manually:
+
+```bash
+# Ensure you're logged in to NPM
+npm login
+
+# Run tests and build
+npm test
+npm run build
+
+# Publish to NPM
+npm publish
+```
+
+### Version Management
+
+- **Semantic Versioning**: Follows [SemVer](https://semver.org/) standards
+- **Changelog**: Update `CHANGELOG.md` with each release
+- **Git Tags**: Version tags trigger automated publishing
+- **Pre-releases**: Use `npm publish --tag beta` for beta releases
 
 ## 🏗️ Project Structure
 

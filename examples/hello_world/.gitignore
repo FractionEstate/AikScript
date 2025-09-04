@@ -1,6 +1,0 @@
-artifacts/
-build/
-*.sk
-*.addr
-node_modules
-.DS_Store

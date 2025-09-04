@@ -1,5 +1,0 @@
----
-source: crates/aiken-lang/src/parser/pattern/string.rs
-description: "Invalid code (parse error):\n\nwhen foo is {\n  @\"foo\" -> True\n}\n"
----
-I refuse to cooperate and match a utf-8 string.

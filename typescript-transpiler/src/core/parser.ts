@@ -653,7 +653,7 @@ export class TypeScriptParser {
   private parseExpectLine(expectLine: string): ExpectExpression | null {
     // Handle expect with custom error message: expect(option.Some, "error message") or expect(option.Some "error message")
     // Also handle simple variable names and complex expressions with dots
-    const withMessageMatch = expectLine.match(/^([\w\.]+)[,\s]+['"](.+)['"]$/);
+    const withMessageMatch = expectLine.match(/^([\w.]+)[,\s]+['"](.+)['"]$/);
     if (withMessageMatch) {
       return {
         expression: withMessageMatch[1],
@@ -662,7 +662,7 @@ export class TypeScriptParser {
     }
 
     // Handle simple expect: expect(option) or expect(option.Some)
-    const simpleMatch = expectLine.match(/^([\w\.]+)$/);
+    const simpleMatch = expectLine.match(/^([\w.]+)$/);
     if (simpleMatch) {
       return {
         expression: simpleMatch[1],

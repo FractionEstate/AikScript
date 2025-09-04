@@ -18,17 +18,28 @@
     "format": "npx prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "format:check": "npx prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build && npm test"
+    "prepublishOnly": "npm run clean && npm run build && npm test",
+    "postinstall": "echo '\\n🎉 AikScript installed successfully!\\n\\nQuick start:\\n  aikscript --help\\n  aikscript new my-project\\n\\nDocumentation: https://github.com/FractionEstate/AikScript\\n'",
+    "bump": "node ../../scripts/bump-version.js"
   },
   "keywords": [
     "cardano",
     "smart-contracts",
     "aiken",
     "typescript",
-    "blockchain"
+    "blockchain",
+    "dapp",
+    "web3",
+    "cryptocurrency",
+    "defi",
+    "nft"
   ],
-  "author": "AikScript Team",
+  "author": "FractionEstate <https://github.com/FractionEstate>",
   "license": "MIT",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/FractionEstate"
+  },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.14",
@@ -50,10 +61,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aikscript/typescript-aiken-copilot.git"
+    "url": "git+https://github.com/FractionEstate/AikScript.git"
   },
-  "homepage": "https://github.com/aikscript/typescript-aiken-copilot#readme",
+  "homepage": "https://github.com/FractionEstate/AikScript#readme",
   "bugs": {
-    "url": "https://github.com/aikscript/typescript-aiken-copilot/issues"
-  }
+    "url": "https://github.com/FractionEstate/AikScript/issues"
+  },
+  "engines": {
+    "node": ">=20.19.5"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "preferGlobal": true
 }

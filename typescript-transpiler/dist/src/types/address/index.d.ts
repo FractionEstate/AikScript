@@ -1,18 +1,13 @@
-import { PubKeyHash, ScriptHash } from '../basic/index';
-export type Address = string & {
-    __brand: 'Address';
+import { ByteArray } from '../basic/index';
+export type Credential = {
+    verificationKey: ByteArray;
+} | {
+    script: ByteArray;
 };
-export type Credential = VerificationKeyCredential | ScriptCredential;
-export interface AddressDetails {
-    paymentCredential: Credential;
-    stakeCredential?: Credential;
-}
-export interface VerificationKeyCredential {
-    __brand: 'VerificationKeyCredential';
-    hash: PubKeyHash;
-}
-export interface ScriptCredential {
-    __brand: 'ScriptCredential';
-    hash: ScriptHash;
+export type PaymentCredential = Credential;
+export type StakeCredential = Credential;
+export interface Address {
+    paymentCredential: PaymentCredential;
+    stakeCredential?: StakeCredential;
 }
 //# sourceMappingURL=index.d.ts.map

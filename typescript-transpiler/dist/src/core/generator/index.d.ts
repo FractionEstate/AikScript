@@ -1,4 +1,4 @@
-import { BuiltinRegistry } from '../builtins';
+import { BuiltinRegistry } from '../types/builtins';
 import { AikenAST } from '../transpiler';
 /**
  * Main code generation orchestrator

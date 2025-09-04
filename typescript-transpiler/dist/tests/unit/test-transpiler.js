@@ -35,7 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const transpiler_1 = require("../src/core/transpiler");
+const transpiler_1 = require("../../src/core/transpiler");
 async function testTranspiler() {
     console.log('Starting transpiler test...');
     try {

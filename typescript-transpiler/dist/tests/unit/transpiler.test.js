@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const transpiler_1 = require("../src/core/transpiler");
+const transpiler_1 = require("../../src/core/transpiler");
 describe('TypeScriptToAikenTranspiler', () => {
     let transpiler;
     beforeEach(() => {

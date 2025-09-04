@@ -19,8 +19,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeScriptToAikenTranspiler = void 0;
 // Core transpiler engine
 __exportStar(require("./core/index"), exports);
-// Version-controlled packages
-__exportStar(require("./core/packages/index"), exports);
 // Type system
 __exportStar(require("./types/index"), exports);
 // CLI interface

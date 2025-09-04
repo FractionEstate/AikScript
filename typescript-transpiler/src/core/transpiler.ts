@@ -43,6 +43,8 @@ export interface AikenFunction {
   parameters: AikenParameter[];
   returnType: string;
   body: string;
+  whenExpressions?: AikenWhenExpression[]; // Pattern matching expressions
+  pipeExpressions?: AikenPipeExpression[]; // Pipe operator expressions
   isPublic: boolean;
   docs?: string[];
 }
@@ -56,6 +58,37 @@ export interface AikenTest {
 export interface AikenParameter {
   name: string;
   type: string;
+}
+
+// Pattern matching interfaces
+export interface AikenPattern {
+  type: 'wildcard' | 'literal' | 'variable' | 'constructor' | 'tuple' | 'list';
+  value?: any;
+  name?: string;
+  constructor?: string;
+  args?: AikenPattern[];
+}
+
+export interface AikenWhenClause {
+  pattern: AikenPattern;
+  guard?: string; // Optional guard expression
+  body: string;
+}
+
+export interface AikenWhenExpression {
+  expression: string;
+  clauses: AikenWhenClause[];
+}
+
+// Pipe operator interfaces
+export interface AikenPipeExpression {
+  initialValue: string;
+  operations: AikenPipeOperation[];
+}
+
+export interface AikenPipeOperation {
+  functionName: string;
+  args?: string[];
 }
 
 // Legacy interfaces for backward compatibility

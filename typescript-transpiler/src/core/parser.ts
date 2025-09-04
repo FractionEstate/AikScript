@@ -41,6 +41,8 @@ export interface FunctionDefinition {
   parameters: ParameterDefinition[];
   returnType?: string;
   body: string;
+  whenExpressions?: WhenExpression[]; // Pattern matching expressions
+  pipeExpressions?: PipeExpression[]; // Pipe operator expressions
   isPublic: boolean;
   docs?: string[];
 }
@@ -54,6 +56,37 @@ export interface TestDefinition {
   name: string;
   body: string;
   docs?: string[];
+}
+
+// Pattern matching interfaces
+export interface Pattern {
+  type: 'wildcard' | 'literal' | 'variable' | 'constructor' | 'tuple' | 'list';
+  value?: any;
+  name?: string;
+  constructor?: string;
+  args?: Pattern[];
+}
+
+export interface WhenClause {
+  pattern: Pattern;
+  guard?: string; // Optional guard expression
+  body: string;
+}
+
+export interface WhenExpression {
+  expression: string;
+  clauses: WhenClause[];
+}
+
+// Pipe operator interfaces
+export interface PipeExpression {
+  initialValue: string;
+  operations: PipeOperation[];
+}
+
+export interface PipeOperation {
+  functionName: string;
+  args?: string[];
 }
 
 // Legacy interfaces for backward compatibility
@@ -256,12 +289,18 @@ export class TypeScriptParser {
       type: param.type ? this.generateTypeDefinition(param.type) : 'Void',
     }));
 
+    const body = node.body ? node.body.getText() : '';
+    const whenExpressions = this.parseWhenExpressions(body);
+    const pipeExpressions = this.parsePipeExpressions(body);
+
     return {
       name: node.name?.getText() || 'anonymous',
       typeParams: node.typeParameters?.map(tp => tp.name.getText()),
       parameters,
       returnType: node.type ? this.generateTypeDefinition(node.type) : 'Void',
-      body: node.body ? node.body.getText() : '',
+      body,
+      whenExpressions,
+      pipeExpressions,
       isPublic: this.isPublicDeclaration(node),
       docs: this.extractJSDoc(node),
     };
@@ -422,5 +461,107 @@ export class TypeScriptParser {
       });
     }
     return docs;
+  }
+
+  /**
+   * Parses when expressions in the function body
+   */
+  private parseWhenExpressions(body: string): WhenExpression[] {
+    const whenRegex = /\/\/\s*@when\s+(\w+)/g;
+    const expressions: WhenExpression[] = [];
+    let match;
+
+    while (match = whenRegex.exec(body)) {
+      const variableName = match[1];
+      const expression = variableName;
+      const clauses = this.parseWhenClausesFromBody(body, variableName);
+      if (clauses.length > 0) {
+        expressions.push({ expression, clauses });
+      }
+    }
+
+    return expressions;
+  }
+
+  /**
+   * Parses when clauses from the function body based on if-else structure
+   */
+  private parseWhenClausesFromBody(body: string, variableName: string): WhenClause[] {
+    const clauses: WhenClause[] = [];
+
+    // Simple pattern: look for if statements that check the variable
+    const ifRegex = new RegExp(`if\\s*\\(\\s*${variableName}\\s*===?\\s*([^)]+)\\)`, 'g');
+    let match;
+
+    while (match = ifRegex.exec(body)) {
+      const patternValue = match[1].replace(/['"]/g, '').trim();
+      clauses.push({
+        pattern: { type: 'literal', value: patternValue } as Pattern,
+        body: `// matched ${patternValue}`
+      });
+    }
+
+    // Look for hasOwnProperty checks (for object patterns)
+    const hasOwnPropertyRegex = new RegExp(`${variableName}\\.hasOwnProperty\\('([^']+)'\\)`, 'g');
+    while (match = hasOwnPropertyRegex.exec(body)) {
+      const propertyName = match[1];
+      clauses.push({
+        pattern: { type: 'constructor', constructor: propertyName } as Pattern,
+        body: `// matched ${propertyName}`
+      });
+    }
+
+    return clauses;
+  }
+
+  /**
+   * Parses pipe expressions in the function body
+   */
+  private parsePipeExpressions(body: string): PipeExpression[] {
+    const pipeRegex = /\/\/\s*@pipe\s+(.+)/g;
+    const expressions: PipeExpression[] = [];
+    let match;
+
+    while (match = pipeRegex.exec(body)) {
+      const pipeLine = match[1].trim();
+      const parsed = this.parsePipeLine(pipeLine);
+      if (parsed) {
+        expressions.push(parsed);
+      }
+    }
+
+    return expressions;
+  }
+
+  /**
+   * Parses a single pipe line like "input |> double |> addOne |> square"
+   */
+  private parsePipeLine(pipeLine: string): PipeExpression | null {
+    // Remove the |> operators and split by them
+    const parts = pipeLine.split(/\s*\|\>\s*/).map(p => p.trim());
+
+    if (parts.length < 2) {
+      return null;
+    }
+
+    const initialValue = parts[0];
+    const operations: PipeOperation[] = [];
+
+    for (let i = 1; i < parts.length; i++) {
+      const part = parts[i];
+
+      // Handle function calls with arguments like addPrefix("Result: ")
+      const funcMatch = part.match(/^(\w+)\((.*)\)$/);
+      if (funcMatch) {
+        const functionName = funcMatch[1];
+        const args = funcMatch[2] ? funcMatch[2].split(',').map(a => a.trim()) : [];
+        operations.push({ functionName, args });
+      } else {
+        // Simple function name without arguments
+        operations.push({ functionName: part, args: [] });
+      }
+    }
+
+    return { initialValue, operations };
   }
 }

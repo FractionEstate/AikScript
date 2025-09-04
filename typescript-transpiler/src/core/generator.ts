@@ -5,7 +5,9 @@ import {
   AikenType,
   AikenConstant,
   AikenFunction,
-  AikenTest
+  AikenTest,
+  AikenWhenExpression,
+  AikenPipeExpression
 } from './transpiler';
 
 /**
@@ -234,6 +236,23 @@ export class CodeGenerator {
     // Convert function body from TypeScript to Aiken syntax
     const aikenBody = this.convertFunctionBodyToAiken(func.body);
     lines.push(aikenBody);
+
+    // Generate when expressions if any
+    if (func.whenExpressions && func.whenExpressions.length > 0) {
+      func.whenExpressions.forEach(whenExpr => {
+        lines.push('');
+        lines.push(this.generateWhenExpression(whenExpr));
+      });
+    }
+
+    // Generate pipe expressions if any
+    if (func.pipeExpressions && func.pipeExpressions.length > 0) {
+      func.pipeExpressions.forEach(pipeExpr => {
+        lines.push('');
+        lines.push(this.generatePipeExpression(pipeExpr));
+      });
+    }
+
     lines.push('}');
 
     return lines.join('\n');
@@ -271,6 +290,9 @@ export class CodeGenerator {
       .replace(/(\w+)\.(\w+)/g, '$1.$2') // Keep property access as is
       .replace(/\/\/.*$/gm, '') // Remove single-line comments
       .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+      .replace(/(\w+)\.hasOwnProperty\('([^']+)'\)/g, '$1 is $2') // Convert hasOwnProperty to pattern matching
+      .replace(/(\w+)\.length/g, 'length($1)') // Convert .length to length() function
+      .replace(/(\w+)\[(\d+)\]/g, 'index($1, $2)') // Convert array access to index function
       .trim();
   }
 
@@ -307,6 +329,73 @@ export class CodeGenerator {
     lines.push(test.body);
     lines.push('}');
 
+    return lines.join('\n');
+  }
+
+  /**
+   * Generate when expression
+   */
+  private generateWhenExpression(whenExpr: AikenWhenExpression): string {
+    const lines: string[] = [];
+
+    lines.push(`when ${whenExpr.expression} {`);
+    whenExpr.clauses.forEach(clause => {
+      const pattern = this.generatePattern(clause.pattern);
+      const guard = clause.guard ? ` if ${clause.guard}` : '';
+      lines.push(`  ${pattern}${guard} => ${clause.body.replace(/\/\/ matched /, '')},`);
+    });
+    lines.push('}');
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Generate pattern for when clause
+   */
+  private generatePattern(pattern: any): string {
+    switch (pattern.type) {
+      case 'wildcard':
+        return '_';
+      case 'literal':
+        return pattern.value;
+      case 'variable':
+        return pattern.name!;
+      case 'constructor':
+        if (pattern.constructor === 'Ok') {
+          return 'Ok(value)';
+        } else if (pattern.constructor === 'Error') {
+          return 'Error(error)';
+        } else if (pattern.constructor === 'Some') {
+          return 'Some(value)';
+        } else if (pattern.constructor === 'None') {
+          return 'None';
+        }
+        return `${pattern.constructor}(${pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''})`;
+      case 'tuple':
+        return `(${pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''})`;
+      case 'list':
+        return `[${pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''}]`;
+      default:
+        return pattern.value || '_';
+    }
+  }
+
+  /**
+   * Generate pipe expression
+   */
+  private generatePipeExpression(pipeExpr: AikenPipeExpression): string {
+    const lines: string[] = [];
+
+    let currentValue = pipeExpr.initialValue;
+    pipeExpr.operations.forEach((op) => {
+      if (op.args && op.args.length > 0) {
+        currentValue = `${op.functionName}(${currentValue}, ${op.args.join(', ')})`;
+      } else {
+        currentValue = `${op.functionName}(${currentValue})`;
+      }
+    });
+
+    lines.push(currentValue);
     return lines.join('\n');
   }
 }

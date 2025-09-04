@@ -103,20 +103,28 @@ export class AikenTransformer {
       // For simple type aliases, just use the definition as-is
       definition = type.definition;
     } else {
-      // For complex types, add the type wrapper
-      if (type.isOpaque) {
-        definition += 'pub opaque ';
-      } else if (type.isPublic) {
-        definition += 'pub ';
+      // For complex types, check if it's already a record type
+      const isRecordType = type.definition.trim().startsWith('{') && type.definition.trim().endsWith('}');
+
+      if (isRecordType) {
+        // For record types, just use the definition as-is (it will be formatted by the generator)
+        definition = type.definition;
+      } else {
+        // For other complex types (unions, etc.), add the type wrapper
+        if (type.isOpaque) {
+          definition += 'pub opaque ';
+        } else if (type.isPublic) {
+          definition += 'pub ';
+        }
+
+        definition += `type ${type.name}`;
+
+        if (type.typeParams && type.typeParams.length > 0) {
+          definition += `<${type.typeParams.join(', ')}>`;
+        }
+
+        definition += ` {\n${type.definition}\n}`;
       }
-
-      definition += `type ${type.name}`;
-
-      if (type.typeParams && type.typeParams.length > 0) {
-        definition += `<${type.typeParams.join(', ')}>`;
-      }
-
-      definition += ` {\n${type.definition}\n}`;
     }
 
     return {
@@ -187,6 +195,8 @@ export class AikenTransformer {
       parameters: func.parameters,
       returnType: func.returnType || 'Void',
       body: func.body,
+      whenExpressions: func.whenExpressions,
+      pipeExpressions: func.pipeExpressions,
       isPublic: func.isPublic,
       docs: func.docs,
     };

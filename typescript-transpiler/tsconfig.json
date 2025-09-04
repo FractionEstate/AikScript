@@ -12,8 +12,8 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "experimentalDecorators": false,
-    "emitDecoratorMetadata": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "types": ["node", "jest"]
   },

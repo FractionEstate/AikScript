@@ -1,0 +1,19 @@
+---
+source: crates/aiken-lang/src/parser/definition/import.rs
+description: "Code:\n\nuse aiken/list as foo"
+---
+Use {
+    as_name: Some(
+        "foo",
+    ),
+    location: 0..21,
+    module: [
+        "aiken",
+        "list",
+    ],
+    package: (),
+    unqualified: (
+        14,
+        [],
+    ),
+}

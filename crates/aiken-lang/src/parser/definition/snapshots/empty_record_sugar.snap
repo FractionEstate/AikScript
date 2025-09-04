@@ -1,0 +1,26 @@
+---
+source: crates/aiken-lang/src/parser/definition/data_type.rs
+description: "Code:\n\npub type Foo {\n}\n"
+---
+DataType(
+    DataType {
+        decorators: [],
+        constructors: [
+            RecordConstructor {
+                decorators: [],
+                location: 0..16,
+                name: "Foo",
+                arguments: [],
+                doc: None,
+                sugar: true,
+            },
+        ],
+        doc: None,
+        location: 0..16,
+        name: "Foo",
+        opaque: false,
+        parameters: [],
+        public: true,
+        typed_parameters: [],
+    },
+)

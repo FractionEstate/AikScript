@@ -1,0 +1,44 @@
+---
+source: crates/aiken-lang/src/parser/expr/assignment.rs
+description: "Code:\n\nlet thing = [ 1, 2, a ]"
+---
+Assignment {
+    location: 0..23,
+    value: List {
+        location: 12..23,
+        elements: [
+            UInt {
+                location: 14..15,
+                value: "1",
+                base: Decimal {
+                    numeric_underscore: false,
+                },
+            },
+            UInt {
+                location: 17..18,
+                value: "2",
+                base: Decimal {
+                    numeric_underscore: false,
+                },
+            },
+            Var {
+                location: 20..21,
+                name: "a",
+            },
+        ],
+        tail: None,
+    },
+    patterns: [
+        AssignmentPattern {
+            pattern: Var {
+                location: 4..9,
+                name: "thing",
+            },
+            annotation: None,
+            location: 4..9,
+        },
+    ],
+    kind: Let {
+        backpassing: false,
+    },
+}

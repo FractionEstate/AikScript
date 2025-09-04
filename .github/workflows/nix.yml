@@ -1,0 +1,30 @@
+name: Nix Build
+
+on:
+  push:
+
+jobs:
+  nix-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+
+      - name: Run the Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v1
+
+      - name: Build Aiken
+        shell: bash
+        run: |
+          set +e
+          nix build
+          exitcode="$?"
+          if [[ "$exitcode" != "0" ]] ; then
+            echo "::warning::Nix build failed with exit code $exitcode"
+            exit 0
+          else
+            exit "$exitcode"
+          fi

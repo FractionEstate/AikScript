@@ -1,0 +1,87 @@
+name: Tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          key: ${{ runner.os }}-cache-build-v1
+      - name: Build release
+        run: |
+          sudo apt-get install -y pkg-config libssl-dev musl musl-dev musl-tools
+          rustup target add x86_64-unknown-linux-musl
+          cargo install --path=crates/aiken --target=x86_64-unknown-linux-musl
+          mv $(which aiken) aiken
+          ldd aiken
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aiken-${{ github.sha }}-${{ runner.arch }}-${{ runner.os }}
+          path: ./aiken
+
+  acceptance_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          key: ${{ runner.os }}-cache-build-v1
+      - name: Run examples
+        run: |
+          cargo run -r -- check examples/hello_world
+          cargo run -r -- check examples/gift_card
+          cargo run -r -- check examples/monorepo
+      - name: Run acceptance tests
+        working-directory: examples/acceptance_tests
+        run: |
+          cargo install cbor-diag-cli
+          bash ci
+        shell: bash
+
+  unit_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          key: ${{ runner.os }}-cache-unit-v1
+      - name: Run unit tests
+        run: cargo test --verbose --workspace
+
+  benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          key: ${{ runner.os }}-cache-build-v1
+      - name: Run benchmarks
+        run: |
+          cargo run -r -- check benchmarks
+
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          key: ${{ runner.os }}-cache-unit-v1
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings

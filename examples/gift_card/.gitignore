@@ -1,0 +1,28 @@
+# Aiken compilation artifacts
+artifacts/
+# Aiken's project working directory
+build/
+# Aiken's default documentation export
+docs/
+
+node_modules
+
+# Output
+.output
+.vercel
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

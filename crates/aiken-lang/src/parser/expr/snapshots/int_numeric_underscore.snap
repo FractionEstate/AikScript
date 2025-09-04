@@ -1,0 +1,82 @@
+---
+source: crates/aiken-lang/src/parser/expr/int.rs
+description: "Code:\n\n{\n  let i = 1_234_567\n  let j = 1_000_000\n  let k = -10_000\n}\n"
+---
+Sequence {
+    location: 4..59,
+    expressions: [
+        Assignment {
+            location: 4..21,
+            value: UInt {
+                location: 12..21,
+                value: "1234567",
+                base: Decimal {
+                    numeric_underscore: true,
+                },
+            },
+            patterns: [
+                AssignmentPattern {
+                    pattern: Var {
+                        location: 8..9,
+                        name: "i",
+                    },
+                    annotation: None,
+                    location: 8..9,
+                },
+            ],
+            kind: Let {
+                backpassing: false,
+            },
+        },
+        Assignment {
+            location: 24..41,
+            value: UInt {
+                location: 32..41,
+                value: "1000000",
+                base: Decimal {
+                    numeric_underscore: true,
+                },
+            },
+            patterns: [
+                AssignmentPattern {
+                    pattern: Var {
+                        location: 28..29,
+                        name: "j",
+                    },
+                    annotation: None,
+                    location: 28..29,
+                },
+            ],
+            kind: Let {
+                backpassing: false,
+            },
+        },
+        Assignment {
+            location: 44..59,
+            value: UnOp {
+                op: Negate,
+                location: 52..59,
+                value: UInt {
+                    location: 53..59,
+                    value: "10000",
+                    base: Decimal {
+                        numeric_underscore: true,
+                    },
+                },
+            },
+            patterns: [
+                AssignmentPattern {
+                    pattern: Var {
+                        location: 48..49,
+                        name: "k",
+                    },
+                    annotation: None,
+                    location: 48..49,
+                },
+            ],
+            kind: Let {
+                backpassing: false,
+            },
+        },
+    ],
+}

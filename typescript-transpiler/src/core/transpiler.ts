@@ -68,36 +68,46 @@ export class TypeScriptToAikenTranspiler {
   }
 
   compile(config: TranspilerConfig): CompilationResult {
-    // Read source file
-    console.log(`Reading source file: ${config.inputPath}`);
-    const sourceCode = require('fs').readFileSync(config.inputPath, 'utf-8');
-    console.log(`Source code length: ${sourceCode.length}`);
-    console.log(`Source code preview: ${sourceCode.substring(0, 200)}...`);
+    try {
+      // Read source file
+      console.log(`Reading source file: ${config.inputPath}`);
+      const sourceCode = require('fs').readFileSync(config.inputPath, 'utf-8');
+      console.log(`Source code length: ${sourceCode.length}`);
+      console.log(`Source code preview: ${sourceCode.substring(0, 200)}...`);
 
-    // Parse TypeScript
-    console.log('Starting parsing...');
-    const tsAst = this.parse(sourceCode);
-    console.log('Parsing completed');
+      // Parse TypeScript
+      console.log('Starting parsing...');
+      const tsAst = this.parse(sourceCode);
+      console.log('Parsing completed');
 
-    // Transform to Aiken AST
-    console.log('Starting transformation...');
-    const aikenAst = this.transform(tsAst);
-    console.log('Transformation completed');
+      // Transform to Aiken AST
+      console.log('Starting transformation...');
+      const aikenAst = this.transform(tsAst);
+      console.log('Transformation completed');
 
-    // Generate Aiken code
-    console.log('Starting code generation...');
-    const aikenCode = this.generate(aikenAst);
-    console.log('Code generation completed');
-    console.log('Generated code preview:', aikenCode.substring(0, 200));
+      // Generate Aiken code
+      console.log('Starting code generation...');
+      const aikenCode = this.generate(aikenAst);
+      console.log('Code generation completed');
+      console.log('Generated code preview:', aikenCode.substring(0, 200));
 
-    // Write output
-    require('fs').writeFileSync(config.outputPath, aikenCode);
+      // Write output
+      require('fs').writeFileSync(config.outputPath, aikenCode);
 
-    return {
-      success: true,
-      outputPath: config.outputPath,
-      generatedCode: aikenCode,
-    };
+      return {
+        success: true,
+        outputPath: config.outputPath,
+        generatedCode: aikenCode,
+      };
+    } catch (error) {
+      console.error('❌ Compilation failed:', (error as Error).message);
+      return {
+        success: false,
+        outputPath: config.outputPath,
+        generatedCode: '',
+        errors: [(error as Error).message],
+      };
+    }
   }
 
   /**

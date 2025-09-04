@@ -1,5 +1,5 @@
 import { BuiltinRegistry } from './builtins';
-import { AikenAST, AikenContract } from './transpiler';
+import { AikenAST, AikenContract, AikenValidator, AikenParameter } from './transpiler';
 
 /**
  * Code generation utilities for TypeScript-to-Aiken transpiler
@@ -66,8 +66,10 @@ export class CodeGenerator {
   /**
    * Generate Aiken datum type definition
    */
-  private generateDatum(datum: any): string {
-    let output = `pub type ${datum.name} {\n`;
+  private generateDatum(datum: { name: string; fields: AikenParameter[] }): string {
+    // Convert to PascalCase for Aiken type naming convention
+    const typeName = datum.name.charAt(0).toUpperCase() + datum.name.slice(1);
+    let output = `pub type ${typeName} {\n`;
 
     for (const field of datum.fields) {
       output += `  ${field.name}: ${field.type},\n`;
@@ -80,29 +82,13 @@ export class CodeGenerator {
   /**
    * Generate Aiken validator function
    */
-  private generateValidator(validator: any): string {
-    const params = validator.parameters.map((p: any) => `${p.name}: ${p.type}`).join(', ');
+  private generateValidator(validator: AikenValidator): string {
+    const params = validator.parameters.map((p: AikenParameter) => `${p.name}: ${p.type}`).join(', ');
 
     let output = '';
 
-    // Generate appropriate validator function based on purpose
-    switch (validator.purpose) {
-      case 'spend':
-        output += `  spend(${params}) {\n`;
-        break;
-      case 'mint':
-        output += `  mint(${params}) {\n`;
-        break;
-      case 'withdraw':
-        output += `  withdraw(${params}) {\n`;
-        break;
-      case 'publish':
-        output += `  publish {\n`;
-        break;
-      default:
-        // Default to spend if purpose is not recognized
-        output += `  spend(${params}) {\n`;
-    }
+    // Use the actual method name from TypeScript source
+    output += `  fn ${validator.name}(${params}) {\n`;
 
     output += `    ${validator.body}\n`;
     output += `  }\n`;

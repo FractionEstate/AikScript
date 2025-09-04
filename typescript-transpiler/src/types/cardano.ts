@@ -279,7 +279,6 @@ export declare function lessThanEqualsByteString(a: ByteArray, b: ByteArray): Bo
 export declare function replicateByte(count: Int, byte: Int): ByteArray;
 
 // Additional utility functions
-export declare function chooseUnit(unit: void, value: any): any;
 export declare function unconstrIndex(data: any): Int;
 export declare function unconstrFields(data: any): any[];
 
@@ -298,6 +297,7 @@ export interface Rational {
 }
 
 // Dictionary/Map type
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface Dict<K, V> {
   // Dictionary operations
 }
@@ -325,12 +325,6 @@ export interface VerificationKeyCredential {
 export interface ScriptCredential {
   __brand: 'ScriptCredential';
   hash: ScriptHash;
-}
-
-// Value and asset types
-export interface Value {
-  ada: Ada;
-  assets: Map<PolicyId, Map<AssetName, Int>>;
 }
 
 // Fuzzing utilities

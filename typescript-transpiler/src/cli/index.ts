@@ -130,7 +130,7 @@ program
   .command('init <projectName>')
   .description('Initialize a new TypeScript Aiken project with standard Aiken structure')
   .option('-t, --template <template>', 'Project template', 'basic')
-  .action(async (projectName: string, options: any) => {
+  .action(async (projectName: string, _options: any) => {
     try {
       const projectPath = path.resolve(projectName);
 
@@ -389,7 +389,7 @@ program
   .command('watch <input>')
   .description('Watch for changes and recompile automatically')
   .option('-o, --output <output>', 'Output directory')
-  .action(async (input: string, options: any) => {
+  .action(async (_input: string, _options: any) => {
     console.log('Watch mode not yet implemented. Use compile command instead.');
   });
 

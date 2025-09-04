@@ -39,23 +39,31 @@ export class AikenTransformer {
    * Transform TranspilerAST to AikenAST
    */
   transform(ast: TranspilerAST): AikenAST {
-    // Reset builtin tracking for new transformation
-    this.builtinRegistry.reset();
+    try {
+      // Reset builtin tracking for new transformation
+      this.builtinRegistry.reset();
 
-    const contracts = ast.contracts.map(contract => this.transformContract(contract));
-    const types = ast.types.map(type => this.transformType(type));
+      const contracts = ast.contracts.map(contract => this.transformContract(contract));
+      const types = ast.types.map(type => this.transformType(type));
 
-    return {
-      contracts,
-      types,
-    };
+      return {
+        contracts,
+        types,
+      };
+    } catch (error) {
+      throw new Error(`Failed to transform AST: ${(error as Error).message}`);
+    }
   }
 
   /**
    * Generate Aiken code from AikenAST
    */
   generate(ast: AikenAST): string {
-    return this.codeGenerator.generate(ast);
+    try {
+      return this.codeGenerator.generate(ast);
+    } catch (error) {
+      throw new Error(`Failed to generate Aiken code: ${(error as Error).message}`);
+    }
   }
 
   /**

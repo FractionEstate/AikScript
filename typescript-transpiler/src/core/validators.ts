@@ -18,7 +18,7 @@ export class ValidatorTransformer {
   /**
    * Transform a TypeScript validator method to Aiken validator
    */
-  transformValidator(validator: any, datums: any[]): AikenValidator {
+  transformValidator(validator: any, _datums: any[]): AikenValidator {
     const parameters = this.extractParameters(validator.methodDeclaration);
 
     // Adjust parameters based on validator purpose

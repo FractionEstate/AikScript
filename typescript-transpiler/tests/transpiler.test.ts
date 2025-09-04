@@ -87,7 +87,7 @@ describe('TypeScriptToAikenTranspiler', () => {
     const aikenAst = transpiler.transform(tsAst);
     const generatedCode = transpiler.generate(aikenAst);
 
-    expect(generatedCode).toContain('type LockDatum');
+    expect(generatedCode).toContain('pub type LockDatum');
     expect(generatedCode).toContain('fn unlock');
     expect(generatedCode).toContain('lockUntil: POSIXTime');
     expect(generatedCode).toContain('owner: PubKeyHash');

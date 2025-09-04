@@ -53,26 +53,34 @@ export class TypeScriptParser {
   }
 
   parse(filePath: string): TranspilerAST {
-    const sourceFile = ts.createSourceFile(
-      filePath,
-      fs.readFileSync(filePath, 'utf-8'),
-      this.config.target!,
-      true
-    );
+    try {
+      const sourceFile = ts.createSourceFile(
+        filePath,
+        fs.readFileSync(filePath, 'utf-8'),
+        this.config.target!,
+        true
+      );
 
-    this.program = ts.createProgram([filePath], this.config);
-    this.checker = this.program.getTypeChecker();
+      this.program = ts.createProgram([filePath], this.config);
+      this.checker = this.program.getTypeChecker();
 
-    return this.analyzeSourceFile(sourceFile);
+      return this.analyzeSourceFile(sourceFile);
+    } catch (error) {
+      throw new Error(`Failed to parse TypeScript file ${filePath}: ${(error as Error).message}`);
+    }
   }
 
   parseSource(sourceCode: string, fileName = 'temp.ts'): TranspilerAST {
-    const sourceFile = ts.createSourceFile(fileName, sourceCode, this.config.target!, true);
+    try {
+      const sourceFile = ts.createSourceFile(fileName, sourceCode, this.config.target!, true);
 
-    this.program = ts.createProgram([fileName], this.config);
-    this.checker = this.program.getTypeChecker();
+      this.program = ts.createProgram([fileName], this.config);
+      this.checker = this.program.getTypeChecker();
 
-    return this.analyzeSourceFile(sourceFile);
+      return this.analyzeSourceFile(sourceFile);
+    } catch (error) {
+      throw new Error(`Failed to parse TypeScript source: ${(error as Error).message}`);
+    }
   }
 
   private analyzeSourceFile(sourceFile: ts.SourceFile): TranspilerAST {
@@ -199,7 +207,6 @@ export class TypeScriptParser {
     for (const property of objectLiteral.properties) {
       if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
         const propertyName = property.name;
-        const propertyType = property.initializer;
 
         // For now, we'll use 'any' type since we can't easily infer types from null literals
         // In a real implementation, you'd want to do proper type inference

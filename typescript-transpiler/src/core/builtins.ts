@@ -20,7 +20,10 @@ export class BuiltinRegistry {
     // Array/List operations
     this.addMapping('push', { aikenName: 'cons_list', importName: 'mkCons' });
     this.addMapping('concat', { aikenName: 'append_bytearray', importName: 'appendByteString' });
-    this.addMapping('length', { aikenName: 'length_of_bytearray', importName: 'lengthOfByteString' });
+    this.addMapping('length', {
+      aikenName: 'length_of_bytearray',
+      importName: 'lengthOfByteString',
+    });
     this.addMapping('slice', { aikenName: 'slice_bytearray', importName: 'sliceByteString' });
     this.addMapping('indexOf', { aikenName: 'index_bytearray', importName: 'indexByteString' });
 
@@ -42,8 +45,14 @@ export class BuiltinRegistry {
 
     // Data conversion functions
     this.addMapping('Buffer.from', { aikenName: 'b_data', importName: 'bData' });
-    this.addMapping('parseInt', { aikenName: 'bytearray_to_integer', importName: 'byteStringToInteger' });
-    this.addMapping('BigInt', { aikenName: 'integer_to_bytearray', importName: 'integerToByteString' });
+    this.addMapping('parseInt', {
+      aikenName: 'bytearray_to_integer',
+      importName: 'byteStringToInteger',
+    });
+    this.addMapping('BigInt', {
+      aikenName: 'integer_to_bytearray',
+      importName: 'integerToByteString',
+    });
 
     // Boolean operations
     this.addMapping('Boolean', { aikenName: 'if_then_else', importName: 'ifThenElse' });
@@ -75,22 +84,49 @@ export class BuiltinRegistry {
     // BLS12-381 operations
     this.addMapping('blsG1Add', { aikenName: 'bls12_381_g1_add', importName: 'bls12_381_G1_Add' });
     this.addMapping('blsG1Neg', { aikenName: 'bls12_381_g1_neg', importName: 'bls12_381_G1_Neg' });
-    this.addMapping('blsG1ScalarMul', { aikenName: 'bls12_381_g1_scalar_mul', importName: 'bls12_381_G1_ScalarMul' });
-    this.addMapping('blsG1Equal', { aikenName: 'bls12_381_g1_equal', importName: 'bls12_381_G1_Equal' });
-    this.addMapping('blsG1Compress', { aikenName: 'bls12_381_g1_compress', importName: 'bls12_381_G1_Compress' });
-    this.addMapping('blsG1Uncompress', { aikenName: 'bls12_381_g1_uncompress', importName: 'bls12_381_G1_Uncompress' });
-    this.addMapping('blsG1HashToGroup', { aikenName: 'bls12_381_g1_hash_to_group', importName: 'bls12_381_G1_HashToGroup' });
+    this.addMapping('blsG1ScalarMul', {
+      aikenName: 'bls12_381_g1_scalar_mul',
+      importName: 'bls12_381_G1_ScalarMul',
+    });
+    this.addMapping('blsG1Equal', {
+      aikenName: 'bls12_381_g1_equal',
+      importName: 'bls12_381_G1_Equal',
+    });
+    this.addMapping('blsG1Compress', {
+      aikenName: 'bls12_381_g1_compress',
+      importName: 'bls12_381_G1_Compress',
+    });
+    this.addMapping('blsG1Uncompress', {
+      aikenName: 'bls12_381_g1_uncompress',
+      importName: 'bls12_381_G1_Uncompress',
+    });
+    this.addMapping('blsG1HashToGroup', {
+      aikenName: 'bls12_381_g1_hash_to_group',
+      importName: 'bls12_381_G1_HashToGroup',
+    });
 
     // Bitwise operations
     this.addMapping('readBit', { aikenName: 'read_bit', importName: 'readBit' });
     this.addMapping('writeBits', { aikenName: 'write_bits', importName: 'writeBits' });
     this.addMapping('countSetBits', { aikenName: 'count_set_bits', importName: 'countSetBits' });
-    this.addMapping('findFirstSetBit', { aikenName: 'find_first_set_bit', importName: 'findFirstSetBit' });
+    this.addMapping('findFirstSetBit', {
+      aikenName: 'find_first_set_bit',
+      importName: 'findFirstSetBit',
+    });
 
     // Signature verification
-    this.addMapping('verifyEd25519Signature', { aikenName: 'verify_ed25519_signature', importName: 'verifyEd25519Signature' });
-    this.addMapping('verifyEcdsaSecp256k1Signature', { aikenName: 'verify_ecdsa_secp256k1_signature', importName: 'verifyEcdsaSecp256k1Signature' });
-    this.addMapping('verifySchnorrSecp256k1Signature', { aikenName: 'verify_schnorr_secp256k1_signature', importName: 'verifySchnorrSecp256k1Signature' });
+    this.addMapping('verifyEd25519Signature', {
+      aikenName: 'verify_ed25519_signature',
+      importName: 'verifyEd25519Signature',
+    });
+    this.addMapping('verifyEcdsaSecp256k1Signature', {
+      aikenName: 'verify_ecdsa_secp256k1_signature',
+      importName: 'verifyEcdsaSecp256k1Signature',
+    });
+    this.addMapping('verifySchnorrSecp256k1Signature', {
+      aikenName: 'verify_schnorr_secp256k1_signature',
+      importName: 'verifySchnorrSecp256k1Signature',
+    });
 
     // Debugging
     this.addMapping('console.log', { aikenName: 'debug', importName: 'trace' });
@@ -98,20 +134,47 @@ export class BuiltinRegistry {
 
     // Integer arithmetic functions
     this.addMapping('addInteger', { aikenName: 'add_integer', importName: 'addInteger' });
-    this.addMapping('subtractInteger', { aikenName: 'subtract_integer', importName: 'subtractInteger' });
-    this.addMapping('multiplyInteger', { aikenName: 'multiply_integer', importName: 'multiplyInteger' });
+    this.addMapping('subtractInteger', {
+      aikenName: 'subtract_integer',
+      importName: 'subtractInteger',
+    });
+    this.addMapping('multiplyInteger', {
+      aikenName: 'multiply_integer',
+      importName: 'multiplyInteger',
+    });
     this.addMapping('divideInteger', { aikenName: 'divide_integer', importName: 'divideInteger' });
-    this.addMapping('quotientInteger', { aikenName: 'quotient_integer', importName: 'quotientInteger' });
-    this.addMapping('remainderInteger', { aikenName: 'remainder_integer', importName: 'remainderInteger' });
+    this.addMapping('quotientInteger', {
+      aikenName: 'quotient_integer',
+      importName: 'quotientInteger',
+    });
+    this.addMapping('remainderInteger', {
+      aikenName: 'remainder_integer',
+      importName: 'remainderInteger',
+    });
     this.addMapping('modInteger', { aikenName: 'mod_integer', importName: 'modInteger' });
     this.addMapping('equalsInteger', { aikenName: 'equals_integer', importName: 'equalsInteger' });
-    this.addMapping('lessThanInteger', { aikenName: 'less_than_integer', importName: 'lessThanInteger' });
-    this.addMapping('lessThanEqualsInteger', { aikenName: 'less_than_equals_integer', importName: 'lessThanEqualsInteger' });
+    this.addMapping('lessThanInteger', {
+      aikenName: 'less_than_integer',
+      importName: 'lessThanInteger',
+    });
+    this.addMapping('lessThanEqualsInteger', {
+      aikenName: 'less_than_equals_integer',
+      importName: 'lessThanEqualsInteger',
+    });
 
     // ByteString comparison functions
-    this.addMapping('equalsByteString', { aikenName: 'equals_bytearray', importName: 'equalsByteString' });
-    this.addMapping('lessThanByteString', { aikenName: 'less_than_bytearray', importName: 'lessThanByteString' });
-    this.addMapping('lessThanEqualsByteString', { aikenName: 'less_than_equals_bytearray', importName: 'lessThanEqualsByteString' });
+    this.addMapping('equalsByteString', {
+      aikenName: 'equals_bytearray',
+      importName: 'equalsByteString',
+    });
+    this.addMapping('lessThanByteString', {
+      aikenName: 'less_than_bytearray',
+      importName: 'lessThanByteString',
+    });
+    this.addMapping('lessThanEqualsByteString', {
+      aikenName: 'less_than_equals_bytearray',
+      importName: 'lessThanEqualsByteString',
+    });
 
     // Additional ByteString functions
     this.addMapping('replicateByte', { aikenName: 'replicate_byte', importName: 'replicateByte' });
@@ -119,26 +182,56 @@ export class BuiltinRegistry {
     // BLS12-381 G2 operations
     this.addMapping('blsG2Add', { aikenName: 'bls12_381_g2_add', importName: 'bls12_381_G2_Add' });
     this.addMapping('blsG2Neg', { aikenName: 'bls12_381_g2_neg', importName: 'bls12_381_G2_Neg' });
-    this.addMapping('blsG2ScalarMul', { aikenName: 'bls12_381_g2_scalar_mul', importName: 'bls12_381_G2_ScalarMul' });
-    this.addMapping('blsG2Equal', { aikenName: 'bls12_381_g2_equal', importName: 'bls12_381_G2_Equal' });
-    this.addMapping('blsG2Compress', { aikenName: 'bls12_381_g2_compress', importName: 'bls12_381_G2_Compress' });
-    this.addMapping('blsG2Uncompress', { aikenName: 'bls12_381_g2_uncompress', importName: 'bls12_381_G2_Uncompress' });
-    this.addMapping('blsG2HashToGroup', { aikenName: 'bls12_381_g2_hash_to_group', importName: 'bls12_381_G2_HashToGroup' });
+    this.addMapping('blsG2ScalarMul', {
+      aikenName: 'bls12_381_g2_scalar_mul',
+      importName: 'bls12_381_G2_ScalarMul',
+    });
+    this.addMapping('blsG2Equal', {
+      aikenName: 'bls12_381_g2_equal',
+      importName: 'bls12_381_G2_Equal',
+    });
+    this.addMapping('blsG2Compress', {
+      aikenName: 'bls12_381_g2_compress',
+      importName: 'bls12_381_G2_Compress',
+    });
+    this.addMapping('blsG2Uncompress', {
+      aikenName: 'bls12_381_g2_uncompress',
+      importName: 'bls12_381_G2_Uncompress',
+    });
+    this.addMapping('blsG2HashToGroup', {
+      aikenName: 'bls12_381_g2_hash_to_group',
+      importName: 'bls12_381_G2_HashToGroup',
+    });
 
     // BLS12-381 Miller loop operations
-    this.addMapping('blsMillerLoop', { aikenName: 'bls12_381_miller_loop', importName: 'bls12_381_MillerLoop' });
-    this.addMapping('blsMulMlResult', { aikenName: 'bls12_381_mul_ml_result', importName: 'bls12_381_MulMlResult' });
-    this.addMapping('blsFinalVerify', { aikenName: 'bls12_381_final_verify', importName: 'bls12_381_FinalVerify' });
+    this.addMapping('blsMillerLoop', {
+      aikenName: 'bls12_381_miller_loop',
+      importName: 'bls12_381_MillerLoop',
+    });
+    this.addMapping('blsMulMlResult', {
+      aikenName: 'bls12_381_mul_ml_result',
+      importName: 'bls12_381_MulMlResult',
+    });
+    this.addMapping('blsFinalVerify', {
+      aikenName: 'bls12_381_final_verify',
+      importName: 'bls12_381_FinalVerify',
+    });
 
     // Additional data constructors
     this.addMapping('mkPairData', { aikenName: 'mk_pair_data', importName: 'mkPairData' });
     this.addMapping('mkNilData', { aikenName: 'mk_nil_data', importName: 'mkNilData' });
-    this.addMapping('mkNilPairData', { aikenName: 'mk_nil_pair_data', importName: 'mkNilPairData' });
+    this.addMapping('mkNilPairData', {
+      aikenName: 'mk_nil_pair_data',
+      importName: 'mkNilPairData',
+    });
 
     // Additional utility functions
     this.addMapping('chooseUnit', { aikenName: 'choose_unit', importName: 'chooseUnit' });
     this.addMapping('unconstrIndex', { aikenName: 'unconstr_index', importName: 'unconstrIndex' });
-    this.addMapping('unconstrFields', { aikenName: 'unconstr_fields', importName: 'unconstrFields' });
+    this.addMapping('unconstrFields', {
+      aikenName: 'unconstr_fields',
+      importName: 'unconstrFields',
+    });
 
     // Aiken Stdlib - Collections
     this.addMapping('list.filter', { aikenName: 'list.filter', importName: 'listFilter' });
@@ -165,27 +258,69 @@ export class BuiltinRegistry {
     this.addMapping('option.isSome', { aikenName: 'option.is_some', importName: 'optionIsSome' });
     this.addMapping('option.isNone', { aikenName: 'option.is_none', importName: 'optionIsNone' });
     this.addMapping('option.unwrap', { aikenName: 'option.unwrap', importName: 'optionUnwrap' });
-    this.addMapping('option.unwrapOr', { aikenName: 'option.unwrap_or', importName: 'optionUnwrapOr' });
-    this.addMapping('option.unwrapOrElse', { aikenName: 'option.unwrap_or_else', importName: 'optionUnwrapOrElse' });
+    this.addMapping('option.unwrapOr', {
+      aikenName: 'option.unwrap_or',
+      importName: 'optionUnwrapOr',
+    });
+    this.addMapping('option.unwrapOrElse', {
+      aikenName: 'option.unwrap_or_else',
+      importName: 'optionUnwrapOrElse',
+    });
 
     // Aiken Stdlib - Rational
-    this.addMapping('rational.fromInt', { aikenName: 'rational.from_int', importName: 'rationalFromInt' });
+    this.addMapping('rational.fromInt', {
+      aikenName: 'rational.from_int',
+      importName: 'rationalFromInt',
+    });
     this.addMapping('rational.add', { aikenName: 'rational.add', importName: 'rationalAdd' });
-    this.addMapping('rational.subtract', { aikenName: 'rational.subtract', importName: 'rationalSubtract' });
-    this.addMapping('rational.multiply', { aikenName: 'rational.multiply', importName: 'rationalMultiply' });
-    this.addMapping('rational.divide', { aikenName: 'rational.divide', importName: 'rationalDivide' });
-    this.addMapping('rational.compare', { aikenName: 'rational.compare', importName: 'rationalCompare' });
-    this.addMapping('rational.truncate', { aikenName: 'rational.truncate', importName: 'rationalTruncate' });
+    this.addMapping('rational.subtract', {
+      aikenName: 'rational.subtract',
+      importName: 'rationalSubtract',
+    });
+    this.addMapping('rational.multiply', {
+      aikenName: 'rational.multiply',
+      importName: 'rationalMultiply',
+    });
+    this.addMapping('rational.divide', {
+      aikenName: 'rational.divide',
+      importName: 'rationalDivide',
+    });
+    this.addMapping('rational.compare', {
+      aikenName: 'rational.compare',
+      importName: 'rationalCompare',
+    });
+    this.addMapping('rational.truncate', {
+      aikenName: 'rational.truncate',
+      importName: 'rationalTruncate',
+    });
     this.addMapping('rational.ceil', { aikenName: 'rational.ceil', importName: 'rationalCeil' });
     this.addMapping('rational.floor', { aikenName: 'rational.floor', importName: 'rationalFloor' });
 
     // Aiken Stdlib - ByteArray
-    this.addMapping('bytearray.compare', { aikenName: 'bytearray.compare', importName: 'byteArrayCompare' });
-    this.addMapping('bytearray.isEmpty', { aikenName: 'bytearray.is_empty', importName: 'byteArrayIsEmpty' });
-    this.addMapping('bytearray.concat', { aikenName: 'bytearray.concat', importName: 'byteArrayConcat' });
-    this.addMapping('bytearray.slice', { aikenName: 'bytearray.slice', importName: 'byteArraySlice' });
-    this.addMapping('bytearray.toHex', { aikenName: 'bytearray.to_hex', importName: 'byteArrayToHex' });
-    this.addMapping('bytearray.fromHex', { aikenName: 'bytearray.from_hex', importName: 'byteArrayFromHex' });
+    this.addMapping('bytearray.compare', {
+      aikenName: 'bytearray.compare',
+      importName: 'byteArrayCompare',
+    });
+    this.addMapping('bytearray.isEmpty', {
+      aikenName: 'bytearray.is_empty',
+      importName: 'byteArrayIsEmpty',
+    });
+    this.addMapping('bytearray.concat', {
+      aikenName: 'bytearray.concat',
+      importName: 'byteArrayConcat',
+    });
+    this.addMapping('bytearray.slice', {
+      aikenName: 'bytearray.slice',
+      importName: 'byteArraySlice',
+    });
+    this.addMapping('bytearray.toHex', {
+      aikenName: 'bytearray.to_hex',
+      importName: 'byteArrayToHex',
+    });
+    this.addMapping('bytearray.fromHex', {
+      aikenName: 'bytearray.from_hex',
+      importName: 'byteArrayFromHex',
+    });
 
     // Aiken Stdlib - Integer
     this.addMapping('int.compare', { aikenName: 'int.compare', importName: 'intCompare' });
@@ -197,32 +332,62 @@ export class BuiltinRegistry {
 
     // Aiken Stdlib - String
     this.addMapping('string.length', { aikenName: 'string.length', importName: 'stringLength' });
-    this.addMapping('string.isEmpty', { aikenName: 'string.is_empty', importName: 'stringIsEmpty' });
+    this.addMapping('string.isEmpty', {
+      aikenName: 'string.is_empty',
+      importName: 'stringIsEmpty',
+    });
     this.addMapping('string.concat', { aikenName: 'string.concat', importName: 'stringConcat' });
     this.addMapping('string.slice', { aikenName: 'string.slice', importName: 'stringSlice' });
     this.addMapping('string.compare', { aikenName: 'string.compare', importName: 'stringCompare' });
-    this.addMapping('string.toByteArray', { aikenName: 'string.to_bytearray', importName: 'stringToByteArray' });
-    this.addMapping('string.fromByteArray', { aikenName: 'string.from_bytearray', importName: 'stringFromByteArray' });
+    this.addMapping('string.toByteArray', {
+      aikenName: 'string.to_bytearray',
+      importName: 'stringToByteArray',
+    });
+    this.addMapping('string.fromByteArray', {
+      aikenName: 'string.from_bytearray',
+      importName: 'stringFromByteArray',
+    });
 
     // Aiken Stdlib - CBOR
     this.addMapping('cbor.encode', { aikenName: 'cbor.encode', importName: 'cborEncode' });
     this.addMapping('cbor.decode', { aikenName: 'cbor.decode', importName: 'cborDecode' });
-    this.addMapping('cbor.diagnostic', { aikenName: 'cbor.diagnostic', importName: 'cborDiagnostic' });
+    this.addMapping('cbor.diagnostic', {
+      aikenName: 'cbor.diagnostic',
+      importName: 'cborDiagnostic',
+    });
 
     // Aiken Stdlib - Transaction
     this.addMapping('transactionId', { aikenName: 'transaction_id', importName: 'transactionId' });
-    this.addMapping('outputReference', { aikenName: 'output_reference', importName: 'outputReference' });
+    this.addMapping('outputReference', {
+      aikenName: 'output_reference',
+      importName: 'outputReference',
+    });
 
     // Aiken Stdlib - Value
     this.addMapping('value.new', { aikenName: 'value.new', importName: 'valueNew' });
-    this.addMapping('value.addAsset', { aikenName: 'value.add_asset', importName: 'valueAddAsset' });
-    this.addMapping('value.quantityOf', { aikenName: 'value.quantity_of', importName: 'valueQuantityOf' });
+    this.addMapping('value.addAsset', {
+      aikenName: 'value.add_asset',
+      importName: 'valueAddAsset',
+    });
+    this.addMapping('value.quantityOf', {
+      aikenName: 'value.quantity_of',
+      importName: 'valueQuantityOf',
+    });
     this.addMapping('value.isZero', { aikenName: 'value.is_zero', importName: 'valueIsZero' });
 
     // Aiken Stdlib - Address
-    this.addMapping('address.fromCredential', { aikenName: 'address.from_credential', importName: 'addressFromCredential' });
-    this.addMapping('address.paymentCredential', { aikenName: 'address.payment_credential', importName: 'addressPaymentCredential' });
-    this.addMapping('address.stakeCredential', { aikenName: 'address.stake_credential', importName: 'addressStakeCredential' });
+    this.addMapping('address.fromCredential', {
+      aikenName: 'address.from_credential',
+      importName: 'addressFromCredential',
+    });
+    this.addMapping('address.paymentCredential', {
+      aikenName: 'address.payment_credential',
+      importName: 'addressPaymentCredential',
+    });
+    this.addMapping('address.stakeCredential', {
+      aikenName: 'address.stake_credential',
+      importName: 'addressStakeCredential',
+    });
 
     // Aiken Stdlib - Fuzzing
     this.addMapping('fuzz.int', { aikenName: 'fuzz.int', importName: 'fuzzInt' });
@@ -256,11 +421,11 @@ export class BuiltinRegistry {
         // Handle array methods
         if (obj === 'array' || obj === 'list') {
           const arrayMappings: { [key: string]: BuiltinMapping } = {
-            'length': { aikenName: 'length_of_bytearray', importName: 'lengthOfByteString' },
-            'push': { aikenName: 'cons_list', importName: 'mkCons' },
-            'concat': { aikenName: 'append_bytearray', importName: 'appendByteString' },
-            'slice': { aikenName: 'slice_bytearray', importName: 'sliceByteString' },
-            'indexOf': { aikenName: 'index_bytearray', importName: 'indexByteString' },
+            length: { aikenName: 'length_of_bytearray', importName: 'lengthOfByteString' },
+            push: { aikenName: 'cons_list', importName: 'mkCons' },
+            concat: { aikenName: 'append_bytearray', importName: 'appendByteString' },
+            slice: { aikenName: 'slice_bytearray', importName: 'sliceByteString' },
+            indexOf: { aikenName: 'index_bytearray', importName: 'indexByteString' },
           };
           if (arrayMappings[method]) {
             return arrayMappings[method];
@@ -270,10 +435,10 @@ export class BuiltinRegistry {
         // Handle string methods
         if (obj === 'string' || obj === 'str') {
           const stringMappings: { [key: string]: BuiltinMapping } = {
-            'length': { aikenName: 'length_of_bytearray', importName: 'lengthOfByteString' },
-            'slice': { aikenName: 'slice_bytearray', importName: 'sliceByteString' },
-            'charAt': { aikenName: 'index_bytearray', importName: 'indexByteString' },
-            'toString': { aikenName: 'encode_utf8', importName: 'encodeUtf8' },
+            length: { aikenName: 'length_of_bytearray', importName: 'lengthOfByteString' },
+            slice: { aikenName: 'slice_bytearray', importName: 'sliceByteString' },
+            charAt: { aikenName: 'index_bytearray', importName: 'indexByteString' },
+            toString: { aikenName: 'encode_utf8', importName: 'encodeUtf8' },
           };
           if (stringMappings[method]) {
             return stringMappings[method];
@@ -283,9 +448,9 @@ export class BuiltinRegistry {
         // Handle Math methods
         if (obj === 'Math') {
           const mathMappings: { [key: string]: BuiltinMapping } = {
-            'abs': { aikenName: 'if_then_else', importName: 'ifThenElse' },
-            'max': { aikenName: 'if_then_else', importName: 'ifThenElse' },
-            'min': { aikenName: 'if_then_else', importName: 'ifThenElse' },
+            abs: { aikenName: 'if_then_else', importName: 'ifThenElse' },
+            max: { aikenName: 'if_then_else', importName: 'ifThenElse' },
+            min: { aikenName: 'if_then_else', importName: 'ifThenElse' },
           };
           if (mathMappings[method]) {
             return mathMappings[method];
@@ -295,7 +460,7 @@ export class BuiltinRegistry {
         // Handle Buffer methods
         if (obj === 'Buffer') {
           const bufferMappings: { [key: string]: BuiltinMapping } = {
-            'from': { aikenName: 'b_data', importName: 'bData' },
+            from: { aikenName: 'b_data', importName: 'bData' },
           };
           if (bufferMappings[method]) {
             return bufferMappings[method];
@@ -305,7 +470,7 @@ export class BuiltinRegistry {
         // Handle console methods
         if (obj === 'console') {
           const consoleMappings: { [key: string]: BuiltinMapping } = {
-            'log': { aikenName: 'debug', importName: 'trace' },
+            log: { aikenName: 'debug', importName: 'trace' },
           };
           if (consoleMappings[method]) {
             return consoleMappings[method];

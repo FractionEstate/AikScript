@@ -11,18 +11,30 @@ export class TypeMapper {
    */
   static mapTypeReference(typeName: string): string {
     switch (typeName) {
-      case 'string': return 'ByteArray';
-      case 'number': return 'Int';
-      case 'boolean': return 'Bool';
-      case 'bigint': return 'Int';
-      case 'POSIXTime': return 'POSIXTime';
-      case 'PubKeyHash': return 'PubKeyHash';
-      case 'ScriptHash': return 'ScriptHash';
-      case 'AssetName': return 'ByteArray';
-      case 'PolicyId': return 'ByteArray';
-      case 'Address': return 'Address';
-      case 'ScriptContext': return 'ScriptContext';
-      default: return typeName;
+      case 'string':
+        return 'ByteArray';
+      case 'number':
+        return 'Int';
+      case 'boolean':
+        return 'Bool';
+      case 'bigint':
+        return 'Int';
+      case 'POSIXTime':
+        return 'POSIXTime';
+      case 'PubKeyHash':
+        return 'PubKeyHash';
+      case 'ScriptHash':
+        return 'ScriptHash';
+      case 'AssetName':
+        return 'ByteArray';
+      case 'PolicyId':
+        return 'ByteArray';
+      case 'Address':
+        return 'Address';
+      case 'ScriptContext':
+        return 'ScriptContext';
+      default:
+        return typeName;
     }
   }
 

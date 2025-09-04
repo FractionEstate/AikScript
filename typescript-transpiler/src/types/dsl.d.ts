@@ -9,11 +9,9 @@ declare global {
   function datum(target: any, context: ClassFieldDecoratorContext): void;
 
   // Validator decorator - Method decorator
-  function validator(purpose: string): <T extends (...args: any[]) => any>(
-    target: T,
-    context: ClassMethodDecoratorContext
-  ) => T;
+  function validator(
+    purpose: string
+  ): <T extends (...args: any[]) => any>(target: T, context: ClassMethodDecoratorContext) => T;
 }
 
-export { };
-
+export {};

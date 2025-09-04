@@ -8,4 +8,3 @@ export { TypeScriptToAikenTranspiler } from './core/transpiler';
 export { TypeMapper } from './core/types';
 export { ValidatorTransformer } from './core/validators';
 export * from './types';
-

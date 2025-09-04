@@ -47,7 +47,7 @@ export class AikenTransformer {
 
     return {
       contracts,
-      types
+      types,
     };
   }
 
@@ -63,12 +63,14 @@ export class AikenTransformer {
    */
   private transformContract(contract: ContractDefinition): AikenContract {
     const datums = contract.datums.map(datum => this.transformDatum(datum));
-    const validators = contract.validators.map(validator => this.validatorTransformer.transformValidator(validator, datums));
+    const validators = contract.validators.map(validator =>
+      this.validatorTransformer.transformValidator(validator, datums)
+    );
 
     return {
       name: contract.name,
       datums,
-      validators
+      validators,
     };
   }
 
@@ -91,7 +93,7 @@ export class AikenTransformer {
 
     return {
       name: datum.name,
-      fields
+      fields,
     };
   }
 
@@ -103,7 +105,7 @@ export class AikenTransformer {
 
     return {
       name: type.name,
-      definition
+      definition,
     };
   }
 

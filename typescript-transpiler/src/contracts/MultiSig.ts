@@ -6,16 +6,16 @@ interface MultiSigDatum {
   transactionHash: string;
 }
 
-@contract("MultiSigWallet")
+@contract('MultiSigWallet')
 export class MultiSigWalletContract {
   @datum
   public multiSigDatum: MultiSigDatum = {
     requiredSignatures: 0,
     signatories: [],
-    transactionHash: ""
+    transactionHash: '',
   };
 
-  @validator("spend")
+  @validator('spend')
   validateTransaction(datum: MultiSigDatum, redeemer: any, ctx: ScriptContext): Bool {
     const tx = ctx.transaction;
     // Test property access

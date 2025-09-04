@@ -96,7 +96,7 @@ export class TypeScriptToAikenTranspiler {
     return {
       success: true,
       outputPath: config.outputPath,
-      generatedCode: aikenCode
+      generatedCode: aikenCode,
     };
   }
 

@@ -41,7 +41,10 @@ export class ExpressionTransformer {
       return expression.text;
     }
 
-    if (expression.kind === ts.SyntaxKind.TrueKeyword || expression.kind === ts.SyntaxKind.FalseKeyword) {
+    if (
+      expression.kind === ts.SyntaxKind.TrueKeyword ||
+      expression.kind === ts.SyntaxKind.FalseKeyword
+    ) {
       return expression.kind === ts.SyntaxKind.TrueKeyword ? 'True' : 'False';
     }
 
@@ -101,7 +104,9 @@ export class ExpressionTransformer {
    */
   private transformCallExpression(expression: ts.CallExpression): string {
     const callee = this.transformExpression(expression.expression);
-    const args = expression.arguments.map((arg: ts.Expression) => this.transformExpression(arg)).join(', ');
+    const args = expression.arguments
+      .map((arg: ts.Expression) => this.transformExpression(arg))
+      .join(', ');
 
     // Check if this is a builtin function call
     const builtinMapping = this.builtinRegistry.getMapping(callee);
@@ -147,17 +152,28 @@ export class ExpressionTransformer {
 
   private transformOperator(operator: ts.BinaryOperatorToken): string {
     switch (operator.kind) {
-      case ts.SyntaxKind.PlusToken: return '+';
-      case ts.SyntaxKind.MinusToken: return '-';
-      case ts.SyntaxKind.AsteriskToken: return '*';
-      case ts.SyntaxKind.SlashToken: return '/';
-      case ts.SyntaxKind.EqualsEqualsToken: return '==';
-      case ts.SyntaxKind.ExclamationEqualsToken: return '!=';
-      case ts.SyntaxKind.LessThanToken: return '<';
-      case ts.SyntaxKind.GreaterThanToken: return '>';
-      case ts.SyntaxKind.AmpersandAmpersandToken: return '&&';
-      case ts.SyntaxKind.BarBarToken: return '||';
-      default: return operator.getText();
+      case ts.SyntaxKind.PlusToken:
+        return '+';
+      case ts.SyntaxKind.MinusToken:
+        return '-';
+      case ts.SyntaxKind.AsteriskToken:
+        return '*';
+      case ts.SyntaxKind.SlashToken:
+        return '/';
+      case ts.SyntaxKind.EqualsEqualsToken:
+        return '==';
+      case ts.SyntaxKind.ExclamationEqualsToken:
+        return '!=';
+      case ts.SyntaxKind.LessThanToken:
+        return '<';
+      case ts.SyntaxKind.GreaterThanToken:
+        return '>';
+      case ts.SyntaxKind.AmpersandAmpersandToken:
+        return '&&';
+      case ts.SyntaxKind.BarBarToken:
+        return '||';
+      default:
+        return operator.getText();
     }
   }
 }

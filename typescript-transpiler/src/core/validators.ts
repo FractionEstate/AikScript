@@ -24,7 +24,9 @@ export class ValidatorTransformer {
     // Adjust parameters based on validator purpose
     this.adjustParametersForPurpose(parameters, validator.purpose);
 
-    const returnType = validator.returnType ? TypeMapper.transformTypeNode(validator.returnType) : 'Bool';
+    const returnType = validator.returnType
+      ? TypeMapper.transformTypeNode(validator.returnType)
+      : 'Bool';
 
     // Transform method body
     const body = this.transformMethodBody(validator.methodDeclaration.body);
@@ -34,7 +36,7 @@ export class ValidatorTransformer {
       purpose: validator.purpose,
       parameters,
       returnType,
-      body
+      body,
     };
   }
 
@@ -45,7 +47,7 @@ export class ValidatorTransformer {
 
     return methodDeclaration.parameters.map((param: ts.ParameterDeclaration) => ({
       name: param.name.getText(),
-      type: param.type ? TypeMapper.transformTypeNode(param.type) : 'Void'
+      type: param.type ? TypeMapper.transformTypeNode(param.type) : 'Void',
     }));
   }
 
@@ -56,7 +58,11 @@ export class ValidatorTransformer {
         if (parameters.length >= 1 && parameters[0].name === 'datum') {
           parameters[0].type = TypeMapper.wrapInOption(parameters[0].type);
         }
-        if (parameters.length >= 2 && parameters[1].name === 'redeemer' && parameters[1].type === 'Void') {
+        if (
+          parameters.length >= 2 &&
+          parameters[1].name === 'redeemer' &&
+          parameters[1].type === 'Void'
+        ) {
           parameters[1].type = 'Data';
         }
         // Add output_reference and transaction if not present
@@ -70,7 +76,11 @@ export class ValidatorTransformer {
 
       case 'mint':
         // mint(redeemer: RedeemerType, policy_id: PolicyId, transaction: Transaction)
-        if (parameters.length >= 1 && parameters[0].name === 'redeemer' && parameters[0].type === 'Void') {
+        if (
+          parameters.length >= 1 &&
+          parameters[0].name === 'redeemer' &&
+          parameters[0].type === 'Void'
+        ) {
           parameters[0].type = 'Data';
         }
         // Add policy_id and transaction if not present
@@ -84,7 +94,11 @@ export class ValidatorTransformer {
 
       case 'withdraw':
         // withdraw(redeemer: RedeemerType, credential: Credential, transaction: Transaction)
-        if (parameters.length >= 1 && parameters[0].name === 'redeemer' && parameters[0].type === 'Void') {
+        if (
+          parameters.length >= 1 &&
+          parameters[0].name === 'redeemer' &&
+          parameters[0].type === 'Void'
+        ) {
           parameters[0].type = 'Data';
         }
         // Add credential and transaction if not present
@@ -106,7 +120,11 @@ export class ValidatorTransformer {
         if (parameters.length >= 1 && parameters[0].name === 'datum') {
           parameters[0].type = TypeMapper.wrapInOption(parameters[0].type);
         }
-        if (parameters.length >= 2 && parameters[1].name === 'redeemer' && parameters[1].type === 'Void') {
+        if (
+          parameters.length >= 2 &&
+          parameters[1].name === 'redeemer' &&
+          parameters[1].type === 'Void'
+        ) {
           parameters[1].type = 'Data';
         }
     }

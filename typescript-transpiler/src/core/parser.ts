@@ -48,7 +48,7 @@ export class TypeScriptParser {
       module: ts.ModuleKind.CommonJS,
       experimentalDecorators: true,
       emitDecoratorMetadata: true,
-      ...config
+      ...config,
     };
   }
 
@@ -67,12 +67,7 @@ export class TypeScriptParser {
   }
 
   parseSource(sourceCode: string, fileName = 'temp.ts'): TranspilerAST {
-    const sourceFile = ts.createSourceFile(
-      fileName,
-      sourceCode,
-      this.config.target!,
-      true
-    );
+    const sourceFile = ts.createSourceFile(fileName, sourceCode, this.config.target!, true);
 
     this.program = ts.createProgram([fileName], this.config);
     this.checker = this.program.getTypeChecker();
@@ -94,12 +89,12 @@ export class TypeScriptParser {
       } else if (ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)) {
         types.push({
           name: node.name.text,
-          declaration: node
+          declaration: node,
         });
       } else if (ts.isImportDeclaration(node)) {
         imports.push({
           clause: node.importClause!,
-          module: node.moduleSpecifier.getText().replace(/['"]/g, '')
+          module: node.moduleSpecifier.getText().replace(/['"]/g, ''),
         });
       }
 
@@ -111,7 +106,7 @@ export class TypeScriptParser {
     return {
       contracts,
       types,
-      imports
+      imports,
     };
   }
 
@@ -133,7 +128,7 @@ export class TypeScriptParser {
       name: contractName,
       datums,
       validators,
-      classDeclaration
+      classDeclaration,
     };
   }
 
@@ -179,7 +174,7 @@ export class TypeScriptParser {
               const syntheticInterface = this.createSyntheticInterface(propertyName, initializer);
               datums.push({
                 name: propertyName,
-                interfaceDeclaration: syntheticInterface
+                interfaceDeclaration: syntheticInterface,
               });
             }
           }
@@ -194,7 +189,10 @@ export class TypeScriptParser {
     return datums;
   }
 
-  private createSyntheticInterface(name: string, objectLiteral: ts.ObjectLiteralExpression): ts.InterfaceDeclaration {
+  private createSyntheticInterface(
+    name: string,
+    objectLiteral: ts.ObjectLiteralExpression
+  ): ts.InterfaceDeclaration {
     // Create property signatures from object literal properties
     const members: ts.PropertySignature[] = [];
 
@@ -254,7 +252,7 @@ export class TypeScriptParser {
               purpose,
               methodDeclaration: node,
               parameters: Array.from(node.parameters),
-              returnType: node.type!
+              returnType: node.type!,
             });
           }
         }

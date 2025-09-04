@@ -115,7 +115,7 @@ export function validator(purpose: string) {
     validators.push({
       name: context.name,
       purpose,
-      implementation: target
+      implementation: target,
     });
     (target.constructor as any).__validators = validators;
     return target;
@@ -183,7 +183,12 @@ export declare function encodeUtf8(str: string): ByteArray;
 export declare function decodeUtf8(bytes: ByteArray): string;
 
 // List functions
-export declare function chooseList(list: any[], defaultValue: any, whenEmpty: any, whenNonEmpty: (head: any, tail: any[]) => any): any;
+export declare function chooseList(
+  list: any[],
+  defaultValue: any,
+  whenEmpty: any,
+  whenNonEmpty: (head: any, tail: any[]) => any
+): any;
 export declare function mkCons(item: any, list: any[]): any[];
 export declare function headList(list: any[]): any;
 export declare function tailList(list: any[]): any[];
@@ -206,9 +211,21 @@ export declare function lengthOfByteString(bytes: ByteArray): Int;
 export declare function indexByteString(bytes: ByteArray, index: Int): number;
 
 // Signature verification
-export declare function verifyEd25519Signature(publicKey: PubKeyHash, message: ByteArray, signature: ByteArray): Bool;
-export declare function verifyEcdsaSecp256k1Signature(publicKey: ByteArray, message: ByteArray, signature: ByteArray): Bool;
-export declare function verifySchnorrSecp256k1Signature(publicKey: ByteArray, message: ByteArray, signature: ByteArray): Bool;
+export declare function verifyEd25519Signature(
+  publicKey: PubKeyHash,
+  message: ByteArray,
+  signature: ByteArray
+): Bool;
+export declare function verifyEcdsaSecp256k1Signature(
+  publicKey: ByteArray,
+  message: ByteArray,
+  signature: ByteArray
+): Bool;
+export declare function verifySchnorrSecp256k1Signature(
+  publicKey: ByteArray,
+  message: ByteArray,
+  signature: ByteArray
+): Bool;
 
 // Bitwise operations
 export declare function andByteString(a: ByteArray, b: ByteArray): ByteArray;

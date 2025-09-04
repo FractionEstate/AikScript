@@ -22,8 +22,9 @@ program
       const transpiler = new TypeScriptToAikenTranspiler();
 
       const inputPath = path.resolve(input);
-      const outputPath = output ? path.resolve(output) :
-        path.join(path.dirname(inputPath), 'validators', path.basename(inputPath, '.ts') + '.ak');
+      const outputPath = output
+        ? path.resolve(output)
+        : path.join(path.dirname(inputPath), 'validators', path.basename(inputPath, '.ts') + '.ak');
 
       // Ensure output directory exists
       const outputDir = path.dirname(outputPath);
@@ -35,7 +36,7 @@ program
         inputPath,
         outputPath,
         target: options.target,
-        optimization: options.optimization
+        optimization: options.optimization,
       };
 
       console.log(`Compiling ${inputPath} to ${outputPath}...`);
@@ -91,16 +92,16 @@ program
         scripts: {
           build: 'ts-aiken compile src/',
           dev: 'ts-aiken watch src/',
-          test: 'jest'
+          test: 'jest',
         },
         devDependencies: {
           '@types/jest': '^29.5.0',
           '@types/node': '^20.0.0',
-          'jest': '^29.0.0',
+          jest: '^29.0.0',
           'ts-jest': '^29.0.0',
-          'typescript': '^5.0.0',
-          'typescript-aiken-copilot': '^1.0.0'
-        }
+          typescript: '^5.0.0',
+          'typescript-aiken-copilot': '^1.0.0',
+        },
       };
 
       fs.writeFileSync(
@@ -118,10 +119,10 @@ program
           strict: true,
           esModuleInterop: true,
           skipLibCheck: true,
-          forceConsistentCasingInFileNames: true
+          forceConsistentCasingInFileNames: true,
         },
         include: ['src/**/*'],
-        exclude: ['node_modules', 'dist']
+        exclude: ['node_modules', 'dist'],
       };
 
       fs.writeFileSync(
@@ -152,10 +153,7 @@ export class TimeLockContract {
 }
 `;
 
-      fs.writeFileSync(
-        path.join(projectPath, 'src', 'contracts', 'TimeLock.ts'),
-        exampleContract
-      );
+      fs.writeFileSync(path.join(projectPath, 'src', 'contracts', 'TimeLock.ts'), exampleContract);
 
       // Create README
       const readme = `# ${projectName}
@@ -184,17 +182,13 @@ npm run build
 - \`validators/\` - Generated Aiken files
 `;
 
-      fs.writeFileSync(
-        path.join(projectPath, 'README.md'),
-        readme
-      );
+      fs.writeFileSync(path.join(projectPath, 'README.md'), readme);
 
       console.log('✅ Project initialized successfully!');
       console.log(`\nNext steps:`);
       console.log(`  cd ${projectName}`);
       console.log(`  npm install`);
       console.log(`  npm run build`);
-
     } catch (error) {
       console.error('❌ Error initializing project:', (error as Error).message);
       process.exit(1);

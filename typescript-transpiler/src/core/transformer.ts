@@ -94,21 +94,30 @@ export class AikenTransformer {
    * Transforms a type definition
    */
   private transformType(type: TypeDefinition): AikenType {
+    // Check if this is a simple type alias (no braces, no unions in definition)
+    const isSimpleAlias = !type.definition.includes('{') && !type.definition.includes('|') && !type.definition.includes('\n');
+
     let definition = '';
 
-    if (type.isOpaque) {
-      definition += 'pub opaque ';
-    } else if (type.isPublic) {
-      definition += 'pub ';
+    if (isSimpleAlias) {
+      // For simple type aliases, just use the definition as-is
+      definition = type.definition;
+    } else {
+      // For complex types, add the type wrapper
+      if (type.isOpaque) {
+        definition += 'pub opaque ';
+      } else if (type.isPublic) {
+        definition += 'pub ';
+      }
+
+      definition += `type ${type.name}`;
+
+      if (type.typeParams && type.typeParams.length > 0) {
+        definition += `<${type.typeParams.join(', ')}>`;
+      }
+
+      definition += ` {\n${type.definition}\n}`;
     }
-
-    definition += `type ${type.name}`;
-
-    if (type.typeParams && type.typeParams.length > 0) {
-      definition += `<${type.typeParams.join(', ')}>`;
-    }
-
-    definition += ` {\n${type.definition}\n}`;
 
     return {
       name: type.name,

@@ -158,9 +158,13 @@ export class CodeGenerator {
   private convertToAikenSyntax(definition: string): string {
     // Handle record types (objects with properties)
     if (definition.includes('{') && definition.includes(':')) {
-      // If it's already properly formatted, return as-is
+      // If it's already properly formatted, clean it up
       if (definition.startsWith('{') && definition.endsWith('}')) {
-        return definition;
+        // Remove outer braces and clean up formatting
+        let content = definition.slice(1, -1).trim();
+        // Remove extra commas and clean up
+        content = content.replace(/,(\s*})/g, '$1'); // Remove trailing commas before closing braces
+        return content;
       }
       // Otherwise, it's likely a type alias that doesn't need extra formatting
       return definition;

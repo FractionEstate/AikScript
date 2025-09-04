@@ -160,11 +160,11 @@ export class CodeGenerator {
     if (definition.includes('{') && definition.includes(':')) {
       // If it's already properly formatted, clean it up
       if (definition.startsWith('{') && definition.endsWith('}')) {
-        // Remove outer braces and clean up formatting
+        // Extract content between braces
         let content = definition.slice(1, -1).trim();
-        // Remove extra commas and clean up
-        content = content.replace(/,(\s*})/g, '$1'); // Remove trailing commas before closing braces
-        return content;
+        // Clean up formatting - ensure proper line breaks and indentation
+        const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        return lines.join('\n');
       }
       // Otherwise, it's likely a type alias that doesn't need extra formatting
       return definition;

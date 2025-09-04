@@ -1,46 +1,33 @@
 // Cardano Transaction Module
-// TypeScript declarations for Cardano transaction types and operations
+// TypeScript declarations for Cardano transaction types
 
-import { ByteArray, Int, Bool } from '@/types/basic/index';
+import { ByteArray } from '@/types/basic/index';
+import { Address } from '../address/index';
+import { Value } from '../assets/index';
 
-// Transaction types
+// Transaction Types
 export declare type TransactionId = ByteArray;
-export declare type Transaction = {
-  id: TransactionId;
-  inputs: Input[];
-  outputs: Output[];
-  validityRange: ValidityRange;
-  fee: Lovelace;
-  mint: Value;
-  certificates: Certificate[];
-  withdrawals: Withdrawal[];
-  metadata: Metadata;
-};
+export declare type OutputReference = { transactionId: TransactionId; outputIndex: number };
+export declare type TxIn = OutputReference;
+export declare type TxOut = { address: Address; value: Value; datum?: unknown; referenceScript?: ByteArray };
 
-export declare type Input = {
-  transactionId: TransactionId;
-  outputIndex: Int;
-};
+// Script Purpose Types
+export declare type ScriptPurpose =
+  | { type: 'Mint'; policyId: ByteArray }
+  | { type: 'Spend'; outputReference: OutputReference }
+  | { type: 'Withdraw'; credential: ByteArray }
+  | { type: 'Publish'; certificate: unknown }
+  | { type: 'Vote'; voter: unknown; governanceActionId: { transactionId: ByteArray; actionIndex: number } }
+  | { type: 'Propose'; proposal: unknown };
 
-export declare type Output = {
-  address: Address;
-  value: Value;
-  datum: Datum;
-};
+// Submodules
+export * as outputReferenceModule from './output_reference/index';
+export * as scriptPurposeModule from './script_purpose/index';
 
-export declare type ValidityRange = {
-  start: POSIXTime;
-  end: POSIXTime;
-};
+// Transaction Functions
+export declare function outputReference(transactionId: TransactionId, outputIndex: number): OutputReference;
+export declare function txIn(outputReference: OutputReference): TxIn;
+export declare function txOut(address: Address, value: Value, datum?: unknown, referenceScript?: ByteArray): TxOut;
 
-export declare type Certificate = unknown;
-export declare type Withdrawal = unknown;
-export declare type Metadata = unknown;
-export declare type Datum = unknown;
-export declare type Address = ByteArray;
-export declare type Value = unknown;
-export declare type Lovelace = Int;
-export declare type POSIXTime = Int;
-
-// Transaction utility functions
-export declare function transactionIsSignedBy(tx: Transaction, pubKeyHash: ByteArray): Bool;
+// Transaction Validation
+export declare function outputReferenceIsEqual(left: OutputReference, right: OutputReference): boolean;

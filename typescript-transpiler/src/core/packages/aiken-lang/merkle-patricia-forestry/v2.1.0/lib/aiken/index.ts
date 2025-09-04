@@ -6,3 +6,6 @@ export * from './merkle-patricia-forestry';
 
 // Re-export helpers
 export * as helpers from './merkle-patricia-forestry/helpers';
+
+// Re-export merkling (internal functions)
+export * as merkling from './merkle-patricia-forestry/merkling';

@@ -164,8 +164,8 @@ export class CodeGenerator {
       signature += `<${func.typeParams.join(', ')}>`;
     }
 
-    const params = func.parameters.map(p => `${p.name}: ${p.type}`).join(', ');
-    signature += `(${params}) -> ${func.returnType}`;
+    const params = func.parameters.map(p => `${p.name}: ${this.mapTypeToAiken(p.type)}`).join(', ');
+    signature += `(${params}) -> ${this.mapTypeToAiken(func.returnType)}`;
 
     lines.push(signature);
     lines.push('{');
@@ -173,6 +173,22 @@ export class CodeGenerator {
     lines.push('}');
 
     return lines.join('\n');
+  }
+
+  /**
+   * Map type names to Aiken equivalents
+   */
+  private mapTypeToAiken(typeName: string): string {
+    switch (typeName) {
+      case 'boolean':
+        return 'Bool';
+      case 'number':
+        return 'Int';
+      case 'string':
+        return 'String';
+      default:
+        return typeName;
+    }
   }
 
   /**

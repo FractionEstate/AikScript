@@ -160,8 +160,12 @@ export class TypeScriptParser {
         ast.constants.push(this.parseConstantDeclaration(node));
       } else if (ts.isFunctionDeclaration(node)) {
         ast.functions.push(this.parseFunctionDeclaration(node));
-      } else if (ts.isMethodDeclaration(node) && this.isTestMethod(node)) {
-        ast.tests.push(this.parseTestDeclaration(node));
+      } else if (ts.isMethodDeclaration(node)) {
+        if (this.isTestMethod(node)) {
+          ast.tests.push(this.parseTestDeclaration(node));
+        } else {
+          ast.functions.push(this.parseFunctionDeclaration(node as any));
+        }
       }
 
       ts.forEachChild(node, visit);
@@ -276,7 +280,53 @@ export class TypeScriptParser {
    * Generates type definition string from TypeScript type
    */
   private generateTypeDefinition(type: ts.TypeNode): string {
-    // This is a simplified implementation - would need full type mapping
+    // Map TypeScript types to Aiken types
+    if (ts.isTypeReferenceNode(type)) {
+      const typeName = type.typeName.getText();
+      switch (typeName) {
+        case 'boolean':
+        case 'Bool':
+          return 'Bool';
+        case 'number':
+        case 'Int':
+          return 'Int';
+        case 'string':
+        case 'String':
+          return 'String';
+        case 'Uint8Array':
+        case 'ByteArray':
+          return 'ByteArray';
+        case 'PubKeyHash':
+          return 'PubKeyHash';
+        case 'ScriptHash':
+          return 'ScriptHash';
+        case 'AssetName':
+          return 'AssetName';
+        case 'PolicyId':
+          return 'PolicyId';
+        case 'POSIXTime':
+          return 'POSIXTime';
+        case 'ScriptContext':
+          return 'ScriptContext';
+        case 'Address':
+          return 'Address';
+        default:
+          return typeName;
+      }
+    }
+
+    // Handle other type constructs
+    if (ts.isArrayTypeNode(type)) {
+      const elementType = this.generateTypeDefinition(type.elementType);
+      return `List<${elementType}>`;
+    }
+
+    if (ts.isUnionTypeNode(type)) {
+      // For now, just return the first type - this could be improved
+      return this.generateTypeDefinition(type.types[0]);
+    }
+
+    // Default fallback
     return type.getText();
   }
 

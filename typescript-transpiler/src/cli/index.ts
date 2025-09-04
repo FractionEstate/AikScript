@@ -43,7 +43,11 @@ program
           const baseName = path.basename(relativeToLib, '.ts');
           outputPath = path.join(validatorsDir, baseName + '.ak');
         } else {
-          outputPath = path.join(path.dirname(inputPath), 'validators', path.basename(inputPath, '.ts') + '.ak');
+          outputPath = path.join(
+            path.dirname(inputPath),
+            'validators',
+            path.basename(inputPath, '.ts') + '.ak'
+          );
         }
       }
 
@@ -81,30 +85,30 @@ program
 
             // Add/update validator in plutus.json
             const contractName = path.basename(inputPath, '.ts');
-            const existingValidatorIndex = plutusData.validators.findIndex((v: any) =>
-              v.title && v.title.includes(contractName)
+            const existingValidatorIndex = plutusData.validators.findIndex(
+              (v: any) => v.title && v.title.includes(contractName)
             );
 
             const newValidator = {
               title: `${contractName}.spend`,
               datum: {
-                title: "datum",
+                title: 'datum',
                 schema: {
-                  type: "object",
+                  type: 'object',
                   properties: {
-                    owner: { type: "string" },
-                    amount: { type: "string" }
-                  }
-                }
+                    owner: { type: 'string' },
+                    amount: { type: 'string' },
+                  },
+                },
               },
               redeemer: {
-                title: "redeemer",
+                title: 'redeemer',
                 schema: {
-                  type: "object"
-                }
+                  type: 'object',
+                },
               },
-              compiledCode: "placeholder_compiled_code",
-              hash: "placeholder_hash"
+              compiledCode: 'placeholder_compiled_code',
+              hash: 'placeholder_hash',
             };
 
             if (existingValidatorIndex >= 0) {
@@ -173,20 +177,17 @@ source = "github"
         preamble: {
           title: projectName,
           description: `TypeScript Aiken contracts for project '${projectName}'`,
-          version: "1.0.0",
-          plutusVersion: "v3",
+          version: '1.0.0',
+          plutusVersion: 'v3',
           compiler: {
-            name: "TypeScript-to-Aiken",
-            version: "1.0.0"
-          }
+            name: 'TypeScript-to-Aiken',
+            version: '1.0.0',
+          },
         },
-        validators: []
+        validators: [],
       };
 
-      fs.writeFileSync(
-        path.join(projectPath, 'plutus.json'),
-        JSON.stringify(plutusJson, null, 2)
-      );
+      fs.writeFileSync(path.join(projectPath, 'plutus.json'), JSON.stringify(plutusJson, null, 2));
 
       // Create package.json for TypeScript tooling
       const packageJson = {
@@ -197,7 +198,7 @@ source = "github"
           build: 'aikscript compile lib/',
           dev: 'aikscript watch lib/',
           test: 'jest',
-          clean: 'rm -rf validators/*.ak plutus.json'
+          clean: 'rm -rf validators/*.ak plutus.json',
         },
         devDependencies: {
           '@types/jest': '^29.5.0',
@@ -205,7 +206,7 @@ source = "github"
           jest: '^29.0.0',
           'ts-jest': '^29.0.0',
           typescript: '^5.0.0',
-          'aikscript': 'file:../',
+          aikscript: 'file:../',
         },
       };
 
@@ -228,10 +229,10 @@ source = "github"
           experimentalDecorators: true,
           emitDecoratorMetadata: true,
           resolveJsonModule: true,
-          types: ["node", "jest"]
+          types: ['node', 'jest'],
         },
         include: ['lib/**/*'],
-        exclude: ['node_modules', 'dist', 'validators']
+        exclude: ['node_modules', 'dist', 'validators'],
       };
 
       fs.writeFileSync(

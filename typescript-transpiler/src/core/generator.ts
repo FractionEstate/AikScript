@@ -86,7 +86,9 @@ export class CodeGenerator {
    * Generate Aiken validator function
    */
   private generateValidator(validator: AikenValidator): string {
-    const params = validator.parameters.map((p: AikenParameter) => `${p.name}: ${p.type}`).join(', ');
+    const params = validator.parameters
+      .map((p: AikenParameter) => `${p.name}: ${p.type}`)
+      .join(', ');
 
     let output = '';
 

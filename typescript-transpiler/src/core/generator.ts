@@ -1,4 +1,5 @@
 import { BuiltinRegistry } from './builtins';
+import { Pattern } from './parser';
 import {
   AikenAST,
   AikenImport,
@@ -387,33 +388,28 @@ export class CodeGenerator {
   /**
    * Generate pattern for when clause
    */
-  private generatePattern(pattern: any): string {
+  private generatePattern(pattern: Pattern): string {
     switch (pattern.type) {
       case 'wildcard':
         return '_';
       case 'literal':
-        return pattern.value;
+        return pattern.value?.toString() || '';
       case 'variable':
-        return pattern.name!;
+        return pattern.name || '_';
       case 'constructor':
         if (pattern.constructor === 'Ok') {
           return 'Ok(value)';
-        } else if (pattern.constructor === 'Error') {
-          return 'Error(error)';
-        } else if (pattern.constructor === 'Some') {
-          return 'Some(value)';
-        } else if (pattern.constructor === 'None') {
-          return 'None';
         }
-        return `${pattern.constructor}(${
-          pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''
-        })`;
+        if (pattern.constructor === 'Err') {
+          return 'Err(error)';
+        }
+        return `${pattern.constructor}(${pattern.args?.map((arg) => this.generatePattern(arg)).join(', ') || ''})`;
       case 'tuple':
-        return `(${pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''})`;
+        return `(${pattern.args?.map((arg) => this.generatePattern(arg)).join(', ') || ''})`;
       case 'list':
-        return `[${pattern.args?.map((arg: any) => this.generatePattern(arg)).join(', ') || ''}]`;
+        return `[${pattern.args?.map((arg) => this.generatePattern(arg)).join(', ') || ''}]`;
       default:
-        return pattern.value || '_';
+        return '_';
     }
   }
 

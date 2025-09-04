@@ -1,25 +1,27 @@
-import { Bool, contract, Credential, datum, PolicyId, validator } from '../../src/types';
+import { Bool, contract, Credential, datum, PolicyId, validator, ScriptContext } from '../../src/types';
 
 @contract("MultiPurpose")
 export class MultiPurposeContract {
+  [key: string]: unknown; // Add index signature for decorator compatibility
+
   @datum
-  public contractDatum: any = {
-    owner: null as any,
-    totalSupply: null as any
+  public contractDatum: { owner: string; totalSupply: number } = {
+    owner: "",
+    totalSupply: 0
   };
 
   @validator("spend")
-  spend(datum: { owner: string; totalSupply: number }, redeemer: void, ctx: any): Bool {
+  spend(datum: { owner: string; totalSupply: number }, redeemer: void, ctx: ScriptContext): Bool {
     return true;
   }
 
   @validator("mint")
-  mintToken(redeemer: { amount: number }, policyId: PolicyId, ctx: any): Bool {
+  mintToken(_redeemer: { amount: number }, _policyId: PolicyId, _ctx: ScriptContext): Bool {
     return true;
   }
 
   @validator("withdraw")
-  withdraw(redeemer: { amount: number }, credential: Credential, ctx: any): Bool {
+  withdraw(_redeemer: { amount: number }, _credential: Credential, _ctx: ScriptContext): Bool {
     return true;
   }
 

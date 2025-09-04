@@ -27,6 +27,7 @@ A powerful development tool that enables TypeScript developers to write Cardano 
 - [Usage Examples](#-usage-examples)
 - [API Reference](#-api-reference)
 - [Development](#-development)
+- [Deployment](#-deployment)
 - [Documentation](#-documentation)
 - [Contributing](#-contributing)
 - [Performance](#-performance)
@@ -380,6 +381,27 @@ npm run test:performance
 npm run test:coverage
 ```
 
+## 🚀 Deployment
+
+### 📋 [Deployment Guide](docs/deployment.md)
+- Testnet and mainnet deployment procedures
+- Environment setup and configuration
+- Automated deployment scripts
+- Security considerations and monitoring
+- Troubleshooting common issues
+
+### Quick Deploy
+
+```bash
+# Build and deploy to testnet
+aikscript build
+aiken build
+./scripts/deploy.sh testnet
+
+# Deploy to mainnet
+./scripts/deploy.sh mainnet
+```
+
 ## 📖 Documentation
 
 ### 📋 [Architecture Guide](docs/architecture.md)
@@ -387,15 +409,11 @@ npm run test:coverage
 - Module structure and design decisions
 - Component details and extensibility
 
-### 🤝 [Contributing Guide](docs/contributing.md)
-- Development setup and workflow
-- Coding standards and best practices
-- Testing guidelines and pull requests
-
-### ⚙️ [Extending AikScript](docs/extending.md)
-- Adding new decorators and builtin functions
-- Extending the type system
-- Adding target languages
+### 🚀 [Deployment Guide](docs/deployment.md)
+- Testnet and mainnet deployment procedures
+- Environment setup and configuration
+- Automated deployment scripts
+- Security considerations and monitoring
 
 ### 📚 [API Reference](docs/api.md)
 - Complete API documentation

@@ -62,7 +62,7 @@ export interface TestDefinition {
 // Pattern matching interfaces
 export interface Pattern {
   type: 'wildcard' | 'literal' | 'variable' | 'constructor' | 'tuple' | 'list';
-  value?: any;
+  value?: string | number | boolean | Pattern[];
   name?: string;
   constructor?: string;
   args?: Pattern[];
@@ -142,7 +142,7 @@ export class TypeScriptParser {
       const sourceFile = ts.createSourceFile(
         filePath,
         fs.readFileSync(filePath, 'utf-8'),
-        this.config.target!,
+        this.config.target || ts.ScriptTarget.ES2020,
         true
       );
 
@@ -164,7 +164,7 @@ export class TypeScriptParser {
    */
   parseSource(sourceCode: string, fileName = 'temp.ts'): TranspilerAST {
     try {
-      const sourceFile = ts.createSourceFile(fileName, sourceCode, this.config.target!, true);
+      const sourceFile = ts.createSourceFile(fileName, sourceCode, this.config.target || ts.ScriptTarget.ES2020, true);
 
       this.program = ts.createProgram([fileName], this.config);
       this.checker = this.program.getTypeChecker();
@@ -205,7 +205,7 @@ export class TypeScriptParser {
           const validator = this.parseValidatorDeclaration(node);
           ast.functions.push(validator);
         } else {
-          const method = this.parseFunctionDeclaration(node as any);
+          const method = this.parseFunctionDeclaration(node);
           ast.functions.push(method);
         }
       }
@@ -292,7 +292,7 @@ export class TypeScriptParser {
   /**
    * Parses function declaration
    */
-  private parseFunctionDeclaration(node: ts.FunctionDeclaration): FunctionDefinition {
+  private parseFunctionDeclaration(node: ts.FunctionDeclaration | ts.MethodDeclaration): FunctionDefinition {
     const parameters: ParameterDefinition[] = node.parameters.map(param => ({
       name: param.name.getText(),
       type: param.type ? this.generateTypeDefinition(param.type) : 'Void',
@@ -400,7 +400,7 @@ export class TypeScriptParser {
 
     // Handle function types
     if (ts.isFunctionTypeNode(type)) {
-      const paramTypes = type.parameters.map(p => this.generateTypeDefinition(p.type!));
+      const paramTypes = type.parameters.map(p => p.type ? this.generateTypeDefinition(p.type) : 'any');
       const returnType = this.generateTypeDefinition(type.type);
       return `(${paramTypes.join(', ')}) -> ${returnType}`;
     }
@@ -436,8 +436,8 @@ export class TypeScriptParser {
       ts.isInterfaceDeclaration(node)
     ) {
       return (
-        (node as any).modifiers?.some(
-          (mod: ts.Modifier) =>
+        (ts.isVariableDeclaration(node) ? undefined : (node as ts.FunctionDeclaration | ts.TypeAliasDeclaration | ts.InterfaceDeclaration).modifiers)?.some(
+          (mod: ts.ModifierLike) =>
             mod.kind === ts.SyntaxKind.ExportKeyword || mod.kind === ts.SyntaxKind.PublicKeyword
         ) || false
       );
@@ -552,11 +552,11 @@ export class TypeScriptParser {
    */
   private extractJSDoc(node: ts.Node): string[] {
     const docs: string[] = [];
-    const jsDoc = (node as any).jsDoc;
-    if (jsDoc && Array.isArray(jsDoc)) {
-      jsDoc.forEach((doc: any) => {
+    const jsDoc = ts.getJSDocCommentsAndTags(node);
+    if (jsDoc && jsDoc.length > 0) {
+      jsDoc.forEach((doc) => {
         if (doc.comment) {
-          docs.push(doc.comment);
+          docs.push(typeof doc.comment === 'string' ? doc.comment : doc.comment.map(c => c.text).join(''));
         }
       });
     }
@@ -687,7 +687,7 @@ export class TypeScriptParser {
   /**
    * Parses expect expressions around a function declaration
    */
-  private parseExpectExpressionsAroundFunction(node: ts.FunctionDeclaration): ExpectExpression[] {
+  private parseExpectExpressionsAroundFunction(node: ts.FunctionDeclaration | ts.MethodDeclaration): ExpectExpression[] {
     const sourceFile = node.getSourceFile();
     const text = sourceFile.getFullText();
     const functionStart = node.getStart();

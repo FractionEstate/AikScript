@@ -64,7 +64,7 @@ export interface AikenParameter {
 // Pattern matching interfaces
 export interface AikenPattern {
   type: 'wildcard' | 'literal' | 'variable' | 'constructor' | 'tuple' | 'list';
-  value?: any;
+  value?: string | number | boolean | AikenPattern[];
   name?: string;
   constructor?: string;
   args?: AikenPattern[];

@@ -26,15 +26,17 @@ import {
 
 @contract("BuiltinTest")
 export class BuiltinTestContract {
+  [key: string]: unknown; // Add index signature for decorator compatibility
+
   @datum
-  public testDatum: any = {
-    owner: null as any,
-    amount: null as any,
-    data: null as any
+  public testDatum: { owner: PubKeyHash; amount: bigint; data: unknown } = {
+    owner: "" as PubKeyHash,
+    amount: BigInt(0),
+    data: null
   };
 
   @validator("spend")
-  spend(datum: { owner: PubKeyHash; amount: bigint; data: any }, redeemer: void, ctx: ScriptContext): Bool {
+  spend(datum: { owner: PubKeyHash; amount: bigint; data: unknown }, redeemer: void, ctx: ScriptContext): Bool {
     const tx = ctx.transaction;
 
     // Convert PubKeyHash to ByteArray for crypto functions
@@ -77,14 +79,14 @@ export class BuiltinTestContract {
   }
 
   @validator("mint")
-  mint(redeemer: void, policyId: any, ctx: ScriptContext): Bool {
+  mint(redeemer: void, policyId: unknown, ctx: ScriptContext): Bool {
     // Test data operations
     const redeemerData = constrData(BigInt(1), []);
     const serialized = serialiseData(redeemerData);
 
     // Test list operations
     const emptyList = mkNilData();
-    const isEmpty = nullList(emptyList);
+    const isEmpty = nullList([emptyList]);
 
     return isEmpty;
   }

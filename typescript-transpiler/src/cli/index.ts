@@ -490,7 +490,7 @@ program
   .command('new <projectName>')
   .description('Create a new AikScript project')
   .option('-t, --template <template>', 'Project template', 'basic')
-  .action(async (projectName: string, options: any) => {
+  .action(async (projectName: string) => {
     try {
       const projectPath = path.resolve(projectName);
 

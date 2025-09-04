@@ -7,4 +7,11 @@ export { AikenTransformer } from './core/transformer';
 export { TypeScriptToAikenTranspiler } from './core/transpiler';
 export { TypeMapper } from './core/types';
 export { ValidatorTransformer } from './core/validators';
+
+// New modular exports
+export * as aiken from './aiken/index';
+export * as cardano from './cardano/index';
+export * as merklePatriciaForestry from './merkle-patricia-forestry/index';
+
+// Legacy exports for backward compatibility
 export * from './types';

@@ -2,11 +2,13 @@ import { Bool, contract, datum, POSIXTime, PubKeyHash, ScriptContext, validator 
 
 @contract("TimeLock")
 export class TimeLockContract {
+    [key: string]: unknown; // Add index signature for decorator compatibility
+
     @datum
-    public lockDatum: any = {
-        lockUntil: null as any,
-        owner: null as any,
-        beneficiary: null as any
+    public lockDatum: { lockUntil: POSIXTime; owner: PubKeyHash; beneficiary: PubKeyHash } = {
+        lockUntil: BigInt(0) as POSIXTime,
+        owner: "" as PubKeyHash,
+        beneficiary: "" as PubKeyHash
     };
 
     @validator("spend")

@@ -2,13 +2,15 @@ import { Bool, contract, datum, Int, POSIXTime, PubKeyHash, ScriptContext, valid
 
 @contract("TokenVesting")
 export class TokenVestingContract {
+    [key: string]: unknown; // Add index signature for decorator compatibility
+
     @datum
-    public vestingDatum: any = {
-        beneficiary: null as any,
-        totalAmount: null as any,
-        releasedAmount: null as any,
-        startTime: null as any,
-        duration: null as any
+    public vestingDatum: { beneficiary: PubKeyHash; totalAmount: Int; releasedAmount: Int; startTime: POSIXTime; duration: Int } = {
+        beneficiary: "" as PubKeyHash,
+        totalAmount: BigInt(0),
+        releasedAmount: BigInt(0),
+        startTime: BigInt(0) as POSIXTime,
+        duration: BigInt(0)
     };
 
     @validator("spend")

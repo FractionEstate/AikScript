@@ -15,6 +15,13 @@ export interface ValidationError {
   column?: number;
 }
 
+export interface ValidatorDefinition {
+  name: string;
+  purpose: string;
+  methodDeclaration: ts.MethodDeclaration;
+  returnType?: ts.TypeNode;
+}
+
 export class ValidatorTransformer {
   private expressionTransformer: ExpressionTransformer;
 
@@ -25,7 +32,7 @@ export class ValidatorTransformer {
   /**
    * Transform a TypeScript validator method to Aiken validator
    */
-  transformValidator(validator: any, _datums: any[]): AikenValidator {
+  transformValidator(validator: ValidatorDefinition, _datums: unknown[]): AikenValidator {
     const parameters = this.extractParameters(validator.methodDeclaration);
 
     // Adjust parameters based on validator purpose

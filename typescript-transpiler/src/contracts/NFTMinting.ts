@@ -2,11 +2,13 @@ import { Bool, ByteArray, contract, datum, PubKeyHash, ScriptContext, validator 
 
 @contract('NFTMinting')
 export class NFTMintingContract {
+  [key: string]: unknown; // Add index signature for decorator compatibility
+
   @datum
-  public mintDatum: any = {
-    owner: null as any,
-    tokenName: null as any,
-    metadata: null as any,
+  public mintDatum: { owner: PubKeyHash; tokenName: ByteArray; metadata: ByteArray } = {
+    owner: "" as PubKeyHash,
+    tokenName: new Uint8Array(),
+    metadata: new Uint8Array(),
   };
 
   @validator('mint')

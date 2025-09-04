@@ -5,6 +5,11 @@ import * as ts from 'typescript';
  * This module handles the conversion of TypeScript types to Aiken types
  */
 
+interface TypeDefinition {
+  name: string;
+  declaration: ts.TypeAliasDeclaration | ts.InterfaceDeclaration;
+}
+
 export class TypeMapper {
   /**
    * Map TypeScript type references to Aiken types
@@ -110,7 +115,7 @@ export class TypeMapper {
   /**
    * Transform a custom type definition to Aiken type definition
    */
-  static transformTypeDefinition(type: any): string {
+  static transformTypeDefinition(type: TypeDefinition): string {
     let definition = '';
 
     if (type.declaration && ts.isTypeAliasDeclaration(type.declaration)) {

@@ -2,10 +2,12 @@ import { Bool, contract, datum, PubKeyHash, ScriptContext, validator } from '../
 
 @contract("SimpleMultiSig")
 export class SimpleMultiSigContract {
+    [key: string]: unknown; // Add index signature for decorator compatibility
+
     @datum
-    public datum: any = {
-        owner1: null as any,
-        owner2: null as any
+    public datum: { owner1: PubKeyHash; owner2: PubKeyHash } = {
+        owner1: "" as PubKeyHash,
+        owner2: "" as PubKeyHash
     };
 
     @validator("spend")

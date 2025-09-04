@@ -8,6 +8,8 @@ interface MultiSigDatum {
 
 @contract('MultiSigWallet')
 export class MultiSigWalletContract {
+  [key: string]: unknown; // Add index signature for decorator compatibility
+
   @datum
   public multiSigDatum: MultiSigDatum = {
     requiredSignatures: 0,
@@ -16,7 +18,7 @@ export class MultiSigWalletContract {
   };
 
   @validator('spend')
-  validateTransaction(datum: MultiSigDatum, redeemer: any, ctx: ScriptContext): Bool {
+  validateTransaction(datum: MultiSigDatum, redeemer: unknown, ctx: ScriptContext): Bool {
     const tx = ctx.transaction;
     // Test property access
     return tx.isSignedBy(datum.signatories[0]);

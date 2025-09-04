@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Documentation Improvements**: Comprehensive documentation suite for AI Copilot readability
+  - `docs/architecture.md`: Detailed system architecture and design decisions
+  - `docs/contributing.md`: Developer guide for contributions
+  - `docs/extending.md`: Guide for adding new features and extensions
+  - `docs/api.md`: Complete API reference with examples
+  - `docs/performance.md`: Performance guide and optimization strategies
+- **Architecture Documentation**: Complete system overview with data flow diagrams
+- **Developer Experience**: Enhanced documentation for better AI Copilot understanding
+- **Code Readability**: Improved inline documentation and architectural clarity
+
+### Changed
+- **Rebranding**: Complete rebrand from 'ts-aiken' to 'aikscript' across all files
+- **Project Structure**: Enhanced project organization for better maintainability
+- **Documentation**: Comprehensive rewrite of all documentation for AI readability
+
+### Fixed
+- **Test Issues**: Resolved circular reference problems in test files
+- **Decorator Syntax**: Fixed invalid decorator signatures and API usage
+- **TypeScript Configuration**: Enabled experimental decorators for proper compilation
+- **Aiken Compatibility**: Ensured full compatibility with standard Aiken project structures
+
 ## [1.0.0] - 2025-09-04
 
 ### Added
@@ -40,8 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generates valid Aiken syntax with proper and/or chains
 - Handles variable declarations, binary expressions, and method calls
 - Custom decorator system for contract, datum, and validator definitions
-
-## [Unreleased]
 
 ### Planned
 

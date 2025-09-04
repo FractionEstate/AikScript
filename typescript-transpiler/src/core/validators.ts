@@ -2,11 +2,18 @@ import * as ts from 'typescript';
 import { ExpressionTransformer } from './expressions';
 import { AikenParameter, AikenValidator } from './transpiler';
 import { TypeMapper } from './types';
+import { TranspilerAST } from './parser';
 
 /**
  * Validator transformation utilities for TypeScript-to-Aiken transpiler
  * This module handles the conversion of TypeScript validator methods to Aiken validators
  */
+
+export interface ValidationError {
+  message: string;
+  line?: number;
+  column?: number;
+}
 
 export class ValidatorTransformer {
   private expressionTransformer: ExpressionTransformer;
@@ -177,5 +184,69 @@ export class ValidatorTransformer {
     ts.forEachChild(body, visit);
 
     return aikenBody;
+  }
+}
+
+/**
+ * Validation engine for Aiken contracts
+ * This class validates the correctness of Aiken contracts' ASTs
+ */
+export class ValidationEngine {
+  private errors: ValidationError[] = [];
+
+  /**
+   * Validates a TranspilerAST for correctness
+   * @param ast The AST to validate
+   * @returns True if validation passes, false otherwise
+   */
+  validate(ast: TranspilerAST): boolean {
+    this.errors = [];
+
+    this.validateContractStructure(ast);
+    this.validateTypes(ast);
+    this.validateValidators(ast);
+    this.validateConstants(ast);
+
+    return this.errors.length === 0;
+  }
+
+  /**
+   * Gets all validation errors
+   * @returns Array of validation errors
+   */
+  getErrors(): ValidationError[] {
+    return [...this.errors];
+  }
+
+  /**
+   * Validates the overall contract structure
+   * @param _ast The AST to validate
+   */
+  private validateContractStructure(_ast: TranspilerAST): void {
+    // Implementation for contract structure validation
+  }
+
+  /**
+   * Validates type definitions
+   * @param _ast The AST to validate
+   */
+  private validateTypes(_ast: TranspilerAST): void {
+    // Implementation for type validation
+  }
+
+  /**
+   * Validates validator functions
+   * @param _ast The AST to validate
+   */
+  private validateValidators(_ast: TranspilerAST): void {
+    // Implementation for validator validation
+  }
+
+  /**
+   * Validates constant definitions
+   * @param _ast The AST to validate
+   */
+  private validateConstants(_ast: TranspilerAST): void {
+    // Implementation for constant validation
   }
 }

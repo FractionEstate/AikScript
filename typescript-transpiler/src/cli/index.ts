@@ -12,6 +12,13 @@ program
   .description('AikScript: TypeScript-to-Aiken development copilot for Cardano smart contracts')
   .version('1.0.0');
 
+/**
+ * Compile command handler
+ * Compiles TypeScript smart contract to Aiken format
+ * @param input Input TypeScript file path
+ * @param output Optional output Aiken file path
+ * @param options Command options
+ */
 program
   .command('compile <input> [output]')
   .description('Compile TypeScript smart contract to Aiken (standard Aiken structure)')

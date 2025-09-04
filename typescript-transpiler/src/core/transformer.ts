@@ -37,6 +37,9 @@ export class AikenTransformer {
 
   /**
    * Transform TranspilerAST to AikenAST
+   * @param ast The TranspilerAST to transform
+   * @returns The transformed AikenAST
+   * @throws Error if transformation fails
    */
   transform(ast: TranspilerAST): AikenAST {
     try {

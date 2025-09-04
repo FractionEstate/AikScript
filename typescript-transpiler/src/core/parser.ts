@@ -52,6 +52,12 @@ export class TypeScriptParser {
     };
   }
 
+  /**
+   * Parses a TypeScript file into a TranspilerAST
+   * @param filePath Path to the TypeScript file to parse
+   * @returns The parsed AST representation
+   * @throws Error if the file cannot be read or parsed
+   */
   parse(filePath: string): TranspilerAST {
     try {
       const sourceFile = ts.createSourceFile(
@@ -70,6 +76,13 @@ export class TypeScriptParser {
     }
   }
 
+  /**
+   * Parses TypeScript source code string into a TranspilerAST
+   * @param sourceCode The TypeScript source code to parse
+   * @param fileName Optional filename for the source (defaults to 'temp.ts')
+   * @returns The parsed AST representation
+   * @throws Error if the source cannot be parsed
+   */
   parseSource(sourceCode: string, fileName = 'temp.ts'): TranspilerAST {
     try {
       const sourceFile = ts.createSourceFile(fileName, sourceCode, this.config.target!, true);

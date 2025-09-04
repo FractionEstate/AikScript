@@ -55,14 +55,29 @@ export class TypeScriptToAikenTranspiler {
     this.transformer = new AikenTransformer();
   }
 
+  /**
+   * Parses TypeScript source code into a TranspilerAST
+   * @param sourceCode The TypeScript source code to parse
+   * @returns The parsed AST representation
+   */
   parse(sourceCode: string): TranspilerAST {
     return this.transformer.parse(sourceCode);
   }
 
+  /**
+   * Transforms a TranspilerAST into an AikenAST
+   * @param ast The TypeScript AST to transform
+   * @returns The transformed Aiken AST
+   */
   transform(ast: TranspilerAST): AikenAST {
     return this.transformer.transform(ast);
   }
 
+  /**
+   * Generates Aiken code from an AikenAST
+   * @param aikenAst The Aiken AST to generate code from
+   * @returns The generated Aiken source code
+   */
   generate(aikenAst: AikenAST): string {
     return this.transformer.generate(aikenAst);
   }

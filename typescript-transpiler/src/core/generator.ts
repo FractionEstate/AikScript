@@ -15,6 +15,9 @@ export class CodeGenerator {
 
   /**
    * Generate Aiken code from AikenAST
+   * @param ast The AikenAST to generate code from
+   * @returns The generated Aiken source code
+   * @throws Error if code generation fails
    */
   generate(ast: AikenAST): string {
     let output = '';

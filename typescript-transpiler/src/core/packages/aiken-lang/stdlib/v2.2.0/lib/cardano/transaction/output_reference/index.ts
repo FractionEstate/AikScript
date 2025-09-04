@@ -1,7 +1,7 @@
 // Cardano Transaction Output Reference Module
 // TypeScript declarations for Cardano transaction output references
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // Output Reference Types
 export declare type OutputReference = {

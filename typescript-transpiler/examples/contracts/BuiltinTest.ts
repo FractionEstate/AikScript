@@ -22,7 +22,7 @@ import {
   trace,
   validator,
   verifyEd25519Signature
-} from '../../src/types';
+} from '@aikscript/types';
 
 @contract("BuiltinTest")
 export class BuiltinTestContract {

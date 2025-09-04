@@ -1,4 +1,4 @@
-import { Bool, ByteArray, contract, datum, PubKeyHash, ScriptContext, validator } from '../../src/types';
+import { Bool, ByteArray, contract, datum, PubKeyHash, ScriptContext, validator } from '@aikscript/types';
 
 @contract("NFTMinting")
 export class NFTMintingContract {

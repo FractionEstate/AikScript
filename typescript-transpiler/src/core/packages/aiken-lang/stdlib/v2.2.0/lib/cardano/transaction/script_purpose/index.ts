@@ -1,7 +1,7 @@
 // Cardano Transaction Script Purpose Module
 // TypeScript declarations for Cardano transaction script purposes
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // Script Purpose Types
 export declare type ScriptPurpose =

@@ -1,7 +1,7 @@
 // Cardano Assets Module
 // TypeScript declarations for Cardano asset and value operations
 
-import { ByteArray, Int } from '@/types/basic/index';
+import { ByteArray, Int } from '@aikscript/types';
 
 // Asset types
 export declare type PolicyId = ByteArray;

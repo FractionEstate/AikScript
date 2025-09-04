@@ -1,7 +1,7 @@
 // Merkle Patricia Forestry Module
 // Based on aiken-lang/merkle-patricia-forestry v2.1.0
 
-import { ByteArray, Bool } from '@/types/basic/index';
+import { ByteArray, Bool } from '@aikscript/types';
 
 // Core MPF types
 export declare type MerklePatriciaForestry = { root: ByteArray };

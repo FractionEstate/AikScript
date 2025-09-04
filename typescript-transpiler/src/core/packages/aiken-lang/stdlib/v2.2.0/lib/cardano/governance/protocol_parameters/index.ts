@@ -1,7 +1,7 @@
 // Cardano Governance Protocol Parameters Module
 // TypeScript declarations for Cardano protocol parameters
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // Protocol Parameters Types
 export declare type Rational = { numerator: bigint; denominator: bigint };

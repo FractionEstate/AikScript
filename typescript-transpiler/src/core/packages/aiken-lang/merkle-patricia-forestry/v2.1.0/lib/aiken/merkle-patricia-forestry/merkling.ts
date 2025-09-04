@@ -1,7 +1,7 @@
 // Merkle Patricia Forestry Merkling Module
 // TypeScript declarations for internal MPF merkling functions
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // Constants
 export declare const nullHash: ByteArray;

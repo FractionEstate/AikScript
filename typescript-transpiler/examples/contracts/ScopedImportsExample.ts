@@ -1,5 +1,5 @@
 // Example demonstrating the new scoped import structure
-import { contract, datum, validator, Bool, ByteArray, ScriptContext, PubKeyHash } from '../../src/types';
+import { contract, datum, validator, Bool, ByteArray, ScriptContext, PubKeyHash } from '@aikscript/types';
 
 // Import from specific modules using scoped imports
 import * as collection from '@aiken/collection';

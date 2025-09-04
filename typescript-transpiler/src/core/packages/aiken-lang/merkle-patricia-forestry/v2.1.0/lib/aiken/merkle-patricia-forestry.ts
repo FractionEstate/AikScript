@@ -1,7 +1,7 @@
 // Merkle Patricia Forestry Module
 // TypeScript declarations for aiken-lang/merkle-patricia-forestry
 
-import { ByteArray, Int } from '@/types/basic/index';
+import { ByteArray, Int } from '@aikscript/types';
 
 // Basic types
 type Bool = boolean;

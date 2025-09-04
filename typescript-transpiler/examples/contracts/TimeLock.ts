@@ -1,4 +1,4 @@
-import { Bool, contract, datum, POSIXTime, PubKeyHash, ScriptContext, validator } from '../../src/types';
+import { Bool, POSIXTime, PubKeyHash, ScriptContext, contract, datum, validator } from '@aikscript/types';
 
 @contract("TimeLock")
 export class TimeLockContract {

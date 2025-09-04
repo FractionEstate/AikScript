@@ -45,7 +45,7 @@
       "@cardano/output_reference": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/cardano/transaction/output_reference/index.ts"],
       "@cardano/script_purpose": ["src/core/packages/aiken-lang/stdlib/v2.2.0/lib/cardano/transaction/script_purpose/index.ts"],
       "@cardano/fuzz": ["src/core/packages/aiken-lang/fuzz/v2.2.0/lib/cardano/fuzz/index.ts"],
-      "@aikscript/types": ["src/core/packages/aikscript/types/v1.0.0/lib/aikscript/index"]
+      "@aikscript/types": ["src/core/packages/aikscript/v1.0.0/lib/types/index"]
     }
   },
   "include": ["src/**/*", "tests/**/*", "examples/**/*"],

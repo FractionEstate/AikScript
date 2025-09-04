@@ -3,11 +3,13 @@
 
 import * as fs from 'fs';
 import * as ts from 'typescript';
-import { TranspilerAST } from './interfaces';
+import { TranspilerAST } from './interfaces/index';
 import { ImportParser } from './parsers/import-parser.js';
 import { TypeParser } from './parsers/type-parser.js';
 import { FunctionParser } from './parsers/function-parser.js';
 import { ConstantParser } from './parsers/constant-parser.js';
+
+export { TranspilerAST } from './interfaces';
 
 export class TypeScriptParser {
   private program?: ts.Program;

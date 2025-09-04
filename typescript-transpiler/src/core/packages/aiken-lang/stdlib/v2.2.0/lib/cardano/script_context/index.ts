@@ -1,7 +1,7 @@
 // Cardano Script Context Module
 // TypeScript declarations for Cardano script context operations
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 import { Credential } from '../address/index';
 import { PolicyId } from '../assets/index';
 import { Certificate } from '../certificate/index';

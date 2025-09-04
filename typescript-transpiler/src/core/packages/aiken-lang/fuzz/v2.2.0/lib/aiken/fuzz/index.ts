@@ -1,7 +1,7 @@
 // Aiken Fuzz Library v2.2.0
 // Comprehensive fuzzing and property-based testing utilities
 
-import { Bool, Int, ByteArray, Data } from '@/types/basic/index';
+import { Bool, Int, ByteArray, Data } from '@aikscript/types';
 
 // Core fuzzing types
 export declare type Fuzzer<a> = (seed: Int) => Option<{ seed: Int; value: a }>;

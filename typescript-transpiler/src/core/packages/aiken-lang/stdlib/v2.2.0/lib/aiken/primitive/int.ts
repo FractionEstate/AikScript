@@ -1,7 +1,7 @@
 // Aiken Primitive Int Module
 // TypeScript declarations for aiken-lang/stdlib/primitive/int.ak
 
-import { ByteArray, String } from '@/types/basic/index';
+import { ByteArray, String } from '@aikscript/types';
 
 // Int conversion functions
 export declare function intFromByteArrayBigEndian(bytes: ByteArray): bigint;

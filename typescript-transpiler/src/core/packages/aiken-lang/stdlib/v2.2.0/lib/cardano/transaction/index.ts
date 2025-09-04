@@ -1,7 +1,7 @@
 // Cardano Transaction Module
 // TypeScript declarations for Cardano transaction types
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 import { Address } from '../address/index';
 import { Value } from '../assets/index';
 

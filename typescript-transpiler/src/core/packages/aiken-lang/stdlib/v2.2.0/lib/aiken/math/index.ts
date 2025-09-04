@@ -1,7 +1,7 @@
 // Aiken Math Module
 // TypeScript declarations for aiken-lang/stdlib/lib/aiken/math
 
-import { Int } from '@/types/basic/index';
+import { Int } from '@aikscript/types';
 
 // Basic math functions
 export declare function abs(value: Int): Int;

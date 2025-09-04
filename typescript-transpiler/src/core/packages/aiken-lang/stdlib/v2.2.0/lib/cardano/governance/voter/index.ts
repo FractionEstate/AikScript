@@ -1,7 +1,7 @@
 // Cardano Governance Voter Module
 // TypeScript declarations for Cardano voter operations
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 import { Credential } from '../../address/index';
 
 // Voter Types

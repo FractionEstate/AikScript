@@ -1,7 +1,7 @@
 // Aiken Crypto Module
 // TypeScript declarations for aiken-lang/stdlib/lib/aiken/crypto.ak
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // Cryptographic functions
 export declare function blake2b_224(data: ByteArray): ByteArray;

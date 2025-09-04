@@ -1,7 +1,7 @@
 // Cardano Address Credential Module
 // TypeScript declarations for Cardano address credential operations
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // Credential Types
 export declare type Credential =

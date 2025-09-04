@@ -10,4 +10,4 @@ export * as governance from './governance/index';
 export * as script_context from './script_context/index';
 
 // Re-export commonly used types
-export type { ByteArray, Int } from '@/types/basic/index';
+export type { ByteArray, Int } from '@aikscript/types';

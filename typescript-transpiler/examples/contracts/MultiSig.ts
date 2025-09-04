@@ -1,4 +1,4 @@
-import { Bool, contract, datum, PubKeyHash, ScriptContext, validator } from '../../src/types';
+import { Bool, contract, datum, PubKeyHash, ScriptContext, validator } from '@aikscript/types';
 
 interface MultiSigDatum {
   requiredSignatures: number;

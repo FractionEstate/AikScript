@@ -1,7 +1,7 @@
 // Aiken Collection - Pairs Module
 // TypeScript declarations for aiken-lang/stdlib/lib/aiken/collection/pairs.ak
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // Pairs operations
 export declare function pairsGetAll<T>(pairs: [ByteArray, T][], key: ByteArray): T[];

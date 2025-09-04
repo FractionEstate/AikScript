@@ -1,7 +1,7 @@
 // Cardano Fuzz Library v2.2.0
 // Cardano-specific fuzzing utilities for property-based testing
 
-import { Int, ByteArray, Data } from '@/types/basic/index';
+import { Int, ByteArray, Data } from '@aikscript/types';
 import { Fuzzer, Option } from '@aiken/fuzz';
 
 // Re-export core fuzz types

@@ -1,4 +1,4 @@
-import { Bool, contract, Credential, datum, PolicyId, validator, ScriptContext } from '../../src/types';
+import { Bool, contract, Credential, datum, PolicyId, validator, ScriptContext } from '@aikscript/types';
 
 @contract("MultiPurpose")
 export class MultiPurposeContract {

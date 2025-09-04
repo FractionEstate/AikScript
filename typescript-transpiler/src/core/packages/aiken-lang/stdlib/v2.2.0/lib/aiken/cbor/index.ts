@@ -1,7 +1,7 @@
 // Aiken CBOR Module
 // TypeScript declarations for aiken-lang/stdlib/lib/aiken/cbor.ak
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // CBOR serialization functions
 export function cborDiagnostic(data: unknown): string {

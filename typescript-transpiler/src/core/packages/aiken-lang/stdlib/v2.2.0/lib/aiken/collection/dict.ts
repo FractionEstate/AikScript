@@ -1,7 +1,7 @@
 // Aiken Collection - Dict Module
 // TypeScript declarations for aiken-lang/stdlib/lib/aiken/collection/dict.ak
 
-import { ByteArray, Int } from '@/types/basic/index';
+import { ByteArray, Int } from '@aikscript/types';
 
 // Dictionary type
 export declare type Dict = unknown;

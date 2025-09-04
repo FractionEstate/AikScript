@@ -1,7 +1,7 @@
 // Cardano Address Module
 // TypeScript declarations for Cardano address operations
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 
 // Address types
 export declare type Address = ByteArray;

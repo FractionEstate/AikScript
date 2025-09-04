@@ -1,7 +1,7 @@
 // Cardano Certificate Module
 // TypeScript declarations for Cardano certificate operations
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 import { Credential } from '../address/index';
 
 // Certificate Types

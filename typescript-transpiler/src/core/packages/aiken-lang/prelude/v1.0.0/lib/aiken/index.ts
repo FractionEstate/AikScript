@@ -1,18 +1,18 @@
 // Aiken Prelude v1.0.0
 // Fundamental types and functions automatically available in all Aiken programs
 
-import { Bool, Int, ByteArray, String, Void, Data } from '@/types/basic/index';
+import { Bool, Int, ByteArray, String, Void, Data } from '@aikscript/types';
 
 // ===== BASIC TYPES =====
 
 // Boolean type and operations
-export { Bool } from '@/types/basic/index';
+export { Bool } from '@aikscript/types';
 export declare function not(b: Bool): Bool;
 export declare function and(a: Bool, b: Bool): Bool;
 export declare function or(a: Bool, b: Bool): Bool;
 
 // Integer type and basic operations
-export { Int } from '@/types/basic/index';
+export { Int } from '@aikscript/types';
 export declare function add(a: Int, b: Int): Int;
 export declare function subtract(a: Int, b: Int): Int;
 export declare function multiply(a: Int, b: Int): Int;
@@ -29,21 +29,21 @@ export declare function greaterThan(a: Int, b: Int): Bool;
 export declare function greaterThanOrEqual(a: Int, b: Int): Bool;
 
 // ===== BYTEARRAY OPERATIONS =====
-export { ByteArray } from '@/types/basic/index';
+export { ByteArray } from '@aikscript/types';
 export declare function byteArrayLength(bytes: ByteArray): Int;
 export declare function byteArrayConcat(a: ByteArray, b: ByteArray): ByteArray;
 export declare function byteArraySlice(bytes: ByteArray, start: Int, end: Int): ByteArray;
 
 // ===== STRING OPERATIONS =====
-export { String } from '@/types/basic/index';
+export { String } from '@aikscript/types';
 export declare function stringLength(str: String): Int;
 export declare function stringConcat(a: String, b: String): String;
 
 // ===== DATA TYPE =====
-export { Data } from '@/types/basic/index';
+export { Data } from '@aikscript/types';
 
 // ===== VOID TYPE =====
-export { Void } from '@/types/basic/index';
+export { Void } from '@aikscript/types';
 
 // ===== UTILITY FUNCTIONS =====
 export declare function identity<T>(x: T): T;

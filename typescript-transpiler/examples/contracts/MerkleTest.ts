@@ -1,7 +1,7 @@
 import {
   Bool, contract, datum, ByteArray, ScriptContext, validator,
   PubKeyHash, Int
-} from "../../src/types";
+} from '@aikscript/types';
 
 // Import Merkle Patricia Forestry functions
 import {

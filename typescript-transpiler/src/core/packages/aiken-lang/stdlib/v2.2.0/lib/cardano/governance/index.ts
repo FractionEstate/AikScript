@@ -1,7 +1,7 @@
 // Cardano Governance Module
 // TypeScript declarations for Cardano governance operations
 
-import { ByteArray } from '@/types/basic/index';
+import { ByteArray } from '@aikscript/types';
 import { Credential } from '../address/index';
 
 // Governance Types

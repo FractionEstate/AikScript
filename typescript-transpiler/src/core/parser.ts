@@ -3,11 +3,60 @@ import * as ts from 'typescript';
 
 // AST representation for our transpiler
 export interface TranspilerAST {
-  contracts: ContractDefinition[];
-  types: TypeDefinition[];
+  moduleName: string;
+  docs: string[];
   imports: ImportDeclaration[];
+  types: TypeDefinition[];
+  constants: ConstantDefinition[];
+  functions: FunctionDefinition[];
+  tests: TestDefinition[];
 }
 
+export interface ImportDeclaration {
+  module: string;
+  alias?: string;
+  exposing?: string[];
+}
+
+export interface TypeDefinition {
+  name: string;
+  typeParams?: string[];
+  definition: string;
+  isOpaque: boolean;
+  isPublic: boolean;
+  docs?: string[];
+}
+
+export interface ConstantDefinition {
+  name: string;
+  typeAnnotation?: string;
+  value: string;
+  isPublic: boolean;
+  docs?: string[];
+}
+
+export interface FunctionDefinition {
+  name: string;
+  typeParams?: string[];
+  parameters: ParameterDefinition[];
+  returnType?: string;
+  body: string;
+  isPublic: boolean;
+  docs?: string[];
+}
+
+export interface ParameterDefinition {
+  name: string;
+  type: string;
+}
+
+export interface TestDefinition {
+  name: string;
+  body: string;
+  docs?: string[];
+}
+
+// Legacy interfaces for backward compatibility
 export interface ContractDefinition {
   name: string;
   datums: DatumDefinition[];
@@ -26,16 +75,6 @@ export interface ValidatorDefinition {
   methodDeclaration: ts.MethodDeclaration;
   parameters: ts.ParameterDeclaration[];
   returnType: ts.TypeNode;
-}
-
-export interface TypeDefinition {
-  name: string;
-  declaration: ts.TypeAliasDeclaration | ts.InterfaceDeclaration;
-}
-
-export interface ImportDeclaration {
-  clause: ts.ImportClause;
-  module: string;
 }
 
 export class TypeScriptParser {
@@ -96,228 +135,198 @@ export class TypeScriptParser {
     }
   }
 
+  /**
+   * Analyzes a TypeScript source file and converts it to TranspilerAST
+   */
   private analyzeSourceFile(sourceFile: ts.SourceFile): TranspilerAST {
-    const contracts: ContractDefinition[] = [];
-    const types: TypeDefinition[] = [];
-    const imports: ImportDeclaration[] = [];
+    const ast: TranspilerAST = {
+      moduleName: this.extractModuleName(sourceFile),
+      docs: [],
+      imports: [],
+      types: [],
+      constants: [],
+      functions: [],
+      tests: [],
+    };
 
     const visit = (node: ts.Node) => {
-      if (ts.isClassDeclaration(node)) {
-        const contract = this.extractContract(node);
-        if (contract) {
-          contracts.push(contract);
-        }
-      } else if (ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)) {
-        types.push({
-          name: node.name.text,
-          declaration: node,
-        });
-      } else if (ts.isImportDeclaration(node)) {
-        imports.push({
-          clause: node.importClause!,
-          module: node.moduleSpecifier.getText().replace(/['"]/g, ''),
-        });
+      if (ts.isImportDeclaration(node)) {
+        ast.imports.push(this.parseImportDeclaration(node));
+      } else if (ts.isTypeAliasDeclaration(node)) {
+        ast.types.push(this.parseTypeAliasDeclaration(node));
+      } else if (ts.isInterfaceDeclaration(node)) {
+        ast.types.push(this.parseInterfaceDeclaration(node));
+      } else if (ts.isVariableDeclaration(node) && this.isConstantDeclaration(node)) {
+        ast.constants.push(this.parseConstantDeclaration(node));
+      } else if (ts.isFunctionDeclaration(node)) {
+        ast.functions.push(this.parseFunctionDeclaration(node));
+      } else if (ts.isMethodDeclaration(node) && this.isTestMethod(node)) {
+        ast.tests.push(this.parseTestDeclaration(node));
       }
 
       ts.forEachChild(node, visit);
     };
 
     ts.forEachChild(sourceFile, visit);
+    return ast;
+  }
+
+  /**
+   * Extracts module name from source file
+   */
+  private extractModuleName(sourceFile: ts.SourceFile): string {
+    // Extract from file name or use default
+    const fileName = sourceFile.fileName;
+    const baseName = fileName.replace(/\.[^/.]+$/, '');
+    return baseName || 'main';
+  }
+
+  /**
+   * Parses import declaration
+   */
+  private parseImportDeclaration(node: ts.ImportDeclaration): ImportDeclaration {
+    const module = node.moduleSpecifier.getText().replace(/['"]/g, '');
+    return {
+      module,
+    };
+  }
+
+  /**
+   * Parses type alias declaration
+   */
+  private parseTypeAliasDeclaration(node: ts.TypeAliasDeclaration): TypeDefinition {
+    return {
+      name: node.name.getText(),
+      typeParams: node.typeParameters?.map(tp => tp.name.getText()),
+      definition: this.generateTypeDefinition(node.type),
+      isOpaque: false,
+      isPublic: this.isPublicDeclaration(node),
+      docs: this.extractJSDoc(node),
+    };
+  }
+
+  /**
+   * Parses interface declaration
+   */
+  private parseInterfaceDeclaration(node: ts.InterfaceDeclaration): TypeDefinition {
+    const fields = node.members
+      .filter(ts.isPropertySignature)
+      .map(member => {
+        const name = member.name.getText();
+        const type = member.type ? this.generateTypeDefinition(member.type) : 'Void';
+        return `  ${name}: ${type},`;
+      })
+      .join('\n');
 
     return {
-      contracts,
-      types,
-      imports,
+      name: node.name.getText(),
+      typeParams: node.typeParameters?.map(tp => tp.name.getText()),
+      definition: fields,
+      isOpaque: false,
+      isPublic: this.isPublicDeclaration(node),
+      docs: this.extractJSDoc(node),
     };
   }
 
-  private extractContract(classDeclaration: ts.ClassDeclaration): ContractDefinition | null {
-    const decorators = ts.getDecorators(classDeclaration);
-    if (!decorators) return null;
+  /**
+   * Parses constant declaration
+   */
+  private parseConstantDeclaration(node: ts.VariableDeclaration): ConstantDefinition {
+    return {
+      name: node.name.getText(),
+      typeAnnotation: node.type ? this.generateTypeDefinition(node.type) : undefined,
+      value: node.initializer ? node.initializer.getText() : '',
+      isPublic: this.isPublicDeclaration(node),
+      docs: this.extractJSDoc(node),
+    };
+  }
 
-    const contractDecorator = decorators.find((decorator: ts.Decorator) =>
-      this.isContractDecorator(decorator)
-    );
-
-    if (!contractDecorator) return null;
-
-    const contractName = this.extractContractName(contractDecorator);
-    const datums = this.extractDatums(classDeclaration);
-    const validators = this.extractValidators(classDeclaration);
+  /**
+   * Parses function declaration
+   */
+  private parseFunctionDeclaration(node: ts.FunctionDeclaration): FunctionDefinition {
+    const parameters: ParameterDefinition[] = node.parameters.map(param => ({
+      name: param.name.getText(),
+      type: param.type ? this.generateTypeDefinition(param.type) : 'Void',
+    }));
 
     return {
-      name: contractName,
-      datums,
-      validators,
-      classDeclaration,
+      name: node.name?.getText() || 'anonymous',
+      typeParams: node.typeParameters?.map(tp => tp.name.getText()),
+      parameters,
+      returnType: node.type ? this.generateTypeDefinition(node.type) : 'Void',
+      body: node.body ? node.body.getText() : '',
+      isPublic: this.isPublicDeclaration(node),
+      docs: this.extractJSDoc(node),
     };
   }
 
-  private isContractDecorator(decorator: ts.Decorator): boolean {
-    const expression = decorator.expression;
-    if (!ts.isCallExpression(expression)) return false;
-
-    const identifier = expression.expression;
-    return ts.isIdentifier(identifier) && identifier.text === 'contract';
+  /**
+   * Parses test declaration
+   */
+  private parseTestDeclaration(node: ts.MethodDeclaration): TestDefinition {
+    return {
+      name: node.name.getText(),
+      body: node.body ? node.body.getText() : '',
+      docs: this.extractJSDoc(node),
+    };
   }
 
-  private extractContractName(decorator: ts.Decorator): string {
-    const expression = decorator.expression as ts.CallExpression;
-    const args = expression.arguments;
-    if (args.length === 0) return '';
+  /**
+   * Generates type definition string from TypeScript type
+   */
+  private generateTypeDefinition(type: ts.TypeNode): string {
+    // This is a simplified implementation - would need full type mapping
+    return type.getText();
+  }
 
-    const arg = args[0];
-    if (ts.isStringLiteral(arg)) {
-      return arg.text;
+  /**
+   * Checks if a declaration is public
+   */
+  private isPublicDeclaration(node: ts.Node): boolean {
+    // Check for export keyword or public modifier
+    if (ts.isVariableDeclaration(node) || ts.isFunctionDeclaration(node) ||
+        ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)) {
+      return (node as any).modifiers?.some((mod: ts.Modifier) =>
+        mod.kind === ts.SyntaxKind.ExportKeyword ||
+        mod.kind === ts.SyntaxKind.PublicKeyword
+      ) || false;
     }
-
-    return '';
+    return false;
   }
 
-  private extractDatums(classDeclaration: ts.ClassDeclaration): DatumDefinition[] {
-    const datums: DatumDefinition[] = [];
+  /**
+   * Checks if a variable declaration is a constant
+   */
+  private isConstantDeclaration(node: ts.VariableDeclaration): boolean {
+    // Check parent for const keyword
+    const parent = node.parent;
+    if (ts.isVariableDeclarationList(parent)) {
+      return parent.flags === ts.NodeFlags.Const;
+    }
+    return false;
+  }
 
-    const visit = (node: ts.Node) => {
-      if (ts.isPropertyDeclaration(node)) {
-        const decorators = ts.getDecorators(node);
-        if (decorators) {
-          const datumDecorator = decorators.find((decorator: ts.Decorator) =>
-            this.isDatumDecorator(decorator)
-          );
+  /**
+   * Checks if a method is a test method
+   */
+  private isTestMethod(node: ts.MethodDeclaration): boolean {
+    return node.name.getText().startsWith('test');
+  }
 
-          if (datumDecorator) {
-            // For our DSL, the @datum decorator is applied to a property with an object literal
-            const propertyName = node.name.getText();
-            const initializer = node.initializer;
-
-            if (initializer && ts.isObjectLiteralExpression(initializer)) {
-              // Create a synthetic interface from the object literal
-              const syntheticInterface = this.createSyntheticInterface(propertyName, initializer);
-              datums.push({
-                name: propertyName,
-                interfaceDeclaration: syntheticInterface,
-              });
-            }
-          }
+  /**
+   * Extracts JSDoc comments
+   */
+  private extractJSDoc(node: ts.Node): string[] {
+    const docs: string[] = [];
+    const jsDoc = (node as any).jsDoc;
+    if (jsDoc && Array.isArray(jsDoc)) {
+      jsDoc.forEach((doc: any) => {
+        if (doc.comment) {
+          docs.push(doc.comment);
         }
-      }
-
-      ts.forEachChild(node, visit);
-    };
-
-    ts.forEachChild(classDeclaration, visit);
-
-    return datums;
-  }
-
-  private createSyntheticInterface(
-    name: string,
-    objectLiteral: ts.ObjectLiteralExpression
-  ): ts.InterfaceDeclaration {
-    // Create property signatures from object literal properties
-    const members: ts.PropertySignature[] = [];
-
-    for (const property of objectLiteral.properties) {
-      if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
-        const propertyName = property.name;
-
-        // For now, we'll use 'any' type since we can't easily infer types from null literals
-        // In a real implementation, you'd want to do proper type inference
-        const typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
-
-        const propertySignature = ts.factory.createPropertySignature(
-          undefined, // modifiers
-          propertyName, // pass the identifier directly, not propertyName.text
-          undefined, // question token
-          typeNode
-        );
-
-        members.push(propertySignature);
-      }
+      });
     }
-
-    // Create the interface declaration
-    const interfaceName = ts.factory.createIdentifier(name);
-    const interfaceDeclaration = ts.factory.createInterfaceDeclaration(
-      undefined, // decorators
-      interfaceName,
-      undefined, // type parameters
-      undefined, // heritage clauses
-      members
-    );
-
-    return interfaceDeclaration;
-  }
-
-  private isDatumDecorator(decorator: ts.Decorator): boolean {
-    const expression = decorator.expression;
-    return ts.isIdentifier(expression) && expression.text === 'datum';
-  }
-
-  private extractValidators(classDeclaration: ts.ClassDeclaration): ValidatorDefinition[] {
-    const validators: ValidatorDefinition[] = [];
-
-    const visit = (node: ts.Node) => {
-      if (ts.isMethodDeclaration(node)) {
-        const decorators = ts.getDecorators(node);
-        if (decorators) {
-          const validatorDecorator = decorators.find((decorator: ts.Decorator) =>
-            this.isValidatorDecorator(decorator)
-          );
-
-          if (validatorDecorator) {
-            const purpose = this.extractValidatorPurpose(validatorDecorator);
-            validators.push({
-              name: node.name.getText(),
-              purpose,
-              methodDeclaration: node,
-              parameters: Array.from(node.parameters),
-              returnType: node.type!,
-            });
-          }
-        }
-      }
-
-      ts.forEachChild(node, visit);
-    };
-
-    ts.forEachChild(classDeclaration, visit);
-
-    return validators;
-  }
-
-  private isValidatorDecorator(decorator: ts.Decorator): boolean {
-    const expression = decorator.expression;
-    if (!ts.isCallExpression(expression)) return false;
-
-    const identifier = expression.expression;
-    return ts.isIdentifier(identifier) && identifier.text === 'validator';
-  }
-
-  private extractValidatorPurpose(decorator: ts.Decorator): string {
-    const expression = decorator.expression as ts.CallExpression;
-    const args = expression.arguments;
-    if (args.length === 0) return '';
-
-    const arg = args[0];
-    if (ts.isStringLiteral(arg)) {
-      return arg.text;
-    }
-
-    return '';
-  }
-
-  getTypeChecker(): ts.TypeChecker {
-    if (!this.checker) {
-      throw new Error('TypeChecker not initialized. Call parse() or parseSource() first.');
-    }
-    return this.checker;
-  }
-
-  getProgram(): ts.Program {
-    if (!this.program) {
-      throw new Error('Program not initialized. Call parse() or parseSource() first.');
-    }
-    return this.program;
+    return docs;
   }
 }

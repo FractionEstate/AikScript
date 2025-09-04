@@ -1,5 +1,12 @@
 import { BuiltinRegistry } from './builtins';
-import { AikenAST, AikenContract, AikenValidator, AikenParameter } from './transpiler';
+import {
+  AikenAST,
+  AikenImport,
+  AikenType,
+  AikenConstant,
+  AikenFunction,
+  AikenTest
+} from './transpiler';
 
 /**
  * Code generation utilities for TypeScript-to-Aiken transpiler
@@ -20,110 +27,171 @@ export class CodeGenerator {
    * @throws Error if code generation fails
    */
   generate(ast: AikenAST): string {
-    let output = '';
+    try {
+      const lines: string[] = [];
 
-    // Add builtin imports if any are used
-    const usedImports = this.builtinRegistry.getUsedImports();
-    if (usedImports.length > 0) {
-      output += `use aiken/builtin.{${usedImports.join(', ')}}\n\n`;
-    }
-
-    // Generate type definitions
-    for (const type of ast.types) {
-      output += type.definition + '\n\n';
-    }
-
-    // Generate contracts
-    for (const contract of ast.contracts) {
-      output += this.generateContract(contract) + '\n\n';
-    }
-
-    return output;
-  }
-
-  /**
-   * Generate Aiken contract code
-   */
-  private generateContract(contract: AikenContract): string {
-    let output = `// Contract: ${contract.name}\n`;
-
-    // Generate datums
-    for (const datum of contract.datums) {
-      output += this.generateDatum(datum);
-    }
-
-    // Generate validators
-    if (contract.validators.length > 0) {
-      output += `validator ${contract.name} {\n`;
-
-      for (const validator of contract.validators) {
-        output += this.generateValidator(validator);
+      // Add module docs
+      if (ast.docs && ast.docs.length > 0) {
+        ast.docs.forEach(doc => {
+          lines.push(`/// ${doc}`);
+        });
+        lines.push('');
       }
 
-      output += `}\n\n`;
+      // Add builtin imports if any are used
+      const usedImports = this.builtinRegistry.getUsedImports();
+      if (usedImports.length > 0) {
+        lines.push(`use aiken/builtin.{${usedImports.join(', ')}}`);
+        lines.push('');
+      }
+
+      // Generate imports
+      ast.imports.forEach(imp => {
+        lines.push(this.generateImport(imp));
+      });
+
+      if (ast.imports.length > 0) {
+        lines.push('');
+      }
+
+      // Generate types
+      ast.types.forEach(type => {
+        lines.push(this.generateType(type));
+        lines.push('');
+      });
+
+      // Generate constants
+      ast.constants.forEach(constant => {
+        lines.push(this.generateConstant(constant));
+        lines.push('');
+      });
+
+      // Generate functions
+      ast.functions.forEach(func => {
+        lines.push(this.generateFunction(func));
+        lines.push('');
+      });
+
+      // Generate tests
+      ast.tests.forEach(test => {
+        lines.push(this.generateTest(test));
+        lines.push('');
+      });
+
+      return lines.join('\n');
+    } catch (error) {
+      throw new Error(`Failed to generate Aiken code: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Generate import statement
+   */
+  private generateImport(imp: AikenImport): string {
+    let result = `use ${imp.module}`;
+
+    if (imp.alias) {
+      result += ` as ${imp.alias}`;
     }
 
-    return output;
-  }
-
-  /**
-   * Generate Aiken datum type definition
-   */
-  private generateDatum(datum: { name: string; fields: AikenParameter[] }): string {
-    // Convert to PascalCase for Aiken type naming convention
-    const typeName = datum.name.charAt(0).toUpperCase() + datum.name.slice(1);
-    let output = `pub type ${typeName} {\n`;
-
-    for (const field of datum.fields) {
-      output += `  ${field.name}: ${field.type},\n`;
+    if (imp.exposing && imp.exposing.length > 0) {
+      result += `.{${imp.exposing.join(', ')}}`;
     }
 
-    output += '}\n\n';
-    return output;
+    return result;
   }
 
   /**
-   * Generate Aiken validator function
+   * Generate type definition
    */
-  private generateValidator(validator: AikenValidator): string {
-    const params = validator.parameters
-      .map((p: AikenParameter) => `${p.name}: ${p.type}`)
-      .join(', ');
+  private generateType(type: AikenType): string {
+    const lines: string[] = [];
 
-    let output = '';
-
-    // Use the actual method name from TypeScript source
-    output += `  fn ${validator.name}(${params}) {\n`;
-
-    output += `    ${validator.body}\n`;
-    output += `  }\n`;
-
-    return output;
-  }
-
-  /**
-   * Generate import statements for builtin functions
-   */
-  generateBuiltinImports(): string {
-    const usedImports = this.builtinRegistry.getUsedImports();
-    if (usedImports.length === 0) {
-      return '';
+    // Add docs
+    if (type.docs && type.docs.length > 0) {
+      type.docs.forEach(doc => {
+        lines.push(`/// ${doc}`);
+      });
     }
 
-    return `use aiken/builtin.{${usedImports.join(', ')}}\n\n`;
+    lines.push(type.definition);
+    return lines.join('\n');
   }
 
   /**
-   * Generate type definitions
+   * Generate constant definition
    */
-  generateTypeDefinitions(types: any[]): string {
-    return types.map(type => type.definition).join('\n\n') + '\n\n';
+  private generateConstant(constant: AikenConstant): string {
+    const lines: string[] = [];
+
+    // Add docs
+    if (constant.docs && constant.docs.length > 0) {
+      constant.docs.forEach(doc => {
+        lines.push(`/// ${doc}`);
+      });
+    }
+
+    let definition = '';
+    if (constant.isPublic) {
+      definition += 'pub ';
+    }
+    definition += `const ${constant.name}: ${constant.type} = ${constant.value}`;
+
+    lines.push(definition);
+    return lines.join('\n');
   }
 
   /**
-   * Generate contract definitions
+   * Generate function definition
    */
-  generateContractDefinitions(contracts: AikenContract[]): string {
-    return contracts.map(contract => this.generateContract(contract)).join('\n\n');
+  private generateFunction(func: AikenFunction): string {
+    const lines: string[] = [];
+
+    // Add docs
+    if (func.docs && func.docs.length > 0) {
+      func.docs.forEach(doc => {
+        lines.push(`/// ${doc}`);
+      });
+    }
+
+    let signature = '';
+    if (func.isPublic) {
+      signature += 'pub ';
+    }
+    signature += `fn ${func.name}`;
+
+    if (func.typeParams && func.typeParams.length > 0) {
+      signature += `<${func.typeParams.join(', ')}>`;
+    }
+
+    const params = func.parameters.map(p => `${p.name}: ${p.type}`).join(', ');
+    signature += `(${params}) -> ${func.returnType}`;
+
+    lines.push(signature);
+    lines.push('{');
+    lines.push(func.body);
+    lines.push('}');
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Generate test definition
+   */
+  private generateTest(test: AikenTest): string {
+    const lines: string[] = [];
+
+    // Add docs
+    if (test.docs && test.docs.length > 0) {
+      test.docs.forEach(doc => {
+        lines.push(`/// ${doc}`);
+      });
+    }
+
+    lines.push(`test ${test.name}() {`);
+    lines.push(test.body);
+    lines.push('}');
+
+    return lines.join('\n');
   }
 }

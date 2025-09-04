@@ -1,10 +1,22 @@
 import { BuiltinRegistry } from './builtins';
-import { ExpressionTransformer } from './expressions';
-import { CodeGenerator } from './generator';
-import { ContractDefinition, TranspilerAST, TypeScriptParser } from './parser';
-import { AikenAST, AikenContract, AikenDatum, AikenType } from './transpiler';
-import { TypeMapper } from './types';
-import { ValidatorTransformer } from './validators';
+import {
+  AikenAST,
+  AikenImport,
+  AikenType,
+  AikenConstant,
+  AikenFunction,
+  AikenTest,
+  AikenParameter
+} from './transpiler';
+import {
+  TranspilerAST,
+  ImportDeclaration,
+  TypeDefinition,
+  ConstantDefinition,
+  FunctionDefinition,
+  TestDefinition,
+  ParameterDefinition
+} from './parser';
 
 /**
  * Main transformation orchestrator for TypeScript-to-Aiken transpiler
@@ -12,111 +24,173 @@ import { ValidatorTransformer } from './validators';
  */
 
 export class AikenTransformer {
-  private parser: TypeScriptParser;
   private builtinRegistry: BuiltinRegistry;
-  private typeMapper: TypeMapper;
-  private expressionTransformer: ExpressionTransformer;
-  private validatorTransformer: ValidatorTransformer;
-  private codeGenerator: CodeGenerator;
 
   constructor() {
-    this.parser = new TypeScriptParser();
     this.builtinRegistry = new BuiltinRegistry();
-    this.typeMapper = TypeMapper;
-    this.expressionTransformer = new ExpressionTransformer(this.builtinRegistry);
-    this.validatorTransformer = new ValidatorTransformer(this.expressionTransformer);
-    this.codeGenerator = new CodeGenerator(this.builtinRegistry);
   }
 
   /**
-   * Parse TypeScript source code
-   */
-  parse(sourceCode: string): TranspilerAST {
-    return this.parser.parseSource(sourceCode);
-  }
-
-  /**
-   * Transform TranspilerAST to AikenAST
+   * Transforms a TranspilerAST into an AikenAST
    * @param ast The TranspilerAST to transform
    * @returns The transformed AikenAST
    * @throws Error if transformation fails
    */
   transform(ast: TranspilerAST): AikenAST {
     try {
-      // Reset builtin tracking for new transformation
-      this.builtinRegistry.reset();
-
-      const contracts = ast.contracts.map(contract => this.transformContract(contract));
-      const types = ast.types.map(type => this.transformType(type));
-
-      return {
-        contracts,
-        types,
+      const aikenAst: AikenAST = {
+        moduleName: ast.moduleName || 'main',
+        docs: ast.docs,
+        imports: [],
+        types: [],
+        constants: [],
+        functions: [],
+        tests: [],
       };
+
+      // Transform imports
+      ast.imports.forEach(imp => {
+        aikenAst.imports.push(this.transformImport(imp));
+      });
+
+      // Transform types
+      ast.types.forEach(type => {
+        aikenAst.types.push(this.transformType(type));
+      });
+
+      // Transform constants
+      ast.constants.forEach(constant => {
+        aikenAst.constants.push(this.transformConstant(constant));
+      });
+
+      // Transform functions
+      ast.functions.forEach(func => {
+        aikenAst.functions.push(this.transformFunction(func));
+      });
+
+      // Transform tests
+      ast.tests.forEach(test => {
+        aikenAst.tests.push(this.transformTest(test));
+      });
+
+      return aikenAst;
     } catch (error) {
       throw new Error(`Failed to transform AST: ${(error as Error).message}`);
     }
   }
 
   /**
-   * Generate Aiken code from AikenAST
+   * Transforms an import declaration
    */
-  generate(ast: AikenAST): string {
-    try {
-      return this.codeGenerator.generate(ast);
-    } catch (error) {
-      throw new Error(`Failed to generate Aiken code: ${(error as Error).message}`);
-    }
-  }
-
-  /**
-   * Transform a single contract
-   */
-  private transformContract(contract: ContractDefinition): AikenContract {
-    const datums = contract.datums.map(datum => this.transformDatum(datum));
-    const validators = contract.validators.map(validator =>
-      this.validatorTransformer.transformValidator(validator, datums)
-    );
-
+  private transformImport(imp: ImportDeclaration): AikenImport {
     return {
-      name: contract.name,
-      datums,
-      validators,
+      module: imp.module,
+      alias: imp.alias,
+      exposing: imp.exposing,
     };
   }
 
   /**
-   * Transform a single datum
+   * Transforms a type definition
    */
-  private transformDatum(datum: any): AikenDatum {
-    const fields: any[] = [];
+  private transformType(type: TypeDefinition): AikenType {
+    let definition = '';
 
-    // Extract fields from interface
-    if (datum.interfaceDeclaration.members) {
-      for (const member of datum.interfaceDeclaration.members) {
-        if (member.name && member.type) {
-          const fieldName = member.name.getText();
-          const fieldType = TypeMapper.transformTypeNode(member.type);
-          fields.push({ name: fieldName, type: fieldType });
-        }
-      }
+    if (type.isOpaque) {
+      definition += 'pub opaque ';
+    } else if (type.isPublic) {
+      definition += 'pub ';
     }
 
-    return {
-      name: datum.name,
-      fields,
-    };
-  }
+    definition += `type ${type.name}`;
 
-  /**
-   * Transform a single type
-   */
-  private transformType(type: any): AikenType {
-    const definition = TypeMapper.transformTypeDefinition(type);
+    if (type.typeParams && type.typeParams.length > 0) {
+      definition += `<${type.typeParams.join(', ')}>`;
+    }
+
+    definition += ` {\n${type.definition}\n}`;
 
     return {
       name: type.name,
+      typeParams: type.typeParams,
       definition,
+      isOpaque: type.isOpaque,
+      isPublic: type.isPublic,
+      docs: type.docs,
+    };
+  }
+
+  /**
+   * Transforms a constant definition
+   */
+  private transformConstant(constant: ConstantDefinition): AikenConstant {
+    let definition = '';
+
+    if (constant.isPublic) {
+      definition += 'pub ';
+    }
+
+    definition += `const ${constant.name}`;
+
+    if (constant.typeAnnotation) {
+      definition += `: ${constant.typeAnnotation}`;
+    }
+
+    definition += ` = ${constant.value}`;
+
+    return {
+      name: constant.name,
+      type: constant.typeAnnotation || 'unknown',
+      value: constant.value,
+      isPublic: constant.isPublic,
+      docs: constant.docs,
+    };
+  }
+
+  /**
+   * Transforms a function definition
+   */
+  private transformFunction(func: FunctionDefinition): AikenFunction {
+    let definition = '';
+
+    if (func.isPublic) {
+      definition += 'pub ';
+    }
+
+    definition += `fn ${func.name}`;
+
+    if (func.typeParams && func.typeParams.length > 0) {
+      definition += `<${func.typeParams.join(', ')}>`;
+    }
+
+    const params = func.parameters.map((p: ParameterDefinition) => `${p.name}: ${p.type}`).join(', ');
+    definition += `(${params})`;
+
+    if (func.returnType) {
+      definition += ` -> ${func.returnType}`;
+    }
+
+    definition += ` {\n${func.body}\n}`;
+
+    return {
+      name: func.name,
+      typeParams: func.typeParams,
+      parameters: func.parameters,
+      returnType: func.returnType || 'Void',
+      body: func.body,
+      isPublic: func.isPublic,
+      docs: func.docs,
+    };
+  }
+
+  /**
+   * Transforms a test definition
+   */
+  private transformTest(test: TestDefinition): AikenTest {
+    return {
+      name: test.name,
+      body: test.body,
+      docs: test.docs,
     };
   }
 

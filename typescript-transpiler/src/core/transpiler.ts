@@ -3,10 +3,60 @@ import { AikenTransformer } from './transformer';
 
 // Aiken AST representation
 export interface AikenAST {
-  contracts: AikenContract[];
+  moduleName: string;
+  docs: string[];
+  imports: AikenImport[];
   types: AikenType[];
+  constants: AikenConstant[];
+  functions: AikenFunction[];
+  tests: AikenTest[];
 }
 
+export interface AikenImport {
+  module: string;
+  alias?: string;
+  exposing?: string[];
+}
+
+export interface AikenType {
+  name: string;
+  typeParams?: string[];
+  definition: string;
+  isOpaque: boolean;
+  isPublic: boolean;
+  docs?: string[];
+}
+
+export interface AikenConstant {
+  name: string;
+  type: string;
+  value: string;
+  isPublic: boolean;
+  docs?: string[];
+}
+
+export interface AikenFunction {
+  name: string;
+  typeParams?: string[];
+  parameters: AikenParameter[];
+  returnType: string;
+  body: string;
+  isPublic: boolean;
+  docs?: string[];
+}
+
+export interface AikenTest {
+  name: string;
+  body: string;
+  docs?: string[];
+}
+
+export interface AikenParameter {
+  name: string;
+  type: string;
+}
+
+// Legacy interfaces for backward compatibility
 export interface AikenContract {
   name: string;
   datums: AikenDatum[];
@@ -29,16 +79,6 @@ export interface AikenValidator {
   parameters: AikenParameter[];
   returnType: string;
   body: string;
-}
-
-export interface AikenParameter {
-  name: string;
-  type: string;
-}
-
-export interface AikenType {
-  name: string;
-  definition: string;
 }
 
 export interface TranspilerConfig {

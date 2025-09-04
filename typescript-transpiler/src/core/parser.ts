@@ -199,10 +199,12 @@ export class TypeScriptParser {
    * Parses type alias declaration
    */
   private parseTypeAliasDeclaration(node: ts.TypeAliasDeclaration): TypeDefinition {
+    const typeDef = this.generateTypeDefinition(node.type);
+
     return {
       name: node.name.getText(),
       typeParams: node.typeParameters?.map(tp => tp.name.getText()),
-      definition: this.generateTypeDefinition(node.type),
+      definition: typeDef,
       isOpaque: false,
       isPublic: this.isPublicDeclaration(node),
       docs: this.extractJSDoc(node),
@@ -218,14 +220,14 @@ export class TypeScriptParser {
       .map(member => {
         const name = member.name.getText();
         const type = member.type ? this.generateTypeDefinition(member.type) : 'Void';
-        return `  ${name}: ${type},`;
+        return `${name}: ${type}`;
       })
-      .join('\n');
+      .join(',\n');
 
     return {
       name: node.name.getText(),
       typeParams: node.typeParameters?.map(tp => tp.name.getText()),
-      definition: fields,
+      definition: fields ? `{\n${fields}\n}` : '{}',
       isOpaque: false,
       isPublic: this.isPublicDeclaration(node),
       docs: this.extractJSDoc(node),
@@ -280,6 +282,17 @@ export class TypeScriptParser {
    * Generates type definition string from TypeScript type
    */
   private generateTypeDefinition(type: ts.TypeNode): string {
+    // Handle literal types (string literals, number literals, etc.)
+    if (ts.isLiteralTypeNode(type)) {
+      if (ts.isStringLiteral(type.literal)) {
+        return type.literal.text;
+      }
+      if (ts.isNumericLiteral(type.literal)) {
+        return type.literal.text;
+      }
+      return type.literal.getText();
+    }
+
     // Map TypeScript types to Aiken types
     if (ts.isTypeReferenceNode(type)) {
       const typeName = type.typeName.getText();
@@ -315,19 +328,50 @@ export class TypeScriptParser {
       }
     }
 
-    // Handle other type constructs
+    // Handle union types
+    if (ts.isUnionTypeNode(type)) {
+      const unionTypes = type.types.map(t => this.generateTypeDefinition(t));
+      return unionTypes.join(' | ');
+    }
+
+    // Handle array types
     if (ts.isArrayTypeNode(type)) {
       const elementType = this.generateTypeDefinition(type.elementType);
       return `List<${elementType}>`;
     }
 
-    if (ts.isUnionTypeNode(type)) {
-      // For now, just return the first type - this could be improved
-      return this.generateTypeDefinition(type.types[0]);
+    // Handle tuple types
+    if (ts.isTupleTypeNode(type)) {
+      const elementTypes = type.elements.map(t => this.generateTypeDefinition(t));
+      return `(${elementTypes.join(', ')})`;
     }
 
-    // Default fallback
-    return type.getText();
+    // Handle function types
+    if (ts.isFunctionTypeNode(type)) {
+      const paramTypes = type.parameters.map(p => this.generateTypeDefinition(p.type!));
+      const returnType = this.generateTypeDefinition(type.type);
+      return `(${paramTypes.join(', ')}) -> ${returnType}`;
+    }
+
+    // Handle type literals (object types)
+    if (ts.isTypeLiteralNode(type)) {
+      const members = type.members
+        .filter(ts.isPropertySignature)
+        .map(member => {
+          const name = member.name.getText();
+          const memberType = member.type ? this.generateTypeDefinition(member.type) : 'Void';
+          return `${name}: ${memberType}`;
+        });
+      return `{\n${members.map(m => `  ${m}`).join(',\n')}\n}`;
+    }
+
+    // Default fallback - return the raw text but try to convert basic types
+    const rawText = type.getText();
+    return rawText
+      .replace(/\bboolean\b/g, 'Bool')
+      .replace(/\bnumber\b/g, 'Int')
+      .replace(/\bstring\b/g, 'String')
+      .replace(/\bUint8Array\b/g, 'ByteArray');
   }
 
   /**

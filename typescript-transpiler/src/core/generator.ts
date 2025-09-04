@@ -114,8 +114,65 @@ export class CodeGenerator {
       });
     }
 
-    lines.push(type.definition);
+    // Check if this is a simple type alias (no braces in definition)
+    const isSimpleAlias = !type.definition.includes('{') && !type.definition.includes('|');
+
+    let typeDeclaration = '';
+    if (type.isOpaque) {
+      typeDeclaration += 'pub opaque type ';
+    } else if (type.isPublic) {
+      typeDeclaration += 'pub type ';
+    } else {
+      typeDeclaration += 'type ';
+    }
+    typeDeclaration += type.name;
+
+    // Handle generic types
+    if (type.typeParams && type.typeParams.length > 0) {
+      typeDeclaration += `<${type.typeParams.join(', ')}>`;
+    }
+
+    if (isSimpleAlias) {
+      // For simple type aliases, use = syntax
+      typeDeclaration += ` = ${type.definition}`;
+      lines.push(typeDeclaration);
+    } else {
+      // For complex types (records, unions), use { } syntax
+      typeDeclaration += ' {';
+      lines.push(typeDeclaration);
+
+      // Parse the definition and convert to Aiken syntax
+      const aikenDefinition = this.convertToAikenSyntax(type.definition);
+      if (aikenDefinition.trim()) {
+        lines.push(aikenDefinition);
+      }
+      lines.push('}');
+    }
+
     return lines.join('\n');
+  }
+
+  /**
+   * Convert TypeScript-like syntax to Aiken syntax
+   */
+  private convertToAikenSyntax(definition: string): string {
+    // Handle record types (objects with properties)
+    if (definition.includes('{') && definition.includes(':')) {
+      // If it's already properly formatted, return as-is
+      if (definition.startsWith('{') && definition.endsWith('}')) {
+        return definition;
+      }
+      // Otherwise, it's likely a type alias that doesn't need extra formatting
+      return definition;
+    }
+
+    // Handle union types - they should be used directly
+    if (definition.includes('|')) {
+      return definition;
+    }
+
+    // Handle primitive types and type references - they should be used directly
+    return definition;
   }
 
   /**
@@ -169,10 +226,48 @@ export class CodeGenerator {
 
     lines.push(signature);
     lines.push('{');
-    lines.push(func.body);
+
+    // Convert function body from TypeScript to Aiken syntax
+    const aikenBody = this.convertFunctionBodyToAiken(func.body);
+    lines.push(aikenBody);
     lines.push('}');
 
     return lines.join('\n');
+  }
+
+  /**
+   * Convert function body from TypeScript to Aiken syntax
+   */
+  private convertFunctionBodyToAiken(body: string): string {
+    return body
+      .replace(/const\s+/g, 'let ') // Convert const to let
+      .replace(/let\s+/g, 'let ') // Keep let as is
+      .replace(/===\s*true/g, '') // Remove === true
+      .replace(/===\s*false/g, ' == False') // Convert === false
+      .replace(/===\s*([^f])/g, ' == $1') // Convert === to ==
+      .replace(/!==\s*([^f])/g, ' != $1') // Convert !== to !=
+      .replace(/&&/g, ' && ') // Ensure spaces around &&
+      .replace(/\|\|/g, ' || ') // Ensure spaces around ||
+      .replace(/!/g, ' !') // Ensure space before !
+      .replace(/if\s*\(/g, 'if ') // Remove parentheses from if
+      .replace(/\)\s*{/g, ' {') // Remove closing paren from if
+      .replace(/else\s*if\s*\(/g, 'else if ') // Remove parentheses from else if
+      .replace(/}\s*else\s*{/g, '} else {') // Clean up else
+      .replace(/return\s+/g, '') // Remove return keyword (Aiken uses implicit return)
+      .replace(/;/g, '') // Remove semicolons
+      .replace(/undefined/g, 'None') // Convert undefined to None
+      .replace(/null/g, 'None') // Convert null to None
+      .replace(/Date\.now\(\)/g, 'get_current_time()') // Convert Date.now() to Aiken function
+      .replace(/typeof\s+(\w+)\s*===\s*['"]string['"]/g, 'is_string($1)') // Convert typeof checks
+      .replace(/typeof\s+(\w+)\s*===\s*['"]number['"]/g, 'is_int($1)') // Convert typeof checks
+      .replace(/typeof\s+(\w+)\s*===\s*['"]boolean['"]/g, 'is_bool($1)') // Convert typeof checks
+      .replace(/JSON\.stringify/g, 'to_string') // Convert JSON.stringify to Aiken function
+      .replace(/\.\.\./g, '..') // Convert spread operator
+      .replace(/`([^`]*)`/g, '"$1"') // Convert template literals to regular strings
+      .replace(/(\w+)\.(\w+)/g, '$1.$2') // Keep property access as is
+      .replace(/\/\/.*$/gm, '') // Remove single-line comments
+      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+      .trim();
   }
 
   /**

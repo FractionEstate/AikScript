@@ -1,23 +1,32 @@
 import {
   Bool, contract, datum, ByteArray, ScriptContext, validator,
-  // Merkle Patricia Forestry functions
+  PubKeyHash, Int
+} from "../../src/types";
+
+// Import Merkle Patricia Forestry functions
+import {
   sliceByteArray, nibble, nibbles, suffix, combineHashes,
   merkle4, merkle8, merkle16, sparseMerkle4, sparseMerkle8, sparseMerkle16,
-  nullHash, nullHash2, nullHash4, nullHash8,
-  // Additional cryptographic functions
-  sha2_256, sha3_256, verifyEcdsaSignature, verifySchnorrSignature,
-  // Mathematical functions
-  mathAbs, mathClamp, mathGcd, mathIsSqrt, mathLog, mathLog2,
-  // List functions
-  listPush, listRange, listRepeat, listAll, listAny,
-  // CBOR functions
-  cborDiagnostic, cborSerialise, cborDeserialise,
-  // Address functions
-  addressFromScript, addressFromVerificationKey,
-  // Asset functions
-  valueFromAsset, valueFromAssetList, valueZero, valueAdd, valueSubtract, valueGetAsset, valueIsZero,
-  PubKeyHash, Int
-} from '../../src/types';
+  nullHash, nullHash2, nullHash4, nullHash8
+} from "@aiken/merkle-patricia-forestry";
+
+// Import cryptographic functions
+import { sha2_256, sha3_256, verifyEd25519Signature, verifyEcdsaSignature, verifySchnorrSignature } from "@aiken/crypto";
+
+// Import mathematical functions
+import { abs, clamp, gcd, isSqrt, log, log2 } from "@aiken/math";
+
+// Import list functions
+import { listPush, listRange, listRepeat, listAll, listAny } from "@aiken/collection";
+
+// Import CBOR functions
+import { cborDiagnostic, cborSerialise, cborDeserialise } from "@aiken/cbor";
+
+// Import address functions
+import { addressFromScript, addressFromVerificationKey } from "@cardano/address";
+
+// Import asset functions
+import { valueFromAsset, valueFromAssetList, valueAdd, valueSubtract, valueGetAsset, valueIsZero } from "@cardano/assets";
 
 @contract("MerkleTest")
 export class MerkleTestContract {
@@ -43,7 +52,7 @@ export class MerkleTestContract {
     const combined = combineHashes(datum.root, sliced);
 
     // Simple validation logic - convert ByteArray to PubKeyHash
-    const rootHash = Array.from(datum.root).map(b => b.toString(16).padStart(2, '0')).join('') as PubKeyHash;
+    const rootHash = Array.from(datum.root).map((b: number) => b.toString(16).padStart(2, '0')).join('') as PubKeyHash;
     return tx.isSignedBy(rootHash) && firstNibble >= 0;
   }
 }

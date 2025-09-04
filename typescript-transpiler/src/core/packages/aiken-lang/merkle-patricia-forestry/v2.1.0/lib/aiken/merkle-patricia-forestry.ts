@@ -1,8 +1,9 @@
 // Merkle Patricia Forestry Module
 // TypeScript declarations for aiken-lang/merkle-patricia-forestry
 
+import { ByteArray, Int } from '@/types/basic/index';
+
 // Basic types
-type ByteArray = Uint8Array;
 type Bool = boolean;
 
 // MPF Core Types
@@ -18,13 +19,24 @@ export declare function mpfMiss(mpf: MerklePatriciaForestry, key: ByteArray, pro
 export declare function mpfInsert(mpf: MerklePatriciaForestry, key: ByteArray, value: ByteArray, proof: Proof): MerklePatriciaForestry;
 export declare function mpfDelete(mpf: MerklePatriciaForestry, key: ByteArray, value: ByteArray, proof: Proof): MerklePatriciaForestry;
 export declare function mpfUpdate(mpf: MerklePatriciaForestry, key: ByteArray, proof: Proof, oldValue: ByteArray, newValue: ByteArray): MerklePatriciaForestry;
-export declare function mpfRoot(mpf: MerklePatriciaForestry): ByteArray;
 
-// Constants
-export declare const mpfEmpty: MerklePatriciaForestry;
+// Merkle Tree Functions
+export declare function sliceByteArray(data: ByteArray, start: Int, end: Int): ByteArray;
+export declare function nibble(data: ByteArray, index: Int): Int;
+export declare function nibbles(data: ByteArray): Int[];
+export declare function suffix(data: ByteArray, start: Int): ByteArray;
+export declare function combineHashes(left: ByteArray, right: ByteArray): ByteArray;
 
-// Utility Functions
-export declare function sliceByteArray(bytes: ByteArray, start: number, end: number): ByteArray;
-export declare function concatByteArrays(left: ByteArray, right: ByteArray): ByteArray;
-export declare function hashLeaf(key: ByteArray, value: ByteArray): ByteArray;
-export declare function hashNode(left: ByteArray, right: ByteArray): ByteArray;
+// Merkle Tree Constructors
+export declare function merkle4(hashes: ByteArray[]): ByteArray;
+export declare function merkle8(hashes: ByteArray[]): ByteArray;
+export declare function merkle16(hashes: ByteArray[]): ByteArray;
+export declare function sparseMerkle4(hashes: ByteArray[]): ByteArray;
+export declare function sparseMerkle8(hashes: ByteArray[]): ByteArray;
+export declare function sparseMerkle16(hashes: ByteArray[]): ByteArray;
+
+// Null Hash Constants
+export declare const nullHash: ByteArray;
+export declare const nullHash2: ByteArray;
+export declare const nullHash4: ByteArray;
+export declare const nullHash8: ByteArray;

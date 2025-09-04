@@ -38,3 +38,17 @@ export declare function option<a>(elementFuzzer: Fuzzer<a>): Fuzzer<Option<a>>;
 export declare function rand(): Fuzzer<Int>;
 export declare function one_of<a>(fuzzers: Fuzzer<a>[]): Fuzzer<a>;
 export declare function frequency<a>(weightedFuzzers: { weight: Int; fuzzer: Fuzzer<a> }[]): Fuzzer<a>;
+
+// Additional combinators
+export declare function such_that<a>(fuzzer: Fuzzer<a>, predicate: (a: a) => Bool): Fuzzer<a>;
+export declare function tuple<a, b>(fuzzerA: Fuzzer<a>, fuzzerB: Fuzzer<b>): Fuzzer<[a, b]>;
+export declare function tuple3<a, b, c>(fuzzerA: Fuzzer<a>, fuzzerB: Fuzzer<b>, fuzzerC: Fuzzer<c>): Fuzzer<[a, b, c]>;
+export declare function tuple4<a, b, c, d>(fuzzerA: Fuzzer<a>, fuzzerB: Fuzzer<b>, fuzzerC: Fuzzer<c>, fuzzerD: Fuzzer<d>): Fuzzer<[a, b, c, d]>;
+export declare function tuple5<a, b, c, d, e>(fuzzerA: Fuzzer<a>, fuzzerB: Fuzzer<b>, fuzzerC: Fuzzer<c>, fuzzerD: Fuzzer<d>, fuzzerE: Fuzzer<e>): Fuzzer<[a, b, c, d, e]>;
+
+// Collection utilities
+export declare function list_at_least<a>(elementFuzzer: Fuzzer<a>, min: Int): Fuzzer<a[]>;
+export declare function list_at_most<a>(elementFuzzer: Fuzzer<a>, max: Int): Fuzzer<a[]>;
+export declare function int_at_most(max: Int): Fuzzer<Int>;
+export declare function bytearray_at_least(min: Int): Fuzzer<ByteArray>;
+export declare function bytearray_at_most(max: Int): Fuzzer<ByteArray>;

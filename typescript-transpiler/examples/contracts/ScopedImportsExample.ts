@@ -32,7 +32,7 @@ export class ScopedImportsExampleContract {
     const tx = ctx.transaction;
 
     // Use functions from scoped imports
-    const sliced = mpf.sliceByteArray(datum.data, 0, 8);
+    const sliced = mpf.sliceByteArray(datum.data, 0n, 8n);
     const hashLeaf = mpf.hashLeaf(datum.key, datum.data);
     const combined = mpf.concatByteArrays(datum.root, sliced);
 

@@ -14,3 +14,9 @@ export declare function keccak_256(data: ByteArray): ByteArray;
 export declare type VerificationKey = ByteArray;
 export declare type Signature = ByteArray;
 export declare function verifyEd25519Signature(vk: VerificationKey, msg: ByteArray, sig: Signature): boolean;
+
+// ECDSA signature verification
+export declare function verifyEcdsaSignature(vk: VerificationKey, msg: ByteArray, sig: Signature): boolean;
+
+// Schnorr signature verification
+export declare function verifySchnorrSignature(vk: VerificationKey, msg: ByteArray, sig: Signature): boolean;

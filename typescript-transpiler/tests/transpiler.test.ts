@@ -92,4 +92,70 @@ describe('TypeScriptToAikenTranspiler', () => {
     expect(generatedCode).toContain('lockUntil: POSIXTime');
     expect(generatedCode).toContain('owner: PubKeyHash');
   });
+
+  test('should handle invalid TypeScript syntax', () => {
+    const invalidSourceCode = `
+      import { contract, datum, validator, Bool, POSIXTime, PubKeyHash, ScriptContext } from '../src/types';
+
+      @contract("InvalidContract")
+      export class InvalidContract {
+        @datum
+        public invalidDatum: any = {
+          // Missing closing brace
+          lockUntil: null as any,
+          owner: null as any
+    `;
+
+    expect(() => {
+      transpiler.parse(invalidSourceCode);
+    }).toThrow();
+  });
+
+  test('should handle empty contract', () => {
+    const emptyContractCode = `
+      import { contract } from '../src/types';
+
+      @contract("EmptyContract")
+      export class EmptyContract {
+      }
+    `;
+
+    const tsAst = transpiler.parse(emptyContractCode);
+    const aikenAst = transpiler.transform(tsAst);
+    const generatedCode = transpiler.generate(aikenAst);
+
+    expect(generatedCode).toContain('validator EmptyContract');
+    expect(generatedCode).toContain('pub type EmptyContract');
+  });
+
+  test('should handle contract with multiple validators', () => {
+    const multiValidatorCode = `
+      import { contract, datum, validator, Bool, POSIXTime, PubKeyHash, ScriptContext } from '../src/types';
+
+      @contract("MultiValidatorContract")
+      export class MultiValidatorContract {
+        @datum
+        public datum: any = {
+          owner: null as any
+        };
+
+        @validator("spend")
+        spend(datum: { owner: PubKeyHash }, redeemer: void, ctx: ScriptContext): Bool {
+          return true;
+        }
+
+        @validator("mint")
+        mint(redeemer: void, policyId: any, ctx: ScriptContext): Bool {
+          return true;
+        }
+      }
+    `;
+
+    const tsAst = transpiler.parse(multiValidatorCode);
+    const aikenAst = transpiler.transform(tsAst);
+    const generatedCode = transpiler.generate(aikenAst);
+
+    expect(generatedCode).toContain('fn spend');
+    expect(generatedCode).toContain('fn mint');
+  });
 });

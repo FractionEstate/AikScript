@@ -235,21 +235,27 @@ export class CodeGenerator {
     signature += `(${params}) -> ${this.mapTypeToAiken(func.returnType)}`;
 
     lines.push(signature);
-    lines.push('{');
 
     // Convert function body from TypeScript to Aiken syntax
     let aikenBody = this.convertFunctionBodyToAiken(func.body);
+    let isConditionalWithPipeline = false;
 
     // If pipe expressions exist, handle them properly
     if (func.pipeExpressions && func.pipeExpressions.length > 0) {
       // Check if this is a conditional function with multiple pipe expressions
       if (this.isConditionalFunction(func.body) && func.pipeExpressions.length > 1) {
         aikenBody = this.generateConditionalPipeline(func);
+        isConditionalWithPipeline = true;
       } else {
         // Use the first pipe expression as the main body for simple cases
         const pipeExpr = func.pipeExpressions[0];
         aikenBody = this.generatePipeExpression(pipeExpr);
       }
+    }
+
+    // Only add outer braces if we're not using conditional pipeline (which adds its own braces)
+    if (!isConditionalWithPipeline) {
+      lines.push('{');
     }
 
     lines.push(aikenBody);
@@ -270,8 +276,10 @@ export class CodeGenerator {
       });
     }
 
-    // Don't generate pipe expressions separately since we handled them in the body
-    lines.push('}');
+    // Only add closing brace if we're not using conditional pipeline
+    if (!isConditionalWithPipeline) {
+      lines.push('}');
+    }
 
     return lines.join('\n');
   }
@@ -288,7 +296,7 @@ export class CodeGenerator {
       .replace(/===\s*([^f])/g, ' == $1') // Convert === to ==
       .replace(/!==\s*([^f])/g, ' != $1') // Convert !== to !=
       .replace(/&&/g, ' && ') // Ensure spaces around &&
-      .replace(/\|\|/g, ' || ') // Ensure spaces around ||
+      .replace(/(\w+)\s*\|\|\s*(\w+)/g, '$1 || $2') // Ensure spaces around || between words
       .replace(/!/g, ' !') // Ensure space before !
       .replace(/if\s*\(/g, 'if ') // Remove parentheses from if
       .replace(/\)\s*{/g, ' {') // Remove closing paren from if
@@ -311,6 +319,8 @@ export class CodeGenerator {
       .replace(/(\w+)\.hasOwnProperty\('([^']+)'\)/g, '$1 is $2') // Convert hasOwnProperty to pattern matching
       .replace(/(\w+)\.length/g, 'length($1)') // Convert .length to length() function
       .replace(/(\w+)\[(\d+)\]/g, 'index($1, $2)') // Convert array access to index function
+      .replace(/{\s*/g, '') // Remove opening braces
+      .replace(/\s*}/g, '') // Remove closing braces
       .trim();
   }
 

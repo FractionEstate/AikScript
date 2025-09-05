@@ -1,0 +1,45 @@
+{
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.vscode/**": true,
+    "**/.github/**": true,
+    "**/crates/**": true,
+    "**/examples/**": true,
+    "**/benchmarks/**": true,
+    "**/*.log": true,
+    "**/coverage/**": true,
+    "**/pnpm-lock.yaml": true,
+    "**/package-lock.json": true,
+    "**/yarn.lock": true,
+    "**/tsconfig.tsbuildinfo": true
+  },
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.git/**": true,
+    "**/crates/**": true,
+    "**/coverage/**": true
+  },
+  "typescript.preferences.noSemicolons": "off",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never"
+  },
+  "eslint.run": "onType",
+  "eslint.codeAction.showDocumentation": {
+    "enable": false
+  },
+  "files.exclude": {
+    "**/dist/**": true,
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/coverage/**": true
+  }
+}

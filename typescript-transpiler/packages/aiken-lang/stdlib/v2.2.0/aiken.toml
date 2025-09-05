@@ -1,0 +1,13 @@
+name = "aiken-lang-stdlib"
+description = "Standard library for the Aiken programming language"
+version = "2.2.0"
+license = "Apache-2.0"
+
+[repository]
+user = "aiken-lang"
+project = "stdlib"
+
+[[dependencies]]
+name = "aiken-lang-stdlib"
+version = "2.2.0"
+source = "github"

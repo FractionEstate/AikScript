@@ -5,7 +5,7 @@
 export * from './core/index';
 
 // Type system - now using package-based architecture
-export * from './core/packages/aikscript/v1.0.0/lib/types/index';
+export * from '../packages/aikscript/v1.0.0/lib/types/index';
 
 // CLI interface
 export * from './cli/index';
